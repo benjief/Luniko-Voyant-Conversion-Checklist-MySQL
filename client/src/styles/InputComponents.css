@@ -1,0 +1,33 @@
+.landing-page-options-container .MuiBox-root {
+    width: 100% !important;
+    display: flex;
+    /* margin-top: 5px; */
+}
+
+.landing-page-options-container .material-text-field {
+    width: 100% !important;
+}
+
+.landing-page-options-container .MuiFormControl-root {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.landing-page-options-container .MuiOutlinedInput-root {
+    height: 50px !important;
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+}
+
+.landing-page-options-container .MuiInputLabel-root {
+    top: -2.5px;
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+}
+
+.landing-page-options-container .MuiInputLabel-shrink {
+    top: 0px !important;
+    color: var(--lunikoBlue) !important;
+}
+
+.landing-page-options-container .MuiOutlinedInput-notchedOutline {
+    border-color: var(--lunikoBlue) !important;
+}

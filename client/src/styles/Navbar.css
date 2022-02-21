@@ -1,0 +1,11 @@
+/* Navbar styling */
+.navbar {
+  background-color: var(--lunikoBlue);
+  font-family: 'Raleway', Verdana, sans-serif;
+  font-weight: 400;
+  z-index: 0;
+}
+
+.navbar-brand img {
+  width: 50px;
+}
