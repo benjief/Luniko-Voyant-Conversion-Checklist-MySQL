@@ -8,12 +8,12 @@
     width: 100% !important;
 }
 
-.landing-page-options-container .MuiFormControl-root {
+.MuiFormControl-root {
     width: 100% !important;
     margin: 0 !important;
 }
 
-.landing-page-options-container .MuiOutlinedInput-root {
+.MuiOutlinedInput-root {
     height: 50px !important;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
 }

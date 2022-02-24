@@ -1,0 +1,23 @@
+.create-pre-conversion-checklist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    height: calc(100vh - 106.52px);
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.create-pre-conversion-checklist::-webkit-scrollbar {
+    display: none;
+}
+
+.create-pre-conversion-checklist-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding-bottom: 20px;
+}

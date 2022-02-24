@@ -3,13 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../components/Navbar";
 import MaterialTextField from "../components/MaterialTextField";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
-import "../styles/InputComponents.css"
-import "../styles/LandingPage.css";
+import "../styles/PreConversionChecklist.css";
 
-function LandingPage() {
+function PreConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
+
+
 
     useEffect(() => {
         setRendering(false);
@@ -37,30 +38,28 @@ function LandingPage() {
                 </div>
                 <NavBar>
                 </NavBar>
-                <div className="landing-page-options">
+                <div className="pre-conversion-checklist-options">
                     <div className="page-message">
-                        Welcome!
+                        Pre-Conversion Checklist
                     </div>
-                    <div className="landing-page-options-container">
+                    <div className="pre-conversion-checklist-options-container">
                         <div className="card-text">
                             Please choose an option below:
                         </div>
-                        <Link to={"/pre-conversion-checklist"}>
+                        <Link to={"/create-pre-conversion-checklist"}>
                             <button
-                                className="pre-conversion-checklist-button">
-                                Pre-Conversion Checklist
+                                className="create-pre-conversion-checklist-button">
+                                Create
                             </button>
                         </Link>
-                        <Link to={"/post-conversion-checklist"}>
-                            <button
-                                className="post-conversion-checklist-button">
-                                Post-Conversion Checklist
-                            </button>
-                        </Link>
+                        <button
+                            className="view-pre-conversion-checklist-button">
+                            View/Modify
+                        </button>
                     </div>
                 </div>
             </Fragment>
     )
 };
 
-export default LandingPage;
+export default PreConversionChecklist;

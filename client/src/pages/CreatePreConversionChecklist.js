@@ -1,18 +1,17 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../components/Navbar";
 import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
-import CreateChecklistCard from "../components/CreateChecklistCard";
+import CreatePreConversionChecklistCard from "../components/CreatePreConversionChecklistCard";
+import TestCard from "../components/TestCard";
 import Axios from "axios";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
-import "../styles/CreateRequest.css";
+import "../styles/CreatePreConversionChecklist.css";
 import "../styles/SelectorComponents.css";
 import "../styles/InputComponents.css";
 
-function CreateChecklist() {
+function CreatePreConversionChecklist() {
     // const navigate = useNavigate();
     const [rendering, setRendering] = useState(true);
     const [loadSheetName, setLoadSheetName] = useState("");
@@ -35,6 +34,7 @@ function CreateChecklist() {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
+    const navigate = useNavigate();
 
     // Single select options
     const conversionTypeOptions = [
@@ -42,7 +42,7 @@ function CreateChecklist() {
         { value: "D", label: "DMT" }
     ];
 
-    const AdditionalProcessingOptions = [
+    const additionalProcessingOptions = [
         { value: "C", label: "Cleanup Needed" },
         { value: "D", label: "New Data to Be Added" },
         { value: "N", label: "N/A" }
@@ -50,8 +50,10 @@ function CreateChecklist() {
 
     // Personnel functions
     const getPersonnel = () => {
+        console.log("fetching personnel!");
         Axios.get("http://localhost:3001/get-all-personnel", {
         }).then((response) => {
+            console.log(response.data);
             populatePersonnelList(response.data);
         });
     };
@@ -60,19 +62,17 @@ function CreateChecklist() {
         if (personnelList.length > 1) {
             let tempArray = [];
             for (let i = 0; i < personnelList.length; i++) {
-                if (personnelList[i].pers_id !== uid) {
-                    let value = personnelList[i].pers_id;
-                    let label = personnelList[i].pers_fname + " " + personnelList[i].pers_lname;
-                    let personnel = {
-                        "value": value,
-                        "label": label
-                    };
-                    tempArray.push(personnel);
-                }
+                let value = personnelList[i].pers_id;
+                let label = personnelList[i].pers_fname + " " + personnelList[i].pers_lname;
+                let personnel = {
+                    "value": value,
+                    "label": label
+                };
+                tempArray.push(personnel);
             }
             setPersonnelOptions(tempArray);
-            setRendering(false);
         }
+        setRendering(false);
     }
 
     // Selector callback handlers
@@ -82,18 +82,29 @@ function CreateChecklist() {
 
     const handleLoadSheetOwnerCallback = (lsOwnerFromSelector) => {
         setLoadSheetOwner(lsOwnerFromSelector);
+        setPersonnelOptions(personnelOptions.filter((val) => {
+            return val.value !== lsOwnerFromSelector;
+        }));
     }
 
     const handleDecisionMakerCallback = (decisionMakerFromSelector) => {
         setDecisionMaker(decisionMakerFromSelector);
+        setPersonnelOptions(personnelOptions.filter((val) => {
+            return val.value !== decisionMakerFromSelector;
+        }));
     }
 
     const handleContributorsCallback = (contributorsFromSelector) => {
-        setContributors(contributorsFromSelector)''
+        setContributors(contributorsFromSelector);
+        for (let i = 0; i < contributorsFromSelector.length; i++) {
+            setPersonnelOptions(personnelOptions.filter((val) => {
+                return val.value !== contributorsFromSelector[i];
+            }));
+        }
     }
 
     const handleConversionTypeCallback = (conversionTypeFromSelector) => {
-        setScopeType(conversionTypeFromSelector);
+        setConversionType(conversionTypeFromSelector);
     }
 
     const handleAdditionalProcessingCallback = (additionalProcessingFromSelector) => {
@@ -223,78 +234,36 @@ function CreateChecklist() {
                 </div>
                 <NavBar>
                 </NavBar>
-                <div className="create-request">
-                    <div className="create-request-container">
-                        <div className="create-request-card">
-                            <CreateRequestCard
-                                uid={uid}
-                                scopeTypeOptions={scopeOptions}
-                                departmentOptions={deptOptions}
-                                valueOptions={valueOptions}
-                                identifierOptions={identifierOptions}
-                                updatedCompany={handleCompanyCallback}
-                                selectedScopeType={handleScopeCallback}
-                                selectedDepartment={handleDeptCallback}
-                                updatedDescription={handleDescriptionCallback}
-                                selectedValue={handleValueCallback}
-                                selectedIdentifiers={handleIdentifierCallback}
-                                requestToSubmit={addRequest}
+                <div className="create-pre-conversion-checklist">
+                    <div className="create-pre-conversion-checklist-container">
+                        <div className="create-pre-conversion-checklist-card">
+                            <TestCard></TestCard>
+                            {/* <CreatePreConversionChecklistCard
+                                conversionTypeOptions={conversionTypeOptions}
+                                additionalProcessingOptions={additionalProcessingOptions}
+                                loadSheetName={handleLoadSheetNameCallback}
+                                personnelOptions={personnelOptions}
+                                loadSheetOwner={handleLoadSheetOwnerCallback}
+                                decisionMaker={handleDecisionMakerCallback}
+                                contributors={handleContributorsCallback}
+                                conversionType={handleConversionTypeCallback}
+                                additionalProcessing={handleAdditionalProcessingCallback}
+                                dataSources={handleDataSourcesCallback}
+                                uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
+                                uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
+                                recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
+                                recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
+                                preConversionManipulation={handlePreConversionManipulationCallback}
+                                postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
+                                postConversionValidationResults={handlePostConversionValidationResultsCallback}
+                                postConversionChanges={handlePostConversionChangesCallback}
                                 submitButtonDisabled={submitButtonDisabled}>
-                            </CreateRequestCard>
+                            </CreatePreConversionChecklistCard> */}
                         </div>
-                        {/* <input
-                            className="request-textBox"
-                            type="text"
-                            value={company}
-                            onChange={(event) => setCompany(event.target.value)}
-                            maxLength={45}
-                            required={true}
-                            placeholder="Company Name">
-                        </input>
-                        <MaterialSingleSelect
-                            placeholder="Scope Type"
-                            singleSelectOptions={scopeOptions}
-                            selectedValue={handleScopeCallback}>
-                        </MaterialSingleSelect>
-                        <MaterialSingleSelect
-                            placeholder="Department"
-                            singleSelectOptions={deptOptions}
-                            selectedValue={handleDeptCallback}>
-                        </MaterialSingleSelect>
-                        <textarea
-                            className="request-textBox"
-                            type="text"
-                            value={description}
-                            onChange={(event) => setDescription(event.target.value)}
-                            placeholder="Description"
-                            maxLength={500}
-                            required={true}
-                            style={{ marginTop: "10px", height: "150px" }}>
-                        </textarea>
-                        <MaterialSingleSelect
-                            placeholder="Value"
-                            singleSelectOptions={valueOptions}
-                            selectedValue={handleValueCallback}>
-                        </MaterialSingleSelect>
-                        <MaterialMultiSelect
-                            label="Identifiers"
-                            placeholder="Add Identifiers"
-                            multiSelectOptions={identifierOptions}
-                            selectedValues={handleIdentifierCallback}
-                            limitTags={1}>
-                        </MaterialMultiSelect>
-                        <button
-                            className="submit-request-button"
-                            disabled={disabled}
-                            // TODO: this might not be super necessary
-                            onClick={!submitted ? addRequest : null}
-                            style={{ backgroundColor: submitButtonColor }}>
-                            {submitButtonText}
-                        </button> */}
                     </div>
                 </div>
             </Fragment >
     )
 }
 
-export default CreateChecklist;
+export default CreatePreConversionChecklist;
