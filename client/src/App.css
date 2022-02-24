@@ -19,28 +19,6 @@
   font-size: 11pt;
 }
 
-button {
-  padding: 10px;
-  margin-top: 15px;
-  margin-bottom: 10px;
-  border: none;
-  color: white;
-  background-color: var(--lunikoBlue);
-  border-radius: 5px;
-  font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
-  font-weight: 600;
-  font-size: 14pt;
-  height: 50px;
-  width: 100%;
-  transition: 0.1s;
-  box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
-}
-
-button:hover {
-  cursor: pointer;
-  background-color: var(--lunikoOrange);
-}
-
 textarea:focus {
   outline: none;
 }
