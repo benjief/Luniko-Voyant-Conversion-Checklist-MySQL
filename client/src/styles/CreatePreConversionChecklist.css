@@ -2,8 +2,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 50px;
-    height: calc(100vh - 106.52px);
+    margin-top: 20px;
+    height: calc(100vh - 76.52px);
     overflow-y: scroll;
     -ms-overflow-style: none;
     scrollbar-width: none;

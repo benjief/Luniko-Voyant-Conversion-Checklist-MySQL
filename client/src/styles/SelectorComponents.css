@@ -8,7 +8,18 @@
     font-weight: 700 !important;
     font-size: 10.5pt !important;
     color: rgba(0, 0, 0, 0.7) !important;
+    top: -1px !important;
     /* top: 5px !important; */
+}
+
+.MuiInputLabel-shrink {
+    font-size: 12pt !important;
+    background-color: var(--lunikoOrange);
+    margin: 0 !important;
+    padding-right: 5px !important;
+    /* margin-left: 5px !important;
+    margin-right: 1px !important; */
+    transform: translate(14px, -7px) scale(0.75) !important;
 }
 
 .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
@@ -19,15 +30,11 @@
     color: rgba(0, 0, 0, 0.38) !important;
 }
 
-.MuiInputLabel-shrink {
-    font-size: 12pt !important;
-}
-
 .MuiAutocomplete-input {
     /* background-color: white !important; */
     box-shadow: none !important;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-    font-size: 13pt !important;
+    font-size: 11pt !important;
     color: rgba(83, 83, 83, 0.767) !important;
     position: relative !important;
     top: -3px !important;
@@ -35,17 +42,18 @@
 
 .MuiAutocomplete-option {
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-    font-size: 13pt !important;
+    font-size: 11pt !important;
 }
-
 
 .MuiAutocomplete-noOptions {
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-    font-size: 13pt !important;
+    font-size: 11pt !important;
     min-height: 64px !important;
     align-self: center !important;
+    justify-self: center !important;
     position: relative !important;
     top: 5px !important;
+    border: none !important;
 }
 
 .MuiAutocomplete-popper {
@@ -53,20 +61,28 @@
     top: 5px !important;
 }
 
+.MuiAutocomplete-popper[data-popper-reference-hidden] {
+    visibility: hidden;
+    /* opacity: 0; */
+    pointer-events: none;
+    /* transition: 100ms !important; */
+}
+
+.MuiAutocomplete-popper[data-popper-escaped] {
+    visibility: hidden !important;
+    /* opacity: 0; */
+    pointer-events: none !important;
+    /* transition: 100ms !important; */
+}
+
 .MuiAutocomplete-root {
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
 }
 
 .MuiAutocomplete-input {
     color: rgba(0, 0, 0, 0.7) !important;
 }
 
-
-/* .MuiAutocomplete-endAdornment {
-    height: 28px !important;
+.MuiOutlinedInput-notchedOutline {
+    border-color: rgba(0, 0, 0, 0.7) !important;
 }
-
-.MuiAutocomplete-endAdornment button {
-    width: 28px !important;
-    height: 28px !important;
-} */

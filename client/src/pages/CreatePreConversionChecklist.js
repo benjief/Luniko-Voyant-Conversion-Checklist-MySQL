@@ -4,12 +4,12 @@ import NavBar from "../components/Navbar";
 import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import CreatePreConversionChecklistCard from "../components/CreatePreConversionChecklistCard";
-import TestCard from "../components/TestCard";
 import Axios from "axios";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/CreatePreConversionChecklist.css";
 import "../styles/SelectorComponents.css";
 import "../styles/InputComponents.css";
+import "../styles/CardComponents.css";
 
 function CreatePreConversionChecklist() {
     // const navigate = useNavigate();
@@ -237,8 +237,7 @@ function CreatePreConversionChecklist() {
                 <div className="create-pre-conversion-checklist">
                     <div className="create-pre-conversion-checklist-container">
                         <div className="create-pre-conversion-checklist-card">
-                            <TestCard></TestCard>
-                            {/* <CreatePreConversionChecklistCard
+                            <CreatePreConversionChecklistCard
                                 conversionTypeOptions={conversionTypeOptions}
                                 additionalProcessingOptions={additionalProcessingOptions}
                                 loadSheetName={handleLoadSheetNameCallback}
@@ -258,7 +257,7 @@ function CreatePreConversionChecklist() {
                                 postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                 postConversionChanges={handlePostConversionChangesCallback}
                                 submitButtonDisabled={submitButtonDisabled}>
-                            </CreatePreConversionChecklistCard> */}
+                            </CreatePreConversionChecklistCard>
                         </div>
                     </div>
                 </div>

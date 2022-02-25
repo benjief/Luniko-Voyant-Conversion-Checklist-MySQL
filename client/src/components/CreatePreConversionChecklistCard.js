@@ -127,7 +127,7 @@ export default function CreatePreConversionChecklistCard({
             sx={{
                 minWidth: 350,
                 maxWidth: 350,
-                maxHeight: 500,
+                maxHeight: "calc(100vh - 96.52px)",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",
@@ -182,18 +182,19 @@ export default function CreatePreConversionChecklistCard({
                             placeholder="Who is this load sheet's owner?"
                             singleSelectOptions={personnelOptions}
                             selectedValue={handleOnSelectLoadSheetOwner}
-                            required={true}>
+                            required={true}
+                            autocompleteOpen={false}>
                         </MaterialSingleSelect>
                         <MaterialSingleSelect
                             label="Decision Maker"
-                            placeholder="Who is the decision maker for this load sheet?"
+                            placeholder="Who is the decision maker?"
                             singleSelectOptions={personnelOptions}
                             selectedValue={handleOnSelectDecisionMaker}
                             required={true}>
                         </MaterialSingleSelect>
                         <MaterialMultiSelect
                             label="Other Contributors"
-                            placeholder="Who else was involved throughout the process?"
+                            placeholder="Who else was involved?"
                             singleSelectOptions={personnelOptions}
                             selectedValues={handleOnSelectContributors}
                             required={false}>
@@ -210,9 +211,11 @@ export default function CreatePreConversionChecklistCard({
                             placeholder="Additional Processing"
                             singleSelectOptions={additionalProcessingOptions}
                             selectedValue={handleOnSelectAdditionalProcessing}
-                            required={true}>
+                            required={true}
+                            className="additional-processing">
                         </MaterialSingleSelect>
                         <MaterialTextField
+                            className="data-sources"
                             label="Data Sources"
                             characterLimit={1000}
                             placeholder="What are the sources of data?"
@@ -233,16 +236,17 @@ export default function CreatePreConversionChecklistCard({
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
                             // characterLimit={10}
-                            placeholder="Approximate number of unique records post-cleanup"
+                            placeholder="Enter the approximate number of unique records post-cleanup."
                             inputValue={handleOnChangeUniqueRecordsPostCleanup}
                             multiline={false}
                             required={true}
                             type="number">
                         </MaterialTextField>
                         <MaterialTextField
+                            className="pre-cleanup-notes"
                             label="Pre-Cleanup Notes"
                             characterLimit={1000}
-                            placeholder="Anything worth noting about the pre-cleanup state of the data"
+                            placeholder="Is there anything worth noting about the pre-cleanup state of the data?"
                             inputValue={handleOnChangeRecordsPreCleanupNotes}
                             multiline={true}
                             required={false}
@@ -250,9 +254,10 @@ export default function CreatePreConversionChecklistCard({
                             showCharCounter={true}>
                         </MaterialTextField>
                         <MaterialTextField
+                            className="post-cleanup-notes"
                             label="Post-Cleanup Notes"
                             // characterLimit={10}
-                            placeholder="Anything worth noting about the post-cleanup state of the data"
+                            placeholder="Is there anything worth noting about the post-cleanup state of the data?"
                             inputValue={handleOnChangeRecordsPostCleanupNotes}
                             multiline={true}
                             required={false}
@@ -260,19 +265,10 @@ export default function CreatePreConversionChecklistCard({
                             showCharCounter={true}>
                         </MaterialTextField>
                         <MaterialTextField
-                            label="Pre-conversion Manipulation"
+                            className="pre-conversion-manipulation"
+                            label="Pre-Conversion Manipulation"
                             characterLimit={1000}
-                            placeholder="Describe pre-conversion processing methodology: how were addition of new data/processing carried out?"
-                            inputValue={handleOnChangeRecordsPostCleanupNotes}
-                            multiline={true}
-                            required={false}
-                            type="text"
-                            showCharCounter={true}>
-                        </MaterialTextField>
-                        <MaterialTextField
-                            label="Post"
-                            characterLimit={1000}
-                            placeholder="Describe pre-conversion processing methodology: how were addition of new data/processing carried out?"
+                            placeholder="Describe your pre-conversion processing methodology. How was the addition of new data/processing carried out?"
                             inputValue={handleOnChangeRecordsPostCleanupNotes}
                             multiline={true}
                             required={false}

@@ -1,10 +1,11 @@
-.landing-page-options-container .MuiBox-root {
+.MuiBox-root {
     width: 100% !important;
     display: flex;
+    margin-bottom: 15px !important;
     /* margin-top: 5px; */
 }
 
-.landing-page-options-container .material-text-field {
+.material-text-field {
     width: 100% !important;
 }
 
@@ -16,18 +17,33 @@
 .MuiOutlinedInput-root {
     height: 50px !important;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    font-size: 11pt !important;
 }
 
-.landing-page-options-container .MuiInputLabel-root {
+
+.data-sources .MuiOutlinedInput-root,
+.pre-cleanup-notes .MuiOutlinedInput-root,
+.post-cleanup-notes .MuiOutlinedInput-root,
+.pre-conversion-manipulation .MuiOutlinedInput-root {
+    min-height: 200px !important;
+}
+
+.MuiOutlinedInput-input {
+    align-self: flex-start !important;
+    position: relative;
+    top: -3px;
+}
+
+.MuiInputLabel-root {
     top: -2.5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
 }
 
-.landing-page-options-container .MuiInputLabel-shrink {
+/* .MuiInputLabel-shrink {
     top: 0px !important;
     color: var(--lunikoBlue) !important;
-}
+} */
 
-.landing-page-options-container .MuiOutlinedInput-notchedOutline {
+/* .MuiOutlinedInput-notchedOutline {
     border-color: var(--lunikoBlue) !important;
-}
+} */
