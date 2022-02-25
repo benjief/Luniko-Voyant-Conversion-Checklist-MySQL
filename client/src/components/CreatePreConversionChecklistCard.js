@@ -212,7 +212,8 @@ export default function CreatePreConversionChecklistCard({
                             singleSelectOptions={additionalProcessingOptions}
                             selectedValue={handleOnSelectAdditionalProcessing}
                             required={true}
-                            className="additional-processing">
+                            className="additional-processing"
+                        >
                         </MaterialSingleSelect>
                         <MaterialTextField
                             className="data-sources"

@@ -4,7 +4,7 @@
     align-items: center;
     margin-top: 20px;
     height: calc(100vh - 76.52px);
-    overflow-y: scroll;
+    overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
