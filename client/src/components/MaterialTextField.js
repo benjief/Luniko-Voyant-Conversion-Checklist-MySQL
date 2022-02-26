@@ -22,32 +22,36 @@ export default function MaterialTextField({
   const [displayedHelperText, setDisplayedHelperText] = React.useState(helperText);
   const [inputLength, setInputLength] = React.useState(defaultValue.length);
 
+  React.useEffect(() => {
+
+  })
+
   const handleOnChange = (value) => {
-    if (value) {
-      inputNeedsValidating ? checkInputValidity(value) : handleValidValue(value);
+    console.log(value.length);
+    if (value.length > 0) {
+      handleValidValue(value);
     } else {
       if (required) {
-        let helperText = "Required Field"
+        handleInvalidValue(value);
       }
-      handleInvalidValue(value, helperText);
     }
   }
 
-  const checkInputValidity = (input) => {
-    if (input) {
-      handleValidValue(input);
-    } else {
-      let helperTexst = "Invalid load sheet name"
-      handleInvalidValue(input, helperText);
-    }
-  }
+  // const checkInputValidity = (input) => {
+  //   if (input.length > 2) {
+  //     handleValidValue(input);
+  //   } else {
+  //     setErrorMsg("Required Field");
+  //     handleInvalidValue(input);
+  //   }
+  // }
 
-  const handleInvalidValue = (value, errorMsgText) => {
+  const handleInvalidValue = (value) => {
     inputValue("");
     setInputLength(value.length);
     if (required) {
       setErrorEnabled(true);
-      setDisplayedHelperText(errorMsgText);
+      setDisplayedHelperText("Required Field");
     }
   }
 
@@ -57,6 +61,11 @@ export default function MaterialTextField({
     setErrorEnabled(false);
     setDisplayedHelperText(helperText);
   }
+
+  // React.useEffect(() => {
+  //   console.log(errorMsg);
+  //   console.log(displayedHelperText);
+  // }, [errorMsg, displayedHelperText]);
 
   return (
     <Box
