@@ -13,7 +13,6 @@ export default function MaterialSingleSelect(
         isDisabled = false,
         required = false
     }
-
 ) {
     const [errorEnabled, setErrorEnabled] = React.useState(false);
     const [errorMsg, setErrorMsg] = React.useState("");

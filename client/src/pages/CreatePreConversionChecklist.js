@@ -62,11 +62,11 @@ function CreatePreConversionChecklist() {
         if (personnelList.length > 1) {
             let tempArray = [];
             for (let i = 0; i < personnelList.length; i++) {
-                let value = personnelList[i].pers_id;
-                let label = personnelList[i].pers_fname + " " + personnelList[i].pers_lname;
+                let uid = personnelList[i].pers_id;
+                let name = personnelList[i].pers_fname + " " + personnelList[i].pers_lname;
                 let personnel = {
-                    "value": value,
-                    "label": label
+                    "uid": uid,
+                    "name": name
                 };
                 tempArray.push(personnel);
             }

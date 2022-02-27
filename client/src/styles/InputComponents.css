@@ -15,7 +15,7 @@
 }
 
 .MuiOutlinedInput-root {
-    height: 50px !important;
+    min-height: 50px !important;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
     font-size: 11pt !important;
 }
@@ -30,8 +30,8 @@
 
 .MuiOutlinedInput-input {
     align-self: flex-start !important;
-    position: relative;
-    top: -3px;
+    /* position: relative; */
+    /* top: -2.5px; */
 }
 
 .MuiInputLabel-root {

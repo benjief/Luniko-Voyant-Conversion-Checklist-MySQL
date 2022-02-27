@@ -12,6 +12,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MaterialSingleSelect from './MaterialSingleSelect';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
+import MaterialMultiSelectAddNew from './MaterialMultiSelectAddNew';
 // import BootstrapPopover from "../components/BootstrapPopover";
 
 const ExpandMore = styled((props) => {
@@ -192,13 +193,26 @@ export default function CreatePreConversionChecklistCard({
                             selectedValue={handleOnSelectDecisionMaker}
                             required={true}>
                         </MaterialSingleSelect>
-                        <MaterialMultiSelect
+                        {/* <MaterialMultiSelect
                             label="Other Contributors"
                             placeholder="Who else was involved?"
                             singleSelectOptions={personnelOptions}
                             selectedValues={handleOnSelectContributors}
                             required={false}>
-                        </MaterialMultiSelect>
+                        </MaterialMultiSelect> */}
+                        <MaterialMultiSelectAddNew
+                            label="Other Contributors"
+                            placeholder="Who else was involved?"
+                            multiSelectOptions={
+                                [
+                                    { label: 'The Shawshank Redemption', value: 1994 },
+                                    { label: 'The Godfather', value: 1972 }
+
+                                ]
+                            }
+                            selectedValues={handleOnSelectContributors}
+                            required={false}>
+                        </MaterialMultiSelectAddNew>
                         <MaterialSingleSelect
                             label="Conversion Type"
                             placeholder="Conversion Type"

@@ -8,8 +8,6 @@
     font-weight: 700 !important;
     font-size: 10.5pt !important;
     color: rgba(0, 0, 0, 0.7) !important;
-    top: -1px !important;
-    /* top: 5px !important; */
 }
 
 .MuiInputLabel-shrink {
@@ -36,8 +34,8 @@
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
     font-size: 11pt !important;
     color: rgba(83, 83, 83, 0.767) !important;
-    position: relative !important;
-    top: -3px !important;
+    /* position: relative !important; */
+    /* top: -1.5px !important; */
 }
 
 .MuiAutocomplete-option {
@@ -69,12 +67,10 @@
     /* transition: 100ms !important; */
 }
 
-.MuiAutocomplete-popper[data-popper-escaped] {
+/* .MuiAutocomplete-popper[data-popper-escaped] {
     visibility: hidden !important;
-    /* opacity: 0; */
     pointer-events: none !important;
-    /* transition: 100ms !important; */
-}
+} */
 
 .MuiAutocomplete-root {
     margin-bottom: 15px !important;
@@ -82,6 +78,10 @@
 
 .MuiAutocomplete-input {
     color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.MuiButtonBase-root {
+    height: 27px !important;
 }
 
 .MuiOutlinedInput-notchedOutline {
