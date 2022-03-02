@@ -78,7 +78,7 @@ export default function MaterialSingleSelectFreeSolo(
     }
 
     const handleOnBlur = () => {
-        if (required && value = "") {
+        if (required && value === "") {
             setErrorEnabled(true);
             setDisplayedHelperText("Required Field");
         }

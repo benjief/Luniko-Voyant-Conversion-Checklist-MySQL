@@ -61,6 +61,10 @@
     color: #d32f2f !important;
 }
 
+.Mui-error .MuiOutlinedInput-notchedOutline {
+    border-color: #d32f2f !important;
+}
+
 /* .MuiInputLabel-shrink {
     top: 0px !important;
     color: var(--lunikoBlue) !important;
