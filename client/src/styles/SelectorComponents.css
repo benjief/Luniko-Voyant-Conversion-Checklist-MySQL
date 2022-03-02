@@ -27,9 +27,9 @@
     transform: translate(0px, 0px) scale(0.75) !important;
 }
 
-.MuiInputLabel-root.Mui-error {
+/* .MuiInputLabel-root.Mui-error {
     color: #d32f2f !important;
-}
+} */
 
 .MuiInputLabel-root.Mui-disabled {
     color: rgba(0, 0, 0, 0.38) !important;
@@ -95,11 +95,11 @@
     border-color: rgba(0, 0, 0, 0.7) !important;
 }
 
-.css-154xyx0-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
+/* .css-154xyx0-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
 .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
 .css-dpjnhs-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
     border-color: #d32f2f !important;
-}
+} */
 
 .MuiCheckbox-colorPrimary {
     color: var(--lunikoBlue) !important;

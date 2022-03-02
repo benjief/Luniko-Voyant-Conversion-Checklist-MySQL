@@ -57,6 +57,10 @@
     z-index: 1 !important;
 }
 
+.MuiError, .Mui-error {
+    color: #d32f2f !important;
+}
+
 /* .MuiInputLabel-shrink {
     top: 0px !important;
     color: var(--lunikoBlue) !important;
