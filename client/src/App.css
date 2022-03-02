@@ -29,7 +29,7 @@ textarea:focus {
   height: 100vh;
   background-image: url("img/background_pattern.png");
   transition: 1s;
-  z-index: 1;
+  z-index: 2;
 }
 
 .page-message {

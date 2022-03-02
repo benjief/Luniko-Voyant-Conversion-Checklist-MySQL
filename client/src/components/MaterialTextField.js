@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 export default function MaterialTextField({
-  inputNeedsValidating = false,
   className = "",
   label = "",
   helperText = "",
@@ -14,58 +13,73 @@ export default function MaterialTextField({
   multiline = false,
   type = "text",
   required = false,
-  showCharCounter = false,
-  validInputs = []
+  showCharCounter = false
 }) {
+  const [value, setValue] = React.useState("");
   const [errorEnabled, setErrorEnabled] = React.useState(false);
   // const [errorMsg, setErrorMsg] = React.useState("");
   const [displayedHelperText, setDisplayedHelperText] = React.useState(helperText);
   const [inputLength, setInputLength] = React.useState(defaultValue.length);
 
-  React.useEffect(() => {
-
-  })
-
   const handleOnChange = (value) => {
-    console.log(value.length);
-    if (value.length > 0) {
+    if (value) {
+      if (type === "email") {
+        checkEmailValidity(value);
+      } else if (type === "password") {
+        checkPasswordValidity(value);
+      }
       handleValidValue(value);
     } else {
       if (required) {
-        handleInvalidValue(value);
+        setDisplayedHelperText("Required Field");
       }
+      handleInvalidValue(value);
     }
   }
 
-  // const checkInputValidity = (input) => {
-  //   if (input.length > 2) {
-  //     handleValidValue(input);
-  //   } else {
-  //     setErrorMsg("Required Field");
-  //     handleInvalidValue(input);
-  //   }
-  // }
-
-  const handleInvalidValue = (value) => {
-    inputValue("");
-    setInputLength(value.length);
-    if (required) {
+  const handleOnBlur = () => {
+    if (required && value === "") {
       setErrorEnabled(true);
       setDisplayedHelperText("Required Field");
     }
   }
 
+  const checkEmailValidity = (email) => {
+    if (email.match(/[^@]+@[^@]+\./)) {
+      handleValidValue(email);
+    } else {
+      setDisplayedHelperText("Please enter a valid email address");
+      handleInvalidValue(email);
+    }
+  }
+
+  const checkPasswordValidity = (password) => {
+    if (password.length > 5) {
+      handleValidValue(password);
+    } else {
+      setDisplayedHelperText("Passwords must be at least 6 characters long");
+      handleInvalidValue(password);
+    }
+  }
+
+  const handleInvalidValue = (value) => {
+    setValue("");
+    inputValue("");
+    if (value) {
+      setInputLength(value.length);
+    }
+    if (required) {
+      setErrorEnabled(true);
+    }
+  }
+
   const handleValidValue = (value) => {
+    setValue(value);
     inputValue(value);
     setInputLength(value.length);
     setErrorEnabled(false);
     setDisplayedHelperText(helperText);
   }
-
-  // React.useEffect(() => {
-  //   console.log(errorMsg);
-  //   console.log(displayedHelperText);
-  // }, [errorMsg, displayedHelperText]);
 
   return (
     <Box
@@ -82,10 +96,10 @@ export default function MaterialTextField({
           defaultValue={defaultValue}
           type={type}
           onChange={(event) => handleOnChange(event.target.value)}
+          onBlur={(event) => handleOnBlur(event.target.value)}
           multiline={multiline}
           error={errorEnabled}
           required={required}
-          placeholder={placeholder}
           inputProps={{
             maxLength: characterLimit
           }}

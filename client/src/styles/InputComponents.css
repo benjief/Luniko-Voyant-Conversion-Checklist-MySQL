@@ -54,6 +54,7 @@
 .MuiInputLabel-root {
     top: -2.5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    z-index: 1 !important;
 }
 
 /* .MuiInputLabel-shrink {

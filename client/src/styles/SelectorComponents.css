@@ -27,11 +27,11 @@
     transform: translate(0px, 0px) scale(0.75) !important;
 }
 
-.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
+.MuiInputLabel-root.Mui-error {
     color: #d32f2f !important;
 }
 
-.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled {
+.MuiInputLabel-root.Mui-disabled {
     color: rgba(0, 0, 0, 0.38) !important;
 }
 
@@ -93,4 +93,24 @@
 
 .MuiOutlinedInput-notchedOutline {
     border-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+.css-154xyx0-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
+.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
+.css-dpjnhs-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+    border-color: #d32f2f !important;
+}
+
+.MuiCheckbox-colorPrimary {
+    color: var(--lunikoBlue) !important;
+}
+
+.MuiTypography-root {
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    font-size: 11pt !important;
+    text-align: left;
+}
+
+.MuiFormControlLabel-root {
+    margin: 0 !important;
 }

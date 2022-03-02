@@ -1,26 +1,42 @@
 import * as React from 'react';
+import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
 
-export default function MaterialMultiSelect(
-  {
-    label = "",
-    placeholder = "",
-    multiSelectOptions = [],
-    selectedValues = [],
-    limitTags = 1,
-    required = false
-  }
-) {
+export default function MaterialMultiSelect({
+  label = "",
+  placeholder = "",
+  multiSelectOptions = [],
+  selectedValues = [],
+  limitTags = 1,
+  required = false
+}) {
+
+  const [values, setValues] = React.useState([]);
+  const [errorEnabled, setErrorEnabled] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("");
 
   const handleOnChange = (object) => {
-    console.log(object);
-    if (object[0]) {
-      let tempArray = [];
-      for (let i = 0; i < object.length; i++) {
-        tempArray.push(object[i].value);
+    if (object) {
+      setValues(object.value);
+      selectedValues(object.value);
+      setErrorEnabled(false);
+      setErrorMsg("");
+    } else {
+      setValues([]);
+      selectedValues([]);
+      if (required) {
+        setErrorEnabled(true);
+        setErrorMsg("Required Field");
       }
-      selectedValues(tempArray);
+    }
+  }
+
+  const handleOnBlur = () => {
+    if (required && values === []) {
+      setErrorEnabled(true);
+      setErrorMsg("Required Field");
     }
   }
 
@@ -29,6 +45,8 @@ export default function MaterialMultiSelect(
       // Override of option equality is needed for MUI to properly compare options and values
       // isOptionEqualToValue={(option, value) => option.id === value.id}
       multiple
+      values={values}
+      disablePortal
       limitTags={limitTags}
       // id="tags-outlined"
       options={multiSelectOptions}
@@ -36,6 +54,7 @@ export default function MaterialMultiSelect(
       // defaultValue={[top100Films[13]]}
       filterSelectedOptions
       onChange={(event, object) => handleOnChange(object)}
+      onBlur={handleOnBlur}
       renderInput={(params) => (
         <TextField
           // color='warning'

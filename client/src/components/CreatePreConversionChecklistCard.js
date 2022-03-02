@@ -14,6 +14,7 @@ import MaterialSingleSelectFreeSolo from './MaterialSingleSelectFreeSolo';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
+import MaterialCheckBox from './MaterialCheckBox';
 // import BootstrapPopover from "../components/BootstrapPopover";
 
 const ExpandMore = styled((props) => {
@@ -44,9 +45,10 @@ export default function CreatePreConversionChecklistCard({
     recordsPreCleanupNotes = "",
     recordsPostCleanupNotes = "",
     preConversionManipulation = "",
-    postConversionLoadingErrors = "",
-    postConversionValidationResults = "",
-    postConversionChanges = "",
+    // postConversionLoadingErrors = "",
+    // postConversionValidationResults = "",
+    // postConversionChanges = "",
+    checked = false,
     submitted = false,
     submitButtonDisabled = true
 }) {
@@ -101,16 +103,20 @@ export default function CreatePreConversionChecklistCard({
         preConversionManipulation(updatedText);
     }
 
-    const handleOnChangePostConversionLoadingErrors = (updatedText) => {
-        postConversionLoadingErrors(updatedText);
-    }
+    // const handleOnChangePostConversionLoadingErrors = (updatedText) => {
+    //     postConversionLoadingErrors(updatedText);
+    // }
 
-    const handleOnChangePostConversionValidationResults = (updatedText) => {
-        postConversionValidationResults(updatedText);
-    }
+    // const handleOnChangePostConversionValidationResults = (updatedText) => {
+    //     postConversionValidationResults(updatedText);
+    // }
 
-    const handleOnChangePostConversionChanges = (updatedText) => {
-        postConversionChanges(updatedText);
+    // const handleOnChangePostConversionChanges = (updatedText) => {
+    //     postConversionChanges(updatedText);
+    // }
+
+    const handleOnChangeCheck = (checkedFromCheckbox) => {
+        checked(checkedFromCheckbox);
     }
 
     const handleSubmitChecklist = () => {
@@ -128,8 +134,8 @@ export default function CreatePreConversionChecklistCard({
     return (
         <Card
             sx={{
-                minWidth: 350,
-                maxWidth: 350,
+                // minWidth: 1,
+                // maxWidth: 1,
                 maxHeight: "calc(100vh - 96.52px)",
                 overflowY: "scroll",
                 borderRadius: "10px",
@@ -283,12 +289,16 @@ export default function CreatePreConversionChecklistCard({
                             label="Pre-Conversion Manipulation"
                             characterLimit={1000}
                             placeholder="Describe your pre-conversion processing methodology. How was the addition of new data/processing carried out?"
-                            inputValue={handleOnChangeRecordsPostCleanupNotes}
+                            inputValue={handleOnChangePreConversionManipulation}
                             multiline={true}
                             required={false}
                             type="text"
                             showCharCounter={true}>
                         </MaterialTextField>
+                        <MaterialCheckBox
+                            label="Reviewed by Load Sheet Owner and Decision Maker"
+                            checked={handleOnChangeCheck}>
+                        </MaterialCheckBox>
                         <button
                             className="submit-checklist-button"
                             onClick={handleSubmitChecklist}

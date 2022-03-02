@@ -31,6 +31,7 @@ function CreatePreConversionChecklist() {
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
     const [postConversionChanges, setPostConversionChanges] = useState("");
+    const [formReviewed, setFormReviewed] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
@@ -145,17 +146,21 @@ function CreatePreConversionChecklist() {
         setPreConversionManipulation(preConversionManipulationFromInput);
     }
 
-    const handlePostConversionLoadingErrorsCallback = (postConversionLoadingErrorsFromInput) => {
-        setPostConversionLoadingErrors(postConversionLoadingErrorsFromInput);
+    const handleCheckboxCallback = (checkedFromCheckbox) => {
+        setFormReviewed(checkedFromCheckbox);
     }
 
-    const handlePostConversionValidationResultsCallback = (postConversionValidationResultsFromInput) => {
-        setPostConversionValidationResults(postConversionValidationResultsFromInput);
-    }
+    // const handlePostConversionLoadingErrorsCallback = (postConversionLoadingErrorsFromInput) => {
+    //     setPostConversionLoadingErrors(postConversionLoadingErrorsFromInput);
+    // }
 
-    const handlePostConversionChangesCallback = (postConversionChangesFromInput) => {
-        setPostConversionChanges(postConversionChangesFromInput);
-    }
+    // const handlePostConversionValidationResultsCallback = (postConversionValidationResultsFromInput) => {
+    //     setPostConversionValidationResults(postConversionValidationResultsFromInput);
+    // }
+
+    // const handlePostConversionChangesCallback = (postConversionChangesFromInput) => {
+    //     setPostConversionChanges(postConversionChangesFromInput);
+    // }
 
     const addNewPersonnel = () => {
         if (loadSheetOwner.value === -1) {
@@ -243,14 +248,14 @@ function CreatePreConversionChecklist() {
             console.log(personnelOptions);
             if (loadSheetName !== "" && loadSheetOwner !== "" && decisionMaker !== ""
                 && conversionType !== "" && additionalProcessing !== "" && dataSources !== ""
-                && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0) {
+                && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed) {
                 setSubmitButtonDisabled(false);
             } else {
                 setSubmitButtonDisabled(true);
             }
         }
     }, [loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
-        dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, rendering, personnelOptions]);
+        dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, rendering]);
 
     // left off here
     return (
@@ -293,9 +298,10 @@ function CreatePreConversionChecklist() {
                                 recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
                                 recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
                                 preConversionManipulation={handlePreConversionManipulationCallback}
-                                postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
-                                postConversionValidationResults={handlePostConversionValidationResultsCallback}
-                                postConversionChanges={handlePostConversionChangesCallback}
+                                // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
+                                // postConversionValidationResults={handlePostConversionValidationResultsCallback}
+                                // postConversionChanges={handlePostConversionChangesCallback}
+                                checked={handleCheckboxCallback}
                                 submitButtonDisabled={submitButtonDisabled}>
                             </CreatePreConversionChecklistCard>
                         </div>

@@ -21,6 +21,8 @@ export default function MaterialSingleSelectFreeSolo(
     }) {
     const [value, setValue] = React.useState("");
     const [open, toggleOpen] = React.useState(false);
+    const [errorEnabled, setErrorEnabled] = React.useState(false);
+    const [displayedHelperText, setDisplayedHelperText] = React.useState("");
     const [firstNameErrorEnabled, setFirstNameErrorEnabled] = React.useState(false);
     const [lastNameErrorEnabled, setLastNameErrorEnabled] = React.useState(false);
     const [firstNameDisplayedHelperText, setFirstNameDisplayedHelperText] = React.useState("");
@@ -61,6 +63,25 @@ export default function MaterialSingleSelectFreeSolo(
 
     const updateSelectedPersonnel = (value) => {
         selectedPersonnel(value);
+    }
+
+    const handleOnChange = (object) => {
+        if (required) {
+            if (object) {
+                setErrorEnabled(false);
+                setDisplayedHelperText("");
+            } else {
+                setErrorEnabled(true);
+                setDisplayedHelperText("Required Field");
+            }
+        }
+    }
+
+    const handleOnBlur = () => {
+        if (required && value = "") {
+            setErrorEnabled(true);
+            setDisplayedHelperText("Required Field");
+        }
     }
 
     const checkValueAgainstOptions = (value) => {
@@ -124,6 +145,13 @@ export default function MaterialSingleSelectFreeSolo(
         }
     }
 
+    const handleOnBlurFirstNameDialog = () => {
+        if (dialogValue.firstName === "") {
+            setFirstNameDialogError(true);
+            setAddButtonDisabled(true);
+        }
+    }
+
     const handleOnChangeLastNameDialog = (value) => {
         setDialogValue({
             ...dialogValue,
@@ -136,6 +164,13 @@ export default function MaterialSingleSelectFreeSolo(
         } else {
             setLastNameDialogError(false);
             setAddButtonDisabled(false);
+        }
+    }
+
+    const handleOnBlurLastNameDialog = () => {
+        if (dialogValue.lastName === "") {
+            setLastNameDialogError(true);
+            setAddButtonDisabled(true);
         }
     }
 
@@ -161,6 +196,7 @@ export default function MaterialSingleSelectFreeSolo(
         <React.Fragment>
             <Autocomplete
                 value={value}
+                onBlur={handleOnBlur}
                 onChange={(event, value) => {
                     updateSelectedPersonnel(value);
                     let isNewValue = checkValueAgainstOptions(value);
@@ -240,6 +276,8 @@ export default function MaterialSingleSelectFreeSolo(
                         label={label}
                         placeholder={placeholder}
                         required={required}
+                        helperText={errorEnabled ? displayedHelperText : null}
+                        error={errorEnabled}
                     />}
             />
             <Dialog
@@ -250,7 +288,7 @@ export default function MaterialSingleSelectFreeSolo(
                     <DialogTitle>Add Personnel</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Someone missing? Please, add them!
+                            Is someone missing? Please, add them!
                         </DialogContentText>
                         <TextField
                             autoFocus
@@ -259,6 +297,7 @@ export default function MaterialSingleSelectFreeSolo(
                             value={dialogValue.firstName}
                             error={firstNameErrorEnabled}
                             required={true}
+                            onBlur={handleOnBlurFirstNameDialog}
                             onChange={(event) =>
                                 handleOnChangeFirstNameDialog(event.target.value)}
                             inputProps={{
@@ -267,7 +306,8 @@ export default function MaterialSingleSelectFreeSolo(
                             label="first name"
                             type="text"
                             variant="standard"
-                            helperText={firstNameDisplayedHelperText}
+                            helperText={firstNameErrorEnabled ? firstNameDisplayedHelperText : null}
+                            error={firstNameErrorEnabled}
                         />
                         <TextField
                             margin="dense"
@@ -275,6 +315,7 @@ export default function MaterialSingleSelectFreeSolo(
                             value={dialogValue.lastName}
                             error={lastNameErrorEnabled}
                             required={true}
+                            onBlur={handleOnBlurLastNameDialog}
                             onChange={(event) =>
                                 handleOnChangeLastNameDialog(event.target.value)}
                             inputProps={{
@@ -283,7 +324,8 @@ export default function MaterialSingleSelectFreeSolo(
                             label="last name"
                             type="text"
                             variant="standard"
-                            helperText={lastNameDisplayedHelperText}
+                            helperText={lastNameErrorEnabled ? lastNameDisplayedHelperText : null}
+                            error={lastNameErrorEnabled}
                         />
                     </DialogContent>
                     <DialogActions>

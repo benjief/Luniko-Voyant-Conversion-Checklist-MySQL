@@ -18,6 +18,11 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
-    width: 100%;
+    width: 95%;
+    max-width: 600px;
     padding-bottom: 20px;
+}
+
+.create-pre-conversion-checklist-card {
+    width: 100%;
 }

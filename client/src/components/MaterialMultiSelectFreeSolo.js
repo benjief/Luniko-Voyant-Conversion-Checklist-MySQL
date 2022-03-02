@@ -22,6 +22,8 @@ export default function MaterialMultiSelectFreeSolo(
     }) {
     const [values, setValues] = React.useState([]);
     const [open, toggleOpen] = React.useState(false);
+    const [errorEnabled, setErrorEnabled] = React.useState(false);
+    const [displayedHelperText, setDisplayedHelperText] = React.useState("");
     const [firstNameErrorEnabled, setFirstNameErrorEnabled] = React.useState(false);
     const [lastNameErrorEnabled, setLastNameErrorEnabled] = React.useState(false);
     const [firstNameDisplayedHelperText, setFirstNameDisplayedHelperText] = React.useState("");
@@ -65,6 +67,26 @@ export default function MaterialMultiSelectFreeSolo(
 
     const updateSelectedPersonnel = (valuesArray) => {
         selectedPersonnel(valuesArray);
+
+    }
+
+    const handleOnChange = (object) => {
+        if (required) {
+            if (object) {
+                setErrorEnabled(false);
+                setDisplayedHelperText("");
+            } else {
+                setErrorEnabled(true);
+                setDisplayedHelperText("Required Field");
+            }
+        }
+    }
+
+    const handleOnBlur = () => {
+        if (required && values === []) {
+            setErrorEnabled(true);
+            setDisplayedHelperText("Required Field");
+        }
     }
 
     const checkValuesArrayAgainstOptions = (valuesArray) => {
@@ -131,6 +153,13 @@ export default function MaterialMultiSelectFreeSolo(
         }
     }
 
+    const handleOnBlurFirstNameDialog = () => {
+        if (dialogValue.firstName === "") {
+            setFirstNameDialogError(true);
+            setAddButtonDisabled(true);
+        }
+    }
+
     const handleOnChangeLastNameDialog = (value) => {
         setDialogValue({
             ...dialogValue,
@@ -146,10 +175,17 @@ export default function MaterialMultiSelectFreeSolo(
         }
     }
 
+    const handleOnBlurLastNameDialog = () => {
+        if (dialogValue.lastName === "") {
+            setLastNameDialogError(true);
+            setAddButtonDisabled(true);
+        }
+    }
+
     const setFirstNameDialogError = (booleanValue) => {
         setFirstNameErrorEnabled(booleanValue);
         if (booleanValue) {
-            setFirstNameDisplayedHelperText("Required value");
+            setFirstNameDisplayedHelperText("Required Field");
         } else {
             setFirstNameDisplayedHelperText("");
         }
@@ -158,7 +194,7 @@ export default function MaterialMultiSelectFreeSolo(
     const setLastNameDialogError = (booleanValue) => {
         setLastNameErrorEnabled(booleanValue);
         if (booleanValue) {
-            setLastNameDisplayedHelperText("Required value");
+            setLastNameDisplayedHelperText("Required Field");
         } else {
             setLastNameDisplayedHelperText("");
         }
@@ -170,6 +206,7 @@ export default function MaterialMultiSelectFreeSolo(
                 multiple
                 value={values}
                 limitTags={limitTags}
+                onBlur={handleOnBlur}
                 onChange={(event, valuesArray) => {
                     updateSelectedPersonnel(valuesArray);
                     let isNewValue = checkValuesArrayAgainstOptions(valuesArray);
@@ -250,6 +287,8 @@ export default function MaterialMultiSelectFreeSolo(
                         label={label}
                         placeholder={placeholder}
                         required={required}
+                        helperText={errorEnabled ? displayedHelperText : null}
+                        error={errorEnabled}
                     />}
             />
             <Dialog
@@ -269,6 +308,7 @@ export default function MaterialMultiSelectFreeSolo(
                             value={dialogValue.firstName}
                             error={firstNameErrorEnabled}
                             required={true}
+                            onBlur={handleOnBlurFirstNameDialog}
                             onChange={(event) =>
                                 handleOnChangeFirstNameDialog(event.target.value)}
                             inputProps={{
@@ -277,7 +317,8 @@ export default function MaterialMultiSelectFreeSolo(
                             label="first name"
                             type="text"
                             variant="standard"
-                            helperText={firstNameDisplayedHelperText}
+                            helperText={firstNameErrorEnabled ? firstNameDisplayedHelperText : null}
+                            error={firstNameErrorEnabled}
                         />
                         <TextField
                             margin="dense"
@@ -285,6 +326,7 @@ export default function MaterialMultiSelectFreeSolo(
                             value={dialogValue.lastName}
                             error={lastNameErrorEnabled}
                             required={true}
+                            onBlur={handleOnBlurLastNameDialog}
                             onChange={(event) =>
                                 handleOnChangeLastNameDialog(event.target.value)}
                             inputProps={{
@@ -293,7 +335,8 @@ export default function MaterialMultiSelectFreeSolo(
                             label="last name"
                             type="text"
                             variant="standard"
-                            helperText={lastNameDisplayedHelperText}
+                            helperText={lastNameErrorEnabled ? lastNameDisplayedHelperText : null}
+                            error={lastNameErrorEnabled}
                         />
                     </DialogContent>
                     <DialogActions>
