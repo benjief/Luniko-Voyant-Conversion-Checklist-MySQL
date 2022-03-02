@@ -18,9 +18,10 @@ export default function MaterialMultiSelect({
   const [errorMsg, setErrorMsg] = React.useState("");
 
   const handleOnChange = (object) => {
-    if (object) {
-      setValues(object.value);
-      selectedValues(object.value);
+    if (object.length) {
+      console.log(object);
+      setValues(object);
+      selectedValues(object);
       setErrorEnabled(false);
       setErrorMsg("");
     } else {
