@@ -10,9 +10,10 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MaterialSingleSelect from './MaterialSingleSelect';
+import MaterialSingleSelectFreeSolo from './MaterialSingleSelectFreeSolo';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
-import MaterialMultiSelectAddNew from './MaterialMultiSelectAddNew';
+import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 // import BootstrapPopover from "../components/BootstrapPopover";
 
 const ExpandMore = styled((props) => {
@@ -31,6 +32,7 @@ export default function CreatePreConversionChecklistCard({
     additionalProcessingOptions = [],
     loadSheetName = "",
     personnelOptions = [],
+    contributorOptions = [],
     loadSheetOwner = "",
     decisionMaker = "",
     contributors = [],
@@ -178,21 +180,23 @@ export default function CreatePreConversionChecklistCard({
                             required={true}
                             showCharCounter={true}>
                         </MaterialTextField>
-                        <MaterialSingleSelect
+                        <MaterialSingleSelectFreeSolo
+                            className="add-personnel-dialog"
                             label="Load Sheet Owner"
                             placeholder="Who is this load sheet's owner?"
                             singleSelectOptions={personnelOptions}
-                            selectedValue={handleOnSelectLoadSheetOwner}
+                            selectedPersonnel={handleOnSelectLoadSheetOwner}
                             required={true}
                             autocompleteOpen={false}>
-                        </MaterialSingleSelect>
-                        <MaterialSingleSelect
+                        </MaterialSingleSelectFreeSolo>
+                        <MaterialSingleSelectFreeSolo
+                            className="add-personnel-dialog"
                             label="Decision Maker"
                             placeholder="Who is the decision maker?"
                             singleSelectOptions={personnelOptions}
-                            selectedValue={handleOnSelectDecisionMaker}
+                            selectedPersonnel={handleOnSelectDecisionMaker}
                             required={true}>
-                        </MaterialSingleSelect>
+                        </MaterialSingleSelectFreeSolo>
                         {/* <MaterialMultiSelect
                             label="Other Contributors"
                             placeholder="Who else was involved?"
@@ -200,19 +204,14 @@ export default function CreatePreConversionChecklistCard({
                             selectedValues={handleOnSelectContributors}
                             required={false}>
                         </MaterialMultiSelect> */}
-                        <MaterialMultiSelectAddNew
+                        <MaterialMultiSelectFreeSolo
+                            className="add-contributors-dialog"
                             label="Other Contributors"
                             placeholder="Who else was involved?"
-                            multiSelectOptions={
-                                [
-                                    { label: 'The Shawshank Redemption', value: 1994 },
-                                    { label: 'The Godfather', value: 1972 }
-
-                                ]
-                            }
-                            selectedValues={handleOnSelectContributors}
+                            multiSelectOptions={contributorOptions}
+                            selectedPersonnel={handleOnSelectContributors}
                             required={false}>
-                        </MaterialMultiSelectAddNew>
+                        </MaterialMultiSelectFreeSolo>
                         <MaterialSingleSelect
                             label="Conversion Type"
                             placeholder="Conversion Type"
@@ -290,13 +289,13 @@ export default function CreatePreConversionChecklistCard({
                             type="text"
                             showCharCounter={true}>
                         </MaterialTextField>
-                        {/* <button
-                            className="submit-request-button"
+                        <button
+                            className="submit-checklist-button"
                             onClick={handleSubmitChecklist}
                             disabled={submitButtonDisabled}
                             style={{ backgroundColor: submitButtonColor }}>
-                            Submit Request
-                        </button> */}
+                            Submit
+                        </button>
                         {/* <div className="popover-container">
                             <BootstrapPopover
                                 popoverText=

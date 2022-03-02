@@ -22,6 +22,24 @@
     /* align-items: center; */
 }
 
+.add-personnel-dialog .MuiTypography-root,
+.add-contributors-dialog .MuiTypography-root {
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    padding-bottom: 0 !important;
+}
+
+.add-personnel-dialog .MuiDialogContentText-root,
+.add-contributors-dialog .MuiDialogContentText-root {
+    padding-bottom: 20px !important;
+}
+
+.add-personnel-dialog button,
+.add-contributors-dialog button {
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    font-weight: 700 !important;
+    color: var(--lunikoBlue)
+}
+
 .MuiPaper-root::-webkit-scrollbar {
     display: none;
 }

@@ -16,8 +16,9 @@ function CreatePreConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const [loadSheetName, setLoadSheetName] = useState("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
-    const [loadSheetOwner, setLoadSheetOwner] = useState("");
-    const [decisionMaker, setDecisionMaker] = useState("");
+    const [contributorOptions, setContributorOptions] = useState([]);
+    const [loadSheetOwner, setLoadSheetOwner] = useState([]);
+    const [decisionMaker, setDecisionMaker] = useState([]);
     const [contributors, setContributors] = useState([]);
     const [conversionType, setConversionType] = useState("");
     const [additionalProcessing, setAdditionalProcessing] = useState("");
@@ -49,58 +50,67 @@ function CreatePreConversionChecklist() {
     ];
 
     // Personnel functions
-    const getPersonnel = () => {
+    const getPersonnel = async () => {
         console.log("fetching personnel!");
-        Axios.get("http://localhost:3001/get-all-personnel", {
+        await Axios.get("http://localhost:3001/get-all-personnel", {
         }).then((response) => {
-            console.log(response.data);
             populatePersonnelList(response.data);
         });
     };
 
     const populatePersonnelList = (personnelList) => {
-        if (personnelList.length > 1) {
+        if (personnelList.length) { // TODO: change this in other implementations where you had length > 1?
             let tempArray = [];
             for (let i = 0; i < personnelList.length; i++) {
                 let uid = personnelList[i].pers_id;
                 let name = personnelList[i].pers_fname + " " + personnelList[i].pers_lname;
                 let personnel = {
-                    "uid": uid,
-                    "name": name
+                    "value": uid,
+                    "label": name
                 };
                 tempArray.push(personnel);
             }
             setPersonnelOptions(tempArray);
+            setContributorOptions(tempArray);
         }
+        console.log("personnel fetched!");
         setRendering(false);
     }
 
     // Selector callback handlers
+    const filterContributorOptions = (selectedOption) => {
+        setContributorOptions(personnelOptions.filter((val) => {
+            return val !== selectedOption;
+        }));
+    }
+
+    const filterPersonnelOptions = (selectedOptions) => {
+        getPersonnel().then(() => {
+            for (let i = 0; i < selectedOptions.length; i++) {
+                setPersonnelOptions(personnelOptions.filter((val) => {
+                    return val !== selectedOptions[i];
+                }));
+            }
+        })
+    }
+
     const handleLoadSheetNameCallback = (lsNameFromInput) => {
         setLoadSheetName(lsNameFromInput);
     }
 
     const handleLoadSheetOwnerCallback = (lsOwnerFromSelector) => {
         setLoadSheetOwner(lsOwnerFromSelector);
-        setPersonnelOptions(personnelOptions.filter((val) => {
-            return val.value !== lsOwnerFromSelector;
-        }));
+        filterContributorOptions(lsOwnerFromSelector);
     }
 
     const handleDecisionMakerCallback = (decisionMakerFromSelector) => {
         setDecisionMaker(decisionMakerFromSelector);
-        setPersonnelOptions(personnelOptions.filter((val) => {
-            return val.value !== decisionMakerFromSelector;
-        }));
+        filterContributorOptions(decisionMakerFromSelector);
     }
 
     const handleContributorsCallback = (contributorsFromSelector) => {
         setContributors(contributorsFromSelector);
-        for (let i = 0; i < contributorsFromSelector.length; i++) {
-            setPersonnelOptions(personnelOptions.filter((val) => {
-                return val.value !== contributorsFromSelector[i];
-            }));
-        }
+        filterPersonnelOptions(contributorsFromSelector);
     }
 
     const handleConversionTypeCallback = (conversionTypeFromSelector) => {
@@ -147,31 +157,59 @@ function CreatePreConversionChecklist() {
         setPostConversionChanges(postConversionChangesFromInput);
     }
 
-    const addConversionChecklist = (lsNameFromCallback) => {
-        console.log("Adding request...");
-        Axios.post("https://luniko-pe.herokuapp.com/create-request", {
-            loadSheetName: lsNameFromCallback,
-            loadSheetOwner: loadSheetOwner,
-            decisionMaker: decisionMaker,
-            conversionType: conversionType,
-            additionalProcessing: additionalProcessing,
-            dataSources: dataSources,
-            uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
-            uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes,
-            postConversionLoadingErrors: postConversionLoadingErrors,
-            postConversionValidationResults: postConversionValidationResults,
-            postConversionChanges: postConversionChanges
-        }).then((response) => {
-            setSubmitted(true);
-            console.log("Conversion checklist successfully added!!");
-            if (contributors.length !== 0) {
-                addContributions(response.data.insertId);
-            } else {
-                handleSuccessfulSubmit();
+    const addNewPersonnel = () => {
+        if (loadSheetOwner.value === -1) {
+            console.log("Adding new load sheet owner...");
+            addPersonnelToDB(loadSheetOwner.label);
+        }
+        if (decisionMaker.value === -1) {
+            console.log("Adding new decision maker...");
+            addPersonnelToDB(decisionMaker.label)
+        }
+        for (let i = 0; i < contributors.length; i++) {
+            if (contributors[i].value === -1) {
+                console.log("Adding new contributor...");
+                addPersonnelToDB(contributors[i].label);
             }
-        });
+        }
+    }
+
+    const addPersonnelToDB = (name) => {
+        let firstName = name.split(" ")[0];
+        let lastName = name.substring(name.indexOf(" "));
+        Axios.post("http://localhost:3001/add-personnel", {
+            pers_fname: firstName,
+            pers_lname: lastName
+        })
+    }
+
+    const addConversionChecklist = (submitted) => {
+        if (submitted) {
+            console.log("Adding checklist...");
+            Axios.post("http://localhost:3001/add-checklist", {
+                loadSheetName: loadSheetName,
+                loadSheetOwner: loadSheetOwner,
+                decisionMaker: decisionMaker,
+                conversionType: conversionType,
+                additionalProcessing: additionalProcessing,
+                dataSources: dataSources,
+                uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
+                uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
+                recordsPreCleanupNotes: recordsPreCleanupNotes,
+                recordsPostCleanupNotes: recordsPostCleanupNotes,
+                postConversionLoadingErrors: postConversionLoadingErrors,
+                postConversionValidationResults: postConversionValidationResults,
+                postConversionChanges: postConversionChanges
+            }).then((response) => {
+                setSubmitted(true);
+                console.log("Conversion checklist successfully added!!");
+                if (contributors.length !== 0) {
+                    addContributions(response.data.insertId);
+                } else {
+                    handleSuccessfulSubmit();
+                }
+            });
+        }
     };
 
     const addContributions = (conversionChecklistID) => {
@@ -202,6 +240,7 @@ function CreatePreConversionChecklist() {
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
+            console.log(personnelOptions);
             if (loadSheetName !== "" && loadSheetOwner !== "" && decisionMaker !== ""
                 && conversionType !== "" && additionalProcessing !== "" && dataSources !== ""
                 && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0) {
@@ -211,7 +250,7 @@ function CreatePreConversionChecklist() {
             }
         }
     }, [loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
-        dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, rendering]);
+        dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, rendering, personnelOptions]);
 
     // left off here
     return (
@@ -242,6 +281,7 @@ function CreatePreConversionChecklist() {
                                 additionalProcessingOptions={additionalProcessingOptions}
                                 loadSheetName={handleLoadSheetNameCallback}
                                 personnelOptions={personnelOptions}
+                                contributorOptions={contributorOptions}
                                 loadSheetOwner={handleLoadSheetOwnerCallback}
                                 decisionMaker={handleDecisionMakerCallback}
                                 contributors={handleContributorsCallback}

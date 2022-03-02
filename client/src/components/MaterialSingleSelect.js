@@ -19,7 +19,8 @@ export default function MaterialSingleSelect(
 
     const handleOnChange = (object) => {
         if (object) {
-            selectedValue(object.value);
+            console.log(object);
+            selectedValue(object);
             setErrorEnabled(false);
             setErrorMsg("");
         } else {

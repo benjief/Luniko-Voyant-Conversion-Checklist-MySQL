@@ -12,14 +12,31 @@
 .MuiFormControl-root {
     width: 100% !important;
     margin: 0 !important;
+    padding: 0 !important;
 }
+
+.add-personnel-dialog .MuiFormControl-root,
+.add-contributors-dialog .MuiFormControl-root {
+    min-height: 70.91px !important;
+}
+
+.add-personnel-dialog .MuiFormControl-root:last-of-type,
+.add-contributors-dialog .MuiFormControl-root:last-of-type {
+    margin-top: 10px !important;
+}
+
+
+.add-personnel-dialog #first-name, #last-name,
+.add-contributors-dialog #first-name, #last-name {
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+}
+
 
 .MuiOutlinedInput-root {
     min-height: 50px !important;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
     font-size: 11pt !important;
 }
-
 
 .data-sources .MuiOutlinedInput-root,
 .pre-cleanup-notes .MuiOutlinedInput-root,

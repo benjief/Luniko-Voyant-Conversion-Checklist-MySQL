@@ -17,7 +17,14 @@
     padding-right: 5px !important;
     /* margin-left: 5px !important;
     margin-right: 1px !important; */
-    transform: translate(14px, -7px) scale(0.75) !important;
+    transform: translate(14px, -8.5px) scale(0.75) !important;
+}
+
+.add-personnel-dialog .MuiInputLabel-shrink,
+.add-contributors-dialog .MuiInputLabel-shrink {
+    padding-right: 0 !important;
+    background-color: transparent !important;
+    transform: translate(0px, 0px) scale(0.75) !important;
 }
 
 .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root.Mui-error {
