@@ -36,7 +36,10 @@ export default function CreatePreConversionChecklistCard({
     contributorOptions = [],
     loadSheetOwner = "",
     decisionMaker = "",
+    invalidPersonnel = [],
     contributors = [],
+    invalidContributors = [],
+    latestContributor = "",
     conversionType = "",
     additionalProcessing = "",
     dataSources = "",
@@ -191,16 +194,17 @@ export default function CreatePreConversionChecklistCard({
                             label="Load Sheet Owner"
                             placeholder="Who is this load sheet's owner?"
                             singleSelectOptions={personnelOptions}
-                            selectedPersonnel={handleOnSelectLoadSheetOwner}
-                            required={true}
-                            autocompleteOpen={false}>
+                            invalidOptions={invalidPersonnel}
+                            selectedValue={handleOnSelectLoadSheetOwner}
+                            required={true}>
                         </MaterialSingleSelectFreeSolo>
                         <MaterialSingleSelectFreeSolo
                             className="add-personnel-dialog"
                             label="Decision Maker"
                             placeholder="Who is the decision maker?"
                             singleSelectOptions={personnelOptions}
-                            selectedPersonnel={handleOnSelectDecisionMaker}
+                            invalidOptions={invalidPersonnel}
+                            selectedValue={handleOnSelectDecisionMaker}
                             required={true}>
                         </MaterialSingleSelectFreeSolo>
                         {/* <MaterialMultiSelect
@@ -215,7 +219,8 @@ export default function CreatePreConversionChecklistCard({
                             label="Other Contributors"
                             placeholder="Who else was involved?"
                             multiSelectOptions={contributorOptions}
-                            selectedPersonnel={handleOnSelectContributors}
+                            selectedValues={handleOnSelectContributors}
+                            invalidOptions={invalidContributors}
                             required={false}>
                         </MaterialMultiSelectFreeSolo>
                         <MaterialSingleSelect

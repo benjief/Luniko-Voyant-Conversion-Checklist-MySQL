@@ -24,12 +24,13 @@ app.get('/get-all-personnel', (req, res) => {
 });
 
 app.post("/add-personnel", (req, res) => {
+    const pers_id = req.body.pers_id;
     const pers_fname = req.body.pers_fname;
-    const req_lname = req.body.pers_lname;
+    const pers_lname = req.body.pers_lname;
 
     db.query(
-        "INSERT INTO personnel (pers_fname, pers_lname) VALUES (?, ?)",
-        [pers_fname, pers_lname], (err, result) => {
+        "INSERT INTO personnel (pers_id, pers_fname, pers_lname) VALUES (?, ?, ?)",
+        [pers_id, pers_fname, pers_lname], (err, result) => {
             if (err) {
                 console.log(err);
             } else {

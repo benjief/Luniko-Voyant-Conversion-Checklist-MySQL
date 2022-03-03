@@ -16,7 +16,8 @@ export default function MaterialSingleSelectFreeSolo(
         label = "",
         placeholder = "",
         singleSelectOptions = [],
-        selectedPersonnel = [],
+        invalidOptions = [],
+        selectedValue = {},
         required = false
     }) {
     const [value, setValue] = React.useState("");
@@ -52,22 +53,19 @@ export default function MaterialSingleSelectFreeSolo(
         event.preventDefault();
 
         // prevents duplicate values from being added
-        if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
-            setValue({
-                label: dialogValue.firstName + " " + dialogValue.lastName,
-                value: -1
-            });
+        if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
+            && checkInputValueAgainstInvalidOptions(dialogValue.firstName + dialogValue.lastName)) {
+            let tempObject = { label: dialogValue.firstName + " " + dialogValue.lastName, value: -1 }
+            setValue(tempObject);
+            selectedValue(tempObject);
         }
         handleClose();
     };
 
-    const updateSelectedPersonnel = (value) => {
-        selectedPersonnel(value);
-    }
 
-    const handleOnChange = (object) => {
+    const handleOnChange = (value) => {
         if (required) {
-            if (object) {
+            if (value) {
                 setErrorEnabled(false);
                 setDisplayedHelperText("");
             } else {
@@ -75,10 +73,13 @@ export default function MaterialSingleSelectFreeSolo(
                 setDisplayedHelperText("Required Field");
             }
         }
+        if (!value) {
+            selectedValue({});
+        }
     }
 
     const handleOnBlur = () => {
-        if (required && value === "") {
+        if (required && !value && !open) {
             setErrorEnabled(true);
             setDisplayedHelperText("Required Field");
         }
@@ -104,9 +105,21 @@ export default function MaterialSingleSelectFreeSolo(
                 }
             }
             return true;
-        } else {
+        }
+        return true;
+    }
+
+    const checkInputValueAgainstInvalidOptions = (inputValue) => {
+        // console.log(invalidOptions);
+        if (inputValue !== "" && invalidOptions.length) {
+            for (let i = 0; i < invalidOptions.length; i++) {
+                if (invalidOptions[i].label === inputValue) {
+                    return false;
+                }
+            }
             return true;
         }
+        return true;
     }
 
     // const checkInputValueAgainstSelectedValue = (inputValue) => {
@@ -198,7 +211,7 @@ export default function MaterialSingleSelectFreeSolo(
                 value={value}
                 onBlur={handleOnBlur}
                 onChange={(event, value) => {
-                    updateSelectedPersonnel(value);
+                    console.log(value);
                     let isNewValue = checkValueAgainstOptions(value);
                     if (isNewValue) {
                         if (typeof value === 'string') {
@@ -218,9 +231,6 @@ export default function MaterialSingleSelectFreeSolo(
                                 });
                             });
                         } else if (value && value.inputValue) {
-                            // console.log(newValue.inputValue);
-                            // console.log(newValue.inputValue.split(" ")[0]);
-                            // console.log(newValue.inputValue.split(" ").slice(1));
                             let firstName = value.inputValue.split(" ")[0];
                             let lastName = concatenateLastName(value.inputValue.split(" ").slice(1));
                             if (lastName === "") {
@@ -236,14 +246,17 @@ export default function MaterialSingleSelectFreeSolo(
                         }
                     } else {
                         setValue(value);
+                        selectedValue(value);
                     }
+                    handleOnChange(value);
                 }}
                 filterOptions={(options, params) => {
 
                     const filtered = filter(options, params);
 
                     if (params.inputValue !== ''
-                        && checkInputValueAgainstOptions(params.inputValue)) {
+                        && checkInputValueAgainstOptions(params.inputValue)
+                        && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
                             inputValue: params.inputValue,
                             label: `Add "${params.inputValue}"`,

@@ -5,6 +5,7 @@ import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import CreatePreConversionChecklistCard from "../components/CreatePreConversionChecklistCard";
 import Axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/CreatePreConversionChecklist.css";
 import "../styles/SelectorComponents.css";
@@ -16,6 +17,7 @@ function CreatePreConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const [loadSheetName, setLoadSheetName] = useState("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
+    const [newPersonnel, setNewPersonnel] = useState([]);
     const [contributorOptions, setContributorOptions] = useState([]);
     const [loadSheetOwner, setLoadSheetOwner] = useState([]);
     const [decisionMaker, setDecisionMaker] = useState([]);
@@ -162,66 +164,81 @@ function CreatePreConversionChecklist() {
     //     setPostConversionChanges(postConversionChangesFromInput);
     // }
 
-    const addNewPersonnel = () => {
-        if (loadSheetOwner.value === -1) {
-            console.log("Adding new load sheet owner...");
-            addPersonnelToDB(loadSheetOwner.label);
+    const handleOnClickSubmit = (submitted) => {
+        if (submitted) {
+            assignUIDsToNewPersonnel().then(() => {
+                addNewPersonnelToDB().then(() => {
+                    addConversionChecklist();
+                })
+            });
         }
-        if (decisionMaker.value === -1) {
-            console.log("Adding new decision maker...");
-            addPersonnelToDB(decisionMaker.label)
+    }
+
+    const assignUIDsToNewPersonnel = () => {
+        console.log("Adding personnel...");
+        if (loadSheetOwner.value === -1) {
+            let uid = uuidv4();
+            loadSheetOwner.value = uid;
+            setNewPersonnel(newPersonnel.push(loadSheetOwner));
+        }
+        // Don't want to try and add duplicate personnel to DB
+        if ((decisionMaker.label !== loadSheetOwner.label) && decisionMaker.value === -1) {
+            decisionMaker.value = uuidv4();
+            setNewPersonnel(newPersonnel.push(decisionMaker));
         }
         for (let i = 0; i < contributors.length; i++) {
             if (contributors[i].value === -1) {
-                console.log("Adding new contributor...");
-                addPersonnelToDB(contributors[i].label);
+                contributors[i].value = uuidv4();
+                setNewPersonnel(newPersonnel.push(contributors[i]));
             }
         }
     }
 
-    const addPersonnelToDB = (name) => {
-        let firstName = name.split(" ")[0];
-        let lastName = name.substring(name.indexOf(" "));
-        Axios.post("http://localhost:3001/add-personnel", {
-            pers_fname: firstName,
-            pers_lname: lastName
-        })
+    const addNewPersonnelToDB = () => {
+        for (let i = 0; i < newPersonnel.length; i++) {
+            let name = newPersonnel[i].label;
+            let firstName = name.split(" ")[0];
+            let lastName = name.substring(name.indexOf(" "));
+            Axios.post("http://localhost:3001/add-personnel", {
+                pers_id: newPersonnel[i].value,
+                pers_fname: firstName,
+                pers_lname: lastName
+            })
+        }
     }
 
-    const addConversionChecklist = (submitted) => {
-        if (submitted) {
-            console.log("Adding checklist...");
-            Axios.post("http://localhost:3001/add-checklist", {
-                loadSheetName: loadSheetName,
-                loadSheetOwner: loadSheetOwner,
-                decisionMaker: decisionMaker,
-                conversionType: conversionType,
-                additionalProcessing: additionalProcessing,
-                dataSources: dataSources,
-                uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
-                uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-                recordsPreCleanupNotes: recordsPreCleanupNotes,
-                recordsPostCleanupNotes: recordsPostCleanupNotes,
-                postConversionLoadingErrors: postConversionLoadingErrors,
-                postConversionValidationResults: postConversionValidationResults,
-                postConversionChanges: postConversionChanges
-            }).then((response) => {
-                setSubmitted(true);
-                console.log("Conversion checklist successfully added!!");
-                if (contributors.length !== 0) {
-                    addContributions(response.data.insertId);
-                } else {
-                    handleSuccessfulSubmit();
-                }
-            });
-        }
+    const addConversionChecklist = () => {
+        console.log("Adding checklist...");
+        Axios.post("http://localhost:3001/add-checklist", {
+            loadSheetName: loadSheetName,
+            loadSheetOwner: loadSheetOwner,
+            decisionMaker: decisionMaker,
+            conversionType: conversionType,
+            additionalProcessing: additionalProcessing,
+            dataSources: dataSources,
+            uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
+            uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
+            recordsPreCleanupNotes: recordsPreCleanupNotes,
+            recordsPostCleanupNotes: recordsPostCleanupNotes,
+            postConversionLoadingErrors: postConversionLoadingErrors,
+            postConversionValidationResults: postConversionValidationResults,
+            postConversionChanges: postConversionChanges
+        }).then((response) => {
+            setSubmitted(true);
+            console.log("Conversion checklist successfully added!!");
+            if (contributors.length !== 0) {
+                addContributions(response.data.insertId);
+            } else {
+                handleSuccessfulSubmit();
+            }
+        });
     };
 
     const addContributions = (conversionChecklistID) => {
-        console.log("Moving on to contributions...")
+        console.log("Moving on to contributions...");
         for (let i = 0; i < contributors.length; i++) {
-            Axios.post("http://localhost:3001/create-contribution", {
-                contributorID: contributors[i],
+            Axios.post("http://localhost:3001/add-contribution", {
+                contributorID: contributors[i].value,
                 reqID: conversionChecklistID
             }).then((response) => {
                 console.log("Contribution successfully added!");
@@ -245,7 +262,6 @@ function CreatePreConversionChecklist() {
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
-            console.log(personnelOptions);
             if (loadSheetName !== "" && loadSheetOwner !== "" && decisionMaker !== ""
                 && conversionType !== "" && additionalProcessing !== "" && dataSources !== ""
                 && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed) {
@@ -253,11 +269,11 @@ function CreatePreConversionChecklist() {
             } else {
                 setSubmitButtonDisabled(true);
             }
+            console.log(loadSheetOwner.label);
         }
     }, [loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
         dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, rendering]);
 
-    // left off here
     return (
         rendering ?
             <div className="loading-spinner">
@@ -289,7 +305,14 @@ function CreatePreConversionChecklist() {
                                 contributorOptions={contributorOptions}
                                 loadSheetOwner={handleLoadSheetOwnerCallback}
                                 decisionMaker={handleDecisionMakerCallback}
+                                invalidPersonnel={contributors}
                                 contributors={handleContributorsCallback}
+                                invalidContributors={
+                                    loadSheetOwner.label && decisionMaker.label ? [loadSheetOwner, decisionMaker]
+                                        : loadSheetOwner.label ? [loadSheetOwner]
+                                            : decisionMaker.label ? [decisionMaker]
+                                                : []
+                                }
                                 conversionType={handleConversionTypeCallback}
                                 additionalProcessing={handleAdditionalProcessingCallback}
                                 dataSources={handleDataSourcesCallback}
@@ -302,7 +325,8 @@ function CreatePreConversionChecklist() {
                                 // postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                 // postConversionChanges={handlePostConversionChangesCallback}
                                 checked={handleCheckboxCallback}
-                                submitButtonDisabled={submitButtonDisabled}>
+                                submitButtonDisabled={submitButtonDisabled}
+                                submitted={handleOnClickSubmit}>
                             </CreatePreConversionChecklistCard>
                         </div>
                     </div>

@@ -16,9 +16,10 @@ export default function MaterialMultiSelectFreeSolo(
         label = "",
         placeholder = "",
         multiSelectOptions = [],
-        selectedPersonnel = [],
+        invalidOptions = [],
+        selectedValues = [],
         limitTags = 1,
-        required = false
+        required = false,
     }) {
     const [values, setValues] = React.useState([]);
     const [open, toggleOpen] = React.useState(false);
@@ -51,24 +52,24 @@ export default function MaterialMultiSelectFreeSolo(
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        console.log("inside handleSubmit");
 
         // prevents duplicate values from being added
         if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
-            && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)) {
+            && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)
+            && checkInputValueAgainstInvalidOptions(dialogValue.firstName + dialogValue.lastName)) {
+            console.log("inside if statement");
             let tempArray = values;
             tempArray.push({
                 label: dialogValue.firstName + " " + dialogValue.lastName,
                 value: -1,
             });
+            console.log(tempArray);
             setValues(tempArray);
+            selectedValues(tempArray);
         }
         handleClose();
     };
-
-    const updateSelectedPersonnel = (valuesArray) => {
-        selectedPersonnel(valuesArray);
-
-    }
 
     const handleOnChange = (object) => {
         if (required) {
@@ -80,10 +81,13 @@ export default function MaterialMultiSelectFreeSolo(
                 setDisplayedHelperText("Required Field");
             }
         }
+        if (!object) {
+            selectedValues([]);
+        }
     }
 
     const handleOnBlur = () => {
-        if (required && values === []) {
+        if (required && (!values || values === []) && !open) {
             setErrorEnabled(true);
             setDisplayedHelperText("Required Field");
         }
@@ -110,9 +114,8 @@ export default function MaterialMultiSelectFreeSolo(
                 }
             }
             return true;
-        } else {
-            return true;
         }
+        return true;
     }
 
     const checkInputValueAgainstSelectedValues = (inputValue) => {
@@ -123,9 +126,21 @@ export default function MaterialMultiSelectFreeSolo(
                 }
             }
             return true;
-        } else {
+        }
+        return true;
+    }
+
+    const checkInputValueAgainstInvalidOptions = (inputValue) => {
+        // console.log(invalidOptions);
+        if (inputValue !== "" && invalidOptions.length) {
+            for (let i = 0; i < invalidOptions.length; i++) {
+                if (invalidOptions[i].label === inputValue) {
+                    return false;
+                }
+            }
             return true;
         }
+        return true;
     }
 
     const concatenateLastName = (lastNameArray) => {
@@ -208,7 +223,6 @@ export default function MaterialMultiSelectFreeSolo(
                 limitTags={limitTags}
                 onBlur={handleOnBlur}
                 onChange={(event, valuesArray) => {
-                    updateSelectedPersonnel(valuesArray);
                     let isNewValue = checkValuesArrayAgainstOptions(valuesArray);
                     if (isNewValue) {
                         let newValue = valuesArray[valuesArray.length - 1];
@@ -247,15 +261,18 @@ export default function MaterialMultiSelectFreeSolo(
                         }
                     } else {
                         setValues(valuesArray);
+                        selectedValues(valuesArray);
                     }
+                    handleOnChange(valuesArray);
                 }}
                 filterOptions={(options, params) => {
 
                     const filtered = filter(options, params);
 
-                    if (params.inputValue !== ''
+                    if (params.inputValue !== ""
                         && checkInputValueAgainstOptions(params.inputValue)
-                        && checkInputValueAgainstSelectedValues(params.inputValue)) {
+                        && checkInputValueAgainstSelectedValues(params.inputValue)
+                        && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
                             inputValue: params.inputValue,
                             label: `Add "${params.inputValue}"`,
