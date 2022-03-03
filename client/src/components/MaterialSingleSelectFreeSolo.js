@@ -211,7 +211,6 @@ export default function MaterialSingleSelectFreeSolo(
                 value={value}
                 onBlur={handleOnBlur}
                 onChange={(event, value) => {
-                    console.log(value);
                     let isNewValue = checkValueAgainstOptions(value);
                     if (isNewValue) {
                         if (typeof value === 'string') {

@@ -52,19 +52,16 @@ export default function MaterialMultiSelectFreeSolo(
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log("inside handleSubmit");
 
         // prevents duplicate values from being added
         if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
             && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)
             && checkInputValueAgainstInvalidOptions(dialogValue.firstName + dialogValue.lastName)) {
-            console.log("inside if statement");
             let tempArray = values;
             tempArray.push({
                 label: dialogValue.firstName + " " + dialogValue.lastName,
                 value: -1,
             });
-            console.log(tempArray);
             setValues(tempArray);
             selectedValues(tempArray);
         }

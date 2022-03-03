@@ -44,7 +44,9 @@ export default function CreatePreConversionChecklistCard({
     additionalProcessing = "",
     dataSources = "",
     uniqueRecordsPreCleanup = 0,
+    uniqueRecordsPreCleanupLowerLimit = null,
     uniqueRecordsPostCleanup = 0,
+    uniqueRecordsPostCleanupUpperLimit = null,
     recordsPreCleanupNotes = "",
     recordsPostCleanupNotes = "",
     preConversionManipulation = "",
@@ -256,7 +258,9 @@ export default function CreatePreConversionChecklistCard({
                             inputValue={handleOnChangeUniqueRecordsPreCleanup}
                             multiline={false}
                             required={true}
-                            type="number">
+                            type="number"
+                            limitRangeOfInputs={true}
+                            lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}>
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
@@ -265,7 +269,9 @@ export default function CreatePreConversionChecklistCard({
                             inputValue={handleOnChangeUniqueRecordsPostCleanup}
                             multiline={false}
                             required={true}
-                            type="number">
+                            type="number"
+                            limitRangeOfInputs={true}
+                            upperLimitValue={uniqueRecordsPostCleanupUpperLimit}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-cleanup-notes"

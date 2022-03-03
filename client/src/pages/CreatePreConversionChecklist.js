@@ -269,7 +269,6 @@ function CreatePreConversionChecklist() {
             } else {
                 setSubmitButtonDisabled(true);
             }
-            console.log(loadSheetOwner.label);
         }
     }, [loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
         dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, rendering]);
@@ -317,7 +316,9 @@ function CreatePreConversionChecklist() {
                                 additionalProcessing={handleAdditionalProcessingCallback}
                                 dataSources={handleDataSourcesCallback}
                                 uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
+                                uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup}
                                 uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
+                                uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup}
                                 recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
                                 recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
                                 preConversionManipulation={handlePreConversionManipulationCallback}

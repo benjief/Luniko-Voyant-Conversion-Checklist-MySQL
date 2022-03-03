@@ -13,7 +13,10 @@ export default function MaterialTextField({
   multiline = false,
   type = "text",
   required = false,
-  showCharCounter = false
+  showCharCounter = false,
+  limitRangeOfInputs = false,
+  upperLimitValue = 0,
+  lowerLimitValue = 0
 }) {
   const [value, setValue] = React.useState("");
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -27,13 +30,16 @@ export default function MaterialTextField({
         checkEmailValidity(value);
       } else if (type === "password") {
         checkPasswordValidity(value);
+      } else if (type === "number") {
+        checkNumberValidity(parseInt(value));
+      } else {
+        handleValidValue(value);
       }
-      handleValidValue(value);
     } else {
       if (required) {
         setDisplayedHelperText("Required Field");
       }
-      handleInvalidValue(value);
+      handleEmptyValue(value);
     }
   }
 
@@ -49,7 +55,7 @@ export default function MaterialTextField({
       handleValidValue(email);
     } else {
       setDisplayedHelperText("Please enter a valid email address");
-      handleInvalidValue(email);
+      handleEmptyValue(email);
     }
   }
 
@@ -58,17 +64,58 @@ export default function MaterialTextField({
       handleValidValue(password);
     } else {
       setDisplayedHelperText("Passwords must be at least 6 characters long");
-      handleInvalidValue(password);
+      handleEmptyValue(password);
     }
   }
 
-  const handleInvalidValue = (value) => {
+  const checkNumberValidity = (number) => {
+    if (limitRangeOfInputs) {
+      console.log("inside if");
+      if (lowerLimitValue && !upperLimitValue) {
+        console.log("lower limit: " + lowerLimitValue);
+        if (number >= lowerLimitValue) {
+          handleValidValue(number);
+        } else {
+          setDisplayedHelperText("Number is too low");
+          handleInvalidNumber(number);
+        }
+      } else if (!lowerLimitValue && upperLimitValue) {
+        console.log("checking upper limit of " + upperLimitValue);
+        if (number <= upperLimitValue) {
+          handleValidValue(number);
+        } else {
+          setDisplayedHelperText("Number is too high");
+          handleInvalidNumber(number);
+        }
+      } else if (lowerLimitValue && upperLimitValue) {
+        if (lowerLimitValue <= number && number <= upperLimitValue) {
+          handleValidValue(number);
+        } else {
+          setDisplayedHelperText("Number outside of valid range");
+          handleInvalidNumber(number);
+        }
+      } else {
+        handleValidValue(number);
+      }
+
+    }
+  }
+
+  const handleInvalidNumber = (number) => {
+    setValue(null);
+    inputValue(null);
+    console.log("setting error enabled");
+    setErrorEnabled(true);
+  }
+
+  const handleEmptyValue = (value) => {
     setValue("");
     inputValue("");
     if (value) {
       setInputLength(value.length);
     }
     if (required) {
+      console.log("setting error enabled");
       setErrorEnabled(true);
     }
   }
