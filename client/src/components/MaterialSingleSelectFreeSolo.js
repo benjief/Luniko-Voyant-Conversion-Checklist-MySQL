@@ -113,7 +113,7 @@ export default function MaterialSingleSelectFreeSolo(
         // console.log(invalidOptions);
         if (inputValue !== "" && invalidOptions.length) {
             for (let i = 0; i < invalidOptions.length; i++) {
-                if (invalidOptions[i].label === inputValue) {
+                if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
                     return false;
                 }
             }

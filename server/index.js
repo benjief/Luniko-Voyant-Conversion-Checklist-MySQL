@@ -72,6 +72,37 @@ app.post("/add-checklist", (req, res) => {
     );
 });
 
+app.post("/add-contribution", (req, res) => {
+    const pers_fname = req.body.pers_fname;
+    const req_lname = req.body.pers_lname;
+
+    db.query(
+        `INSERT INTO conversion_checklist (
+            cc_load_sheet_owner, 
+            cc_decision_maker, 
+            cc_load_sheet_name, 
+            cc_conversion_type, 
+            cc_additional_processing, 
+            cc_data_sources, 
+            uq_records_pre_cleanup, 
+            cc_records_pre_cleanup_notes, 
+            uq_records_post_cleanup, 
+            cc_records_post_cleanup_notes, 
+            cc_pre_conversion_manipulation
+        )
+        
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [pers_fname, pers_lname], (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Checklist added!");
+                res.send("Checklist added!");
+            }
+        }
+    );
+});
+
 
 
 app.listen(3001, () => {

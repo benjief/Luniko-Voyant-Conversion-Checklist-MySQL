@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../components/Navbar";
-import MaterialTextField from "../components/MaterialTextField";
+import LandingPageOptionsCard from "../components/LandingPageOptionsCard";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/InputComponents.css"
 import "../styles/LandingPage.css";
@@ -42,7 +42,11 @@ function LandingPage() {
                         Welcome!
                     </div>
                     <div className="landing-page-options-container">
-                        <div className="card-text">
+                        <div className="landing-page-options-card">
+                            <LandingPageOptionsCard>
+                            </LandingPageOptionsCard>
+                        </div>
+                        {/* <div className="card-text">
                             Please choose an option below:
                         </div>
                         <Link to={"/pre-conversion-checklist"}>
@@ -56,7 +60,7 @@ function LandingPage() {
                                 className="post-conversion-checklist-button">
                                 Post-Conversion Checklist
                             </button>
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
             </Fragment>

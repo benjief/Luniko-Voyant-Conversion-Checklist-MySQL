@@ -16,7 +16,8 @@ export default function MaterialTextField({
   showCharCounter = false,
   limitRangeOfInputs = false,
   upperLimitValue = 0,
-  lowerLimitValue = 0
+  lowerLimitValue = 0,
+  requiresValidation = false
 }) {
   const [value, setValue] = React.useState("");
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -28,7 +29,7 @@ export default function MaterialTextField({
     if (value) {
       if (type === "email") {
         checkEmailValidity(value);
-      } else if (type === "password") {
+      } else if (type === "password" && requiresValidation) {
         checkPasswordValidity(value);
       } else if (type === "number") {
         checkNumberValidity(parseInt(value));
@@ -51,7 +52,7 @@ export default function MaterialTextField({
   }
 
   const checkEmailValidity = (email) => {
-    if (email.match(/[^@]+@[^@]+\./)) {
+    if (email.match(/[^@]+@[^@]+\.+[^@]/)) {
       handleValidValue(email);
     } else {
       setDisplayedHelperText("Please enter a valid email address");
@@ -70,9 +71,7 @@ export default function MaterialTextField({
 
   const checkNumberValidity = (number) => {
     if (limitRangeOfInputs) {
-      console.log("inside if");
       if (lowerLimitValue && !upperLimitValue) {
-        console.log("lower limit: " + lowerLimitValue);
         if (number >= lowerLimitValue) {
           handleValidValue(number);
         } else {
@@ -80,7 +79,6 @@ export default function MaterialTextField({
           handleInvalidNumber(number);
         }
       } else if (!lowerLimitValue && upperLimitValue) {
-        console.log("checking upper limit of " + upperLimitValue);
         if (number <= upperLimitValue) {
           handleValidValue(number);
         } else {
@@ -97,7 +95,6 @@ export default function MaterialTextField({
       } else {
         handleValidValue(number);
       }
-
     }
   }
 

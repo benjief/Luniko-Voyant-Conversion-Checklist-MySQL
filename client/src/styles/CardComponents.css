@@ -4,10 +4,10 @@
     font-size: 10.5pt !important;
 }
 
-.update-owned-request-container .MuiCollapse-root,
+/* .update-owned-request-container .MuiCollapse-root,
 .create-request-container .MuiCollapse-root {
     margin-top: 20px;
-}
+} */
 
 /* .MuiCollapse-root .MuiTypography-root:last-of-type {
     margin-bottom: 20px !important;
@@ -51,6 +51,7 @@
 
 .MuiCardHeader-title {
     margin-bottom: 0px !important;
+    font-size: 13.5pt !important;
 }
 
 .create-request-container .MuiCardHeader-title {

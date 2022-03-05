@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../components/Navbar";
+import PreConversionChecklistOptionsCard from "../components/PreConversionChecklistOptionsCard";
 import MaterialTextField from "../components/MaterialTextField";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/PreConversionChecklist.css";
@@ -9,8 +10,6 @@ function PreConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
-
-
 
     useEffect(() => {
         setRendering(false);
@@ -43,7 +42,10 @@ function PreConversionChecklist() {
                         Pre-Conversion Checklist
                     </div>
                     <div className="pre-conversion-checklist-options-container">
-                        <div className="card-text">
+                        <div className="pre-conversion-checklist-options-card">
+                            <PreConversionChecklistOptionsCard></PreConversionChecklistOptionsCard>
+                        </div>
+                        {/* <div className="card-text">
                             Please choose an option below:
                         </div>
                         <Link to={"/create-pre-conversion-checklist"}>
@@ -55,7 +57,7 @@ function PreConversionChecklist() {
                         <button
                             className="view-pre-conversion-checklist-button">
                             View/Modify
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </Fragment>

@@ -17,45 +17,40 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    background-color: var(--lunikoDarkGrey);
-    padding: 20px;
-    border-radius: 20px;
+    height: 100%;
     width: 95%;
-    height: 220px;
-    max-width: 350px;
-    box-shadow: 2px 2px 6px rgba(43, 43, 43, 0.884);
-    margin-top: 20px;
-    margin-bottom: 40px;
+    max-width: 600px;
+    padding-bottom: 20px;
 }
 
-.pre-conversion-checklist-button {
-    margin-top: 30px;
-}
-
-.post-conversion-checklist-button {
-    margin-top: 0;
+.landing-page-options-card {
+    width: 100%;
 }
 
 .landing-page-options-container a {
     width: 100%;
 }
 
-.landing-page-options-container button {
+.pre-conversion-checklist-button, .post-conversion-checklist-button {
     padding: 10px;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 5px !important;
+    /* margin-bottom: 10px; */
     border: none;
     color: white;
     background-color: var(--lunikoBlue);
     border-radius: 5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 600;
-    font-size: 14pt;
+    font-size: 13pt;
     height: 50px;
     width: 100%;
     transition: 0.1s;
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
+}
+
+.post-conversion-checklist-button {
+    margin-top: 10px !important;
+    margin-bottom: 0
 }
 
 .landing-page-options-container button:hover {

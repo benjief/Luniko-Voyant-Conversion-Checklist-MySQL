@@ -33,14 +33,15 @@ textarea:focus {
 }
 
 .page-message {
-  font-size: 14pt;
+  font-size: 15pt;
   font-weight: 500;
+  margin-bottom: 20px;
 }
 
-.card-text {
-  font-size: 13.5pt;
+/* .card-text {
+  font-size: 14pt;
   font-weight: 300;
-}
+} */
 
 .loading-spinner {
   display: flex;
@@ -59,4 +60,9 @@ input[type="number"] {
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
+}
+
+.button:disabled:hover {
+  cursor: default !important;
+  background-color: #BFBFBF !important;
 }
