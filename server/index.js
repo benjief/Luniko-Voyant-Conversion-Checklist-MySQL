@@ -42,8 +42,17 @@ app.post("/add-personnel", (req, res) => {
 });
 
 app.post("/add-checklist", (req, res) => {
-    const pers_fname = req.body.pers_fname;
-    const req_lname = req.body.pers_lname;
+    const loadSheetName = req.body.loadSheetName;
+    const loadSheetOwner = req.body.loadSheetOwner;
+    const decisionMaker = req.body.decisionMaker;
+    const conversionType = req.body.conversionType;
+    const additionalProcessing = req.body.additionalProcessing;
+    const dataSources = req.body.dataSources;
+    const uniqueRecordsPreCleanup = req.body.uniqueRecordsPreCleanup;
+    const uniqueRecordsPostCleanup = req.body.uniqueRecordsPostCleanup;
+    const recordsPreCleanupNotes = req.body.recordsPreCleanupNotes;
+    const recordsPostCleanupNotes = req.body.recordsPostCleanupNotes;
+    const preConversionManipulation = req.body.preConversionManipulation;
 
     db.query(
         `INSERT INTO conversion_checklist (
@@ -61,43 +70,38 @@ app.post("/add-checklist", (req, res) => {
         )
         
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [pers_fname, pers_lname], (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log("Checklist added!");
-                res.send("Checklist added!");
+        [loadSheetName, loadSheetOwner, decisionMaker,
+            conversionType, additionalProcessing, dataSources,
+            uniqueRecordsPreCleanup, uniqueRecordsPostCleanup,
+            recordsPreCleanupNotes, recordsPostCleanupNotes,
+            preConversionManipulation], (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Pre-conversion checklist added!");
+                    res.send("Pre-conversion checklist added!");
+                }
             }
-        }
     );
 });
 
 app.post("/add-contribution", (req, res) => {
-    const pers_fname = req.body.pers_fname;
-    const req_lname = req.body.pers_lname;
+    const checklistID = req.body.checklistID;
+    const contributorID = req.body.contributorID;
 
     db.query(
-        `INSERT INTO conversion_checklist (
-            cc_load_sheet_owner, 
-            cc_decision_maker, 
-            cc_load_sheet_name, 
-            cc_conversion_type, 
-            cc_additional_processing, 
-            cc_data_sources, 
-            uq_records_pre_cleanup, 
-            cc_records_pre_cleanup_notes, 
-            uq_records_post_cleanup, 
-            cc_records_post_cleanup_notes, 
-            cc_pre_conversion_manipulation
+        `INSERT INTO contribution (
+            cc_id,
+            contributor_id
         )
         
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [pers_fname, pers_lname], (err, result) => {
+        VALUES (?, ?);`,
+        [checklistID, contributorID], (err, result) => {
             if (err) {
                 console.log(err);
             } else {
-                console.log("Checklist added!");
-                res.send("Checklist added!");
+                console.log("Contribution added!");
+                res.send("Contribution added!");
             }
         }
     );

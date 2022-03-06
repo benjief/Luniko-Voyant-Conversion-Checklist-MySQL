@@ -73,27 +73,27 @@ export default function MaterialTextField({
     if (limitRangeOfInputs) {
       if (lowerLimitValue && !upperLimitValue) {
         if (number >= lowerLimitValue) {
-          handleValidValue(number);
+          handleValidValue(Math.floor(number));
         } else {
           setDisplayedHelperText("Number is too low");
           handleInvalidNumber(number);
         }
       } else if (!lowerLimitValue && upperLimitValue) {
         if (number <= upperLimitValue) {
-          handleValidValue(number);
+          handleValidValue(Math.floor(number));
         } else {
           setDisplayedHelperText("Number is too high");
           handleInvalidNumber(number);
         }
       } else if (lowerLimitValue && upperLimitValue) {
         if (lowerLimitValue <= number && number <= upperLimitValue) {
-          handleValidValue(number);
+          handleValidValue(Math.floor(number));
         } else {
           setDisplayedHelperText("Number outside of valid range");
           handleInvalidNumber(number);
         }
       } else {
-        handleValidValue(number);
+        handleValidValue(Math.floor(number));
       }
     }
   }
