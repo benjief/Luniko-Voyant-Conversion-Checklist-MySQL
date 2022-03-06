@@ -53,8 +53,7 @@ export default function MaterialSingleSelectFreeSolo(
         event.preventDefault();
 
         // prevents duplicate values from being added
-        if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
-            && checkInputValueAgainstInvalidOptions(dialogValue.firstName + dialogValue.lastName)) {
+        if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
             let tempObject = { label: dialogValue.firstName + " " + dialogValue.lastName, value: -1 }
             setValue(tempObject);
             selectedValue(tempObject);
@@ -85,22 +84,22 @@ export default function MaterialSingleSelectFreeSolo(
         }
     }
 
-    const checkValueAgainstOptions = (value) => {
-        if (value) {
-            for (let i = 0; i < singleSelectOptions.length; i++) {
-                if (value.label === singleSelectOptions[i].label
-                    || value.inputValue === singleSelectOptions[i].label) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
+    // const checkValueAgainstOptions = (value) => {
+    //     if (value) {
+    //         for (let i = 0; i < singleSelectOptions.length; i++) {
+    //             if ((value.label.toLowerCase() === singleSelectOptions[i].label.toLowerCase()
+    //                 || value.inputValue.toLowerCase() === singleSelectOptions[i].label.toLowerCase())) {
+    //                 return false;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    // }
 
     const checkInputValueAgainstOptions = (inputValue) => {
         if (inputValue !== "" && singleSelectOptions.length) {
             for (let i = 0; i < singleSelectOptions.length; i++) {
-                if (inputValue === singleSelectOptions[i].label) {
+                if (inputValue.toLowerCase() === singleSelectOptions[i].label.toLowerCase()) {
                     return false;
                 }
             }
@@ -109,18 +108,18 @@ export default function MaterialSingleSelectFreeSolo(
         return true;
     }
 
-    const checkInputValueAgainstInvalidOptions = (inputValue) => {
-        // console.log(invalidOptions);
-        if (inputValue !== "" && invalidOptions.length) {
-            for (let i = 0; i < invalidOptions.length; i++) {
-                if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return true;
-    }
+    // const checkInputValueAgainstInvalidOptions = (inputValue) => {
+    //     // console.log(invalidOptions);
+    //     if (inputValue !== "" && invalidOptions.length) {
+    //         for (let i = 0; i < invalidOptions.length; i++) {
+    //             if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
+    //                 return false;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    //     return true;
+    // }
 
     // const checkInputValueAgainstSelectedValue = (inputValue) => {
     //     if (inputValue !== "" && value) {
@@ -154,7 +153,10 @@ export default function MaterialSingleSelectFreeSolo(
             setAddButtonDisabled(true);
         } else {
             setFirstNameDialogError(false);
-            setAddButtonDisabled(false);
+            if (dialogValue.lastName !== "") {
+                console.log(dialogValue.firstName);
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -176,7 +178,9 @@ export default function MaterialSingleSelectFreeSolo(
             setAddButtonDisabled(true);
         } else {
             setLastNameDialogError(false);
-            setAddButtonDisabled(false);
+            if (dialogValue.firstName !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -211,38 +215,41 @@ export default function MaterialSingleSelectFreeSolo(
                 value={value}
                 onBlur={handleOnBlur}
                 onChange={(event, value) => {
-                    let isNewValue = checkValueAgainstOptions(value);
-                    if (isNewValue) {
-                        if (typeof value === 'string') {
-                            // timeout to avoid instant validation of the dialog's form.
-                            setTimeout(() => {
-                                let firstName = value.split(" ")[0];
-                                let lastName = concatenateLastName(value.split(" ").slice(1));
-                                if (lastName === "") {
-                                    setLastNameDialogError(true);
-                                } else {
-                                    setAddButtonDisabled(false);
-                                }
-                                toggleOpen(true);
-                                setDialogValue({
-                                    firstName: firstName,
-                                    lastName: lastName,
-                                });
-                            });
-                        } else if (value && value.inputValue) {
-                            let firstName = value.inputValue.split(" ")[0];
-                            let lastName = concatenateLastName(value.inputValue.split(" ").slice(1));
+                    // let isNewValue = checkValueAgainstOptions(value);
+                    // if (isNewValue) {
+                    if (typeof value === 'string') {
+                        // timeout to avoid instant validation of the dialog's form.
+                        setTimeout(() => {
+                            let firstName = value.split(" ")[0];
+                            let lastName = concatenateLastName(value.split(" ").slice(1));
                             if (lastName === "") {
                                 setLastNameDialogError(true);
                             } else {
-                                setAddButtonDisabled(false);
+                                if (firstName !== "") {
+                                    setAddButtonDisabled(false);
+                                }
                             }
                             toggleOpen(true);
                             setDialogValue({
                                 firstName: firstName,
                                 lastName: lastName,
                             });
+                        });
+                    } else if (value && value.inputValue) {
+                        let firstName = value.inputValue.split(" ")[0];
+                        let lastName = concatenateLastName(value.inputValue.split(" ").slice(1));
+                        if (lastName === "") {
+                            setLastNameDialogError(true);
+                        } else {
+                            if (firstName !== "") {
+                                setAddButtonDisabled(false);
+                            }
                         }
+                        toggleOpen(true);
+                        setDialogValue({
+                            firstName: firstName,
+                            lastName: lastName,
+                        });
                     } else {
                         setValue(value);
                         selectedValue(value);
@@ -250,12 +257,10 @@ export default function MaterialSingleSelectFreeSolo(
                     handleOnChange(value);
                 }}
                 filterOptions={(options, params) => {
-
                     const filtered = filter(options, params);
 
                     if (params.inputValue !== ''
-                        && checkInputValueAgainstOptions(params.inputValue)
-                        && checkInputValueAgainstInvalidOptions(params.inputValue)) {
+                        && checkInputValueAgainstOptions(params.inputValue)) {
                         filtered.push({
                             inputValue: params.inputValue,
                             label: `Add "${params.inputValue}"`,
@@ -265,6 +270,8 @@ export default function MaterialSingleSelectFreeSolo(
                 }}
                 id="free-solo-dialog-demo"
                 options={singleSelectOptions}
+                getOptionDisabled={(option) =>
+                    invalidOptions.includes(option)}
                 getOptionLabel={(option) => {
                     // console.log(singleSelectOptions);
                     // e.g value selected with enter, right from the input

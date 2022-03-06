@@ -15,9 +15,10 @@ export default function MaterialTextField({
   required = false,
   showCharCounter = false,
   limitRangeOfInputs = false,
+  requiresValidation = false,
   upperLimitValue = 0,
   lowerLimitValue = 0,
-  requiresValidation = false
+  negativeNumbersAllowed = true
 }) {
   const [value, setValue] = React.useState("");
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -70,38 +71,39 @@ export default function MaterialTextField({
   }
 
   const checkNumberValidity = (number) => {
+    // console.log(!negativeNumbersAllowed && number < 0);
     if (limitRangeOfInputs) {
       if (lowerLimitValue && !upperLimitValue) {
         if (number >= lowerLimitValue) {
-          handleValidValue(Math.floor(number));
+          handleValidValue(number);
         } else {
-          setDisplayedHelperText("Number is too low");
-          handleInvalidNumber(number);
+          handleInvalidNumber("Number is too low");
         }
       } else if (!lowerLimitValue && upperLimitValue) {
         if (number <= upperLimitValue) {
-          handleValidValue(Math.floor(number));
+          handleValidValue(number);
         } else {
-          setDisplayedHelperText("Number is too high");
-          handleInvalidNumber(number);
+          handleInvalidNumber("Number is too high");
         }
       } else if (lowerLimitValue && upperLimitValue) {
         if (lowerLimitValue <= number && number <= upperLimitValue) {
-          handleValidValue(Math.floor(number));
+          handleValidValue(number);
         } else {
-          setDisplayedHelperText("Number outside of valid range");
-          handleInvalidNumber(number);
+          handleInvalidNumber("Number outside of valid range");
         }
+      }
+      if (!negativeNumbersAllowed && number < 0) {
+        handleInvalidNumber("Negative numbers aren't allowed");
       } else {
-        handleValidValue(Math.floor(number));
+        handleValidValue(number);
       }
     }
   }
 
-  const handleInvalidNumber = (number) => {
+  const handleInvalidNumber = (helperText) => {
     setValue(null);
     inputValue(null);
-    console.log("setting error enabled");
+    setDisplayedHelperText(helperText);
     setErrorEnabled(true);
   }
 
@@ -112,7 +114,6 @@ export default function MaterialTextField({
       setInputLength(value.length);
     }
     if (required) {
-      console.log("setting error enabled");
       setErrorEnabled(true);
     }
   }
@@ -144,6 +145,7 @@ export default function MaterialTextField({
           multiline={multiline}
           error={errorEnabled}
           required={required}
+          placeholder={placeholder}
           inputProps={{
             maxLength: characterLimit
           }}

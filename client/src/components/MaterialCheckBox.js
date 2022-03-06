@@ -16,7 +16,7 @@ export default function MaterialCheckBox({
                     color="primary"
                     icon={<CircleOutlined />}
                     checkedIcon={<CheckCircle />}
-                    onChange={(event, checked) => console.log(checked)}
+                    onChange={(event, status) => checked(status)}
                 />}
                 label={label} />
         </FormGroup>

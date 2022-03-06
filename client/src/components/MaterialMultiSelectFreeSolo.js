@@ -55,8 +55,7 @@ export default function MaterialMultiSelectFreeSolo(
 
         // prevents duplicate values from being added
         if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
-            && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)
-            && checkInputValueAgainstInvalidOptions(dialogValue.firstName + dialogValue.lastName)) {
+            && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)) {
             let tempArray = values;
             tempArray.push({
                 label: dialogValue.firstName + " " + dialogValue.lastName,
@@ -90,23 +89,23 @@ export default function MaterialMultiSelectFreeSolo(
         }
     }
 
-    const checkValuesArrayAgainstOptions = (valuesArray) => {
-        if (valuesArray.length) {
-            let selection = valuesArray[valuesArray.length - 1];
-            for (let i = 0; i < multiSelectOptions.length; i++) {
-                if (selection.label === multiSelectOptions[i].label
-                    || selection.inputValue === multiSelectOptions[i].label) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
+    // const checkValuesArrayAgainstOptions = (valuesArray) => {
+    //     if (valuesArray.length) {
+    //         let selection = valuesArray[valuesArray.length - 1];
+    //         for (let i = 0; i < multiSelectOptions.length; i++) {
+    //             if (/* selection.label.toLowerCase() === multiSelectOptions[i].label.toLowerCase()
+    //                 || */ selection.inputValue && selection.inputValue.toLowerCase() === multiSelectOptions[i].label.toLowerCase()) {
+    //                 return false;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    // }
 
     const checkInputValueAgainstOptions = (inputValue) => {
         if (inputValue !== "" && multiSelectOptions.length) {
             for (let i = 0; i < multiSelectOptions.length; i++) {
-                if (inputValue === multiSelectOptions[i].label) {
+                if (inputValue.toLowerCase() === multiSelectOptions[i].label.toLowerCase()) {
                     return false;
                 }
             }
@@ -118,7 +117,7 @@ export default function MaterialMultiSelectFreeSolo(
     const checkInputValueAgainstSelectedValues = (inputValue) => {
         if (inputValue !== "" && values.length) {
             for (let i = 0; i < values.length; i++) {
-                if (inputValue === values[i].label) {
+                if (inputValue.toLowerCase() === values[i].label.toLowerCase()) {
                     return false;
                 }
             }
@@ -127,18 +126,18 @@ export default function MaterialMultiSelectFreeSolo(
         return true;
     }
 
-    const checkInputValueAgainstInvalidOptions = (inputValue) => {
-        // console.log(invalidOptions);
-        if (inputValue !== "" && invalidOptions.length) {
-            for (let i = 0; i < invalidOptions.length; i++) {
-                if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return true;
-    }
+    // const checkInputValueAgainstInvalidOptions = (inputValue) => {
+    //     console.log(invalidOptions);
+    //     if (inputValue !== "" && invalidOptions.length) {
+    //         for (let i = 0; i < invalidOptions.length; i++) {
+    //             if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
+    //                 return false;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    //     return true;
+    // }
 
     const concatenateLastName = (lastNameArray) => {
         let lastName = "";
@@ -161,7 +160,9 @@ export default function MaterialMultiSelectFreeSolo(
             setAddButtonDisabled(true);
         } else {
             setFirstNameDialogError(false);
-            setAddButtonDisabled(false);
+            if (dialogValue.lastName !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -183,7 +184,9 @@ export default function MaterialMultiSelectFreeSolo(
             setAddButtonDisabled(true);
         } else {
             setLastNameDialogError(false);
-            setAddButtonDisabled(false);
+            if (dialogValue.firstName !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -220,42 +223,45 @@ export default function MaterialMultiSelectFreeSolo(
                 limitTags={limitTags}
                 onBlur={handleOnBlur}
                 onChange={(event, valuesArray) => {
-                    let isNewValue = checkValuesArrayAgainstOptions(valuesArray);
-                    if (isNewValue) {
-                        let newValue = valuesArray[valuesArray.length - 1];
-                        if (typeof newValue === 'string') {
-                            // timeout to avoid instant validation of the dialog's form.
-                            setTimeout(() => {
-                                let firstName = newValue.split(" ")[0];
-                                let lastName = concatenateLastName(newValue.split(" ").slice(1));
-                                if (lastName === "") {
-                                    setLastNameDialogError(true);
-                                } else {
-                                    setAddButtonDisabled(false);
-                                }
-                                toggleOpen(true);
-                                setDialogValue({
-                                    firstName: firstName,
-                                    lastName: lastName,
-                                });
-                            });
-                        } else if (newValue && newValue.inputValue) {
-                            // console.log(newValue.inputValue);
-                            // console.log(newValue.inputValue.split(" ")[0]);
-                            // console.log(newValue.inputValue.split(" ").slice(1));
-                            let firstName = newValue.inputValue.split(" ")[0];
-                            let lastName = concatenateLastName(newValue.inputValue.split(" ").slice(1));
+                    // let isNewValue = checkValuesArrayAgainstOptions(valuesArray);
+                    // if (isNewValue) {
+                    let newValue = valuesArray[valuesArray.length - 1];
+                    if (typeof newValue === 'string') {
+                        // timeout to avoid instant validation of the dialog's form.
+                        setTimeout(() => {
+                            let firstName = newValue.split(" ")[0];
+                            let lastName = concatenateLastName(newValue.split(" ").slice(1));
                             if (lastName === "") {
                                 setLastNameDialogError(true);
                             } else {
-                                setAddButtonDisabled(false);
+                                if (firstName !== "") {
+                                    setAddButtonDisabled(false);
+                                }
                             }
                             toggleOpen(true);
                             setDialogValue({
                                 firstName: firstName,
                                 lastName: lastName,
                             });
+                        });
+                    } else if (newValue && newValue.inputValue) {
+                        // console.log(newValue.inputValue);
+                        // console.log(newValue.inputValue.split(" ")[0]);
+                        // console.log(newValue.inputValue.split(" ").slice(1));
+                        let firstName = newValue.inputValue.split(" ")[0];
+                        let lastName = concatenateLastName(newValue.inputValue.split(" ").slice(1));
+                        if (lastName === "") {
+                            setLastNameDialogError(true);
+                        } else {
+                            if (firstName !== "") {
+                                setAddButtonDisabled(false);
+                            }
                         }
+                        toggleOpen(true);
+                        setDialogValue({
+                            firstName: firstName,
+                            lastName: lastName,
+                        });
                     } else {
                         setValues(valuesArray);
                         selectedValues(valuesArray);
@@ -268,8 +274,7 @@ export default function MaterialMultiSelectFreeSolo(
 
                     if (params.inputValue !== ""
                         && checkInputValueAgainstOptions(params.inputValue)
-                        && checkInputValueAgainstSelectedValues(params.inputValue)
-                        && checkInputValueAgainstInvalidOptions(params.inputValue)) {
+                        && checkInputValueAgainstSelectedValues(params.inputValue)) {
                         filtered.push({
                             inputValue: params.inputValue,
                             label: `Add "${params.inputValue}"`,
@@ -279,6 +284,9 @@ export default function MaterialMultiSelectFreeSolo(
                 }}
                 id="free-solo-dialog-demo"
                 options={multiSelectOptions}
+                getOptionDisabled={(option) =>
+                    invalidOptions.includes(option)
+                }
                 getOptionLabel={(option) => {
                     // e.g value selected with enter, right from the input
                     if (typeof option === 'string') {

@@ -39,7 +39,7 @@ export default function CreatePreConversionChecklistCard({
     invalidPersonnel = [],
     contributors = [],
     invalidContributors = [],
-    latestContributor = "",
+    // latestContributor = "",
     conversionType = "",
     additionalProcessing = "",
     dataSources = "",
@@ -220,7 +220,7 @@ export default function CreatePreConversionChecklistCard({
                             className="add-contributors-dialog"
                             label="Other Contributors"
                             placeholder="Who else was involved?"
-                            multiSelectOptions={contributorOptions}
+                            multiSelectOptions={personnelOptions}
                             selectedValues={handleOnSelectContributors}
                             invalidOptions={invalidContributors}
                             required={false}>
@@ -260,7 +260,8 @@ export default function CreatePreConversionChecklistCard({
                             required={true}
                             type="number"
                             limitRangeOfInputs={true}
-                            lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}>
+                            lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}
+                            negativeNumbersAllowed={false}>
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
@@ -271,7 +272,8 @@ export default function CreatePreConversionChecklistCard({
                             required={true}
                             type="number"
                             limitRangeOfInputs={true}
-                            upperLimitValue={uniqueRecordsPostCleanupUpperLimit}>
+                            upperLimitValue={uniqueRecordsPostCleanupUpperLimit}
+                            negativeNumbersAllowed={false}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-cleanup-notes"
