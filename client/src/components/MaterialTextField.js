@@ -16,8 +16,8 @@ export default function MaterialTextField({
   showCharCounter = false,
   limitRangeOfInputs = false,
   requiresValidation = false,
-  upperLimitValue = 0,
-  lowerLimitValue = 0,
+  upperLimitValue = null,
+  lowerLimitValue = null,
   negativeNumbersAllowed = true
 }) {
   const [value, setValue] = React.useState("");
@@ -73,30 +73,33 @@ export default function MaterialTextField({
   const checkNumberValidity = (number) => {
     // console.log(!negativeNumbersAllowed && number < 0);
     if (limitRangeOfInputs) {
-      if (lowerLimitValue && !upperLimitValue) {
+      if (number < 0 && lowerLimitValue === 0) {
+        console.log("1");
+        handleInvalidNumber("Negative numbers are not permitted");
+      } else if (lowerLimitValue !== null && upperLimitValue === null) {
         if (number >= lowerLimitValue) {
           handleValidValue(number);
         } else {
           handleInvalidNumber("Number is too low");
         }
-      } else if (!lowerLimitValue && upperLimitValue) {
+      } else if (lowerLimitValue === null && upperLimitValue !== null) {
         if (number <= upperLimitValue) {
           handleValidValue(number);
         } else {
           handleInvalidNumber("Number is too high");
         }
-      } else if (lowerLimitValue && upperLimitValue) {
+      } else if (lowerLimitValue !== null && upperLimitValue !== null) {
         if (lowerLimitValue <= number && number <= upperLimitValue) {
           handleValidValue(number);
         } else {
           handleInvalidNumber("Number outside of valid range");
         }
       }
-      if (!negativeNumbersAllowed && number < 0) {
-        handleInvalidNumber("Negative numbers aren't allowed");
-      } else {
-        handleValidValue(number);
-      }
+      // if (!negativeNumbersAllowed && number < 0) {
+      //   handleInvalidNumber("Negative numbers aren't allowed");
+      // } else {
+      //   handleValidValue(number);
+      // }
     }
   }
 
@@ -125,6 +128,12 @@ export default function MaterialTextField({
     setErrorEnabled(false);
     setDisplayedHelperText(helperText);
   }
+
+  React.useEffect(() => {
+    if (!negativeNumbersAllowed) {
+      lowerLimitValue = 0;
+    }
+  })
 
   return (
     <Box

@@ -149,7 +149,7 @@ function CreatePreConversionChecklist() {
         if (submitted) {
             await assignUIDsToNewPersonnel();
             await addNewPersonnelToDB();
-            // addConversionChecklist();
+            addConversionChecklist();
         }
     }
 
@@ -158,19 +158,24 @@ function CreatePreConversionChecklist() {
         new Promise(resolve => {
             if (loadSheetOwner.value === -1) {
                 loadSheetOwner.value = uuidv4();
-                setNewPersonnel(newPersonnel.push(loadSheetOwner));
+                newPersonnel.push(loadSheetOwner);
+                setNewPersonnel(newPersonnel);
             }
-            // Don't want to try and add duplicate personnel to DB
-            if ((decisionMaker.label.toLowerCase() !== loadSheetOwner.label.toLowerCase()) && decisionMaker.value === -1) {
-                decisionMaker.value = uuidv4();
-                setNewPersonnel(newPersonnel.push(decisionMaker));
+            if (decisionMaker.value === -1) {
+                // Don't want to try and add duplicate personnel to DB
+                decisionMaker.value = (decisionMaker.label.toLowerCase() === loadSheetOwner.label.toLowerCase()) ?
+                    loadSheetOwner.value
+                    : uuidv4();
+                newPersonnel.push(decisionMaker);
+                setNewPersonnel(newPersonnel);
             }
             for (let i = 0; i < contributors.length; i++) {
                 if (contributors[i].value === -1) {
                     contributors[i].value = uuidv4();
-                    setNewPersonnel(newPersonnel.push(contributors[i]));
+                    newPersonnel.push(contributors[i]);
                 }
             }
+            setNewPersonnel(newPersonnel);
         });
         console.log("UIDs assigned...")
     }
@@ -178,9 +183,8 @@ function CreatePreConversionChecklist() {
     const addNewPersonnelToDB = () => {
         console.log("Adding personnel to DB...");
         new Promise(resolve => {
-            console.log(newPersonnel);
+            // console.log(newPersonnel);
             for (let i = 0; i < newPersonnel.length; i++) {
-                console.log(newPersonnel);
                 let name = newPersonnel[i].label;
                 let firstName = name.split(" ")[0];
                 let lastName = name.substring(name.indexOf(" ") + 1);
@@ -199,20 +203,20 @@ function CreatePreConversionChecklist() {
         Axios.post("http://localhost:3001/add-checklist", {
             loadSheetName: loadSheetName,
             loadSheetOwner: loadSheetOwner.value,
-
             decisionMaker: decisionMaker.value,
             conversionType: conversionType,
             additionalProcessing: additionalProcessing,
             dataSources: dataSources,
             uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
             uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes,
-            preConversionManipulation: preConversionManipulation
+            recordsPreCleanupNotes: recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
+            recordsPostCleanupNotes: recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
+            preConversionManipulation: preConversionManipulation === "" ? null : preConversionManipulation
         }).then((response) => {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully added!!");
             if (contributors.length !== 0) {
+                console.log(response.data);
                 addContributions(response.data.insertId);
             } else {
                 handleSuccessfulSubmit();

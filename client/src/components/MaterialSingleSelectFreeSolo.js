@@ -53,7 +53,8 @@ export default function MaterialSingleSelectFreeSolo(
         event.preventDefault();
 
         // prevents duplicate values from being added
-        if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
+        if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
+            && checkInputValueAgainstInvalidOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
             let tempObject = { label: dialogValue.firstName + " " + dialogValue.lastName, value: -1 }
             setValue(tempObject);
             selectedValue(tempObject);
@@ -108,18 +109,18 @@ export default function MaterialSingleSelectFreeSolo(
         return true;
     }
 
-    // const checkInputValueAgainstInvalidOptions = (inputValue) => {
-    //     // console.log(invalidOptions);
-    //     if (inputValue !== "" && invalidOptions.length) {
-    //         for (let i = 0; i < invalidOptions.length; i++) {
-    //             if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
-    //                 return false;
-    //             }
-    //         }
-    //         return true;
-    //     }
-    //     return true;
-    // }
+    const checkInputValueAgainstInvalidOptions = (inputValue) => {
+        // console.log(invalidOptions);
+        if (inputValue !== "" && invalidOptions.length) {
+            for (let i = 0; i < invalidOptions.length; i++) {
+                if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
 
     // const checkInputValueAgainstSelectedValue = (inputValue) => {
     //     if (inputValue !== "" && value) {
@@ -260,7 +261,8 @@ export default function MaterialSingleSelectFreeSolo(
                     const filtered = filter(options, params);
 
                     if (params.inputValue !== ''
-                        && checkInputValueAgainstOptions(params.inputValue)) {
+                        && checkInputValueAgainstOptions(params.inputValue)
+                        && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
                             inputValue: params.inputValue,
                             label: `Add "${params.inputValue}"`,
@@ -271,7 +273,8 @@ export default function MaterialSingleSelectFreeSolo(
                 id="free-solo-dialog-demo"
                 options={singleSelectOptions}
                 getOptionDisabled={(option) =>
-                    invalidOptions.includes(option)}
+                    invalidOptions.includes(option)
+                }
                 getOptionLabel={(option) => {
                     // console.log(singleSelectOptions);
                     // e.g value selected with enter, right from the input

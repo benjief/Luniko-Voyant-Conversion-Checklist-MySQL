@@ -55,7 +55,8 @@ export default function MaterialMultiSelectFreeSolo(
 
         // prevents duplicate values from being added
         if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
-            && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)) {
+            && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)
+            && checkInputValueAgainstInvalidOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
             let tempArray = values;
             tempArray.push({
                 label: dialogValue.firstName + " " + dialogValue.lastName,
@@ -126,18 +127,18 @@ export default function MaterialMultiSelectFreeSolo(
         return true;
     }
 
-    // const checkInputValueAgainstInvalidOptions = (inputValue) => {
-    //     console.log(invalidOptions);
-    //     if (inputValue !== "" && invalidOptions.length) {
-    //         for (let i = 0; i < invalidOptions.length; i++) {
-    //             if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
-    //                 return false;
-    //             }
-    //         }
-    //         return true;
-    //     }
-    //     return true;
-    // }
+    const checkInputValueAgainstInvalidOptions = (inputValue) => {
+        if (inputValue !== "" && invalidOptions.length) {
+            for (let i = 0; i < invalidOptions.length; i++) {
+                if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
+                    console.log("returned false");
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+    }
 
     const concatenateLastName = (lastNameArray) => {
         let lastName = "";
@@ -274,7 +275,8 @@ export default function MaterialMultiSelectFreeSolo(
 
                     if (params.inputValue !== ""
                         && checkInputValueAgainstOptions(params.inputValue)
-                        && checkInputValueAgainstSelectedValues(params.inputValue)) {
+                        && checkInputValueAgainstSelectedValues(params.inputValue)
+                        && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
                             inputValue: params.inputValue,
                             label: `Add "${params.inputValue}"`,
