@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // import BootstrapPopover from "../components/BootstrapPopover";
+import MaterialTextField from '../components/MaterialTextField';
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -23,16 +24,37 @@ const ExpandMore = styled((props) => {
     }),
 }));
 
-export default function PreConversionChecklistOptionsCard({
+export default function EnterLoadSheetNameCard({
+    loadSheetName = "",
+    submitted = false,
+    submitButtonDisabled = true,
+    textAuthenticationError = ""
 }) {
     const [expanded, setExpanded] = React.useState(true);
+    const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
+
+    const handleOnChangeLoadSheetName = (updatedText) => {
+        loadSheetName(updatedText);
+    }
+
+    const handleSubmitLoadSheetName = () => {
+        submitted(true);
+    }
+
+    React.useEffect(() => {
+        if (!submitButtonDisabled) {
+            setSubmitButtonColor("var(--lunikoBlue)");
+        } else {
+            setSubmitButtonColor("#BFBFBF");
+        }
+    }, [submitButtonDisabled]);
 
     return (
         <Card
             sx={{
                 // minWidth: 1,
                 // maxWidth: 1,
-                minHeight: "205px",
+                minHeight: "150px",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",
@@ -52,7 +74,7 @@ export default function PreConversionChecklistOptionsCard({
                     //         {statusAbbreviation}
                     //     </Avatar>
                     // }
-                    title={<strong>Please choose an option below</strong>}
+                    title={<strong>Please enter a valid load sheet name</strong>}
                 />
                 {/* < CardActions
                 disableSpacing
@@ -73,25 +95,24 @@ export default function PreConversionChecklistOptionsCard({
                         paragraph>
                         <strong>Updatable Fields</strong>
                     </Typography> */}
-                        <Link to={"/create-pre-conversion-checklist"}>
-                            <button
-                                className="create-pre-conversion-checklist-button">
-                                Create
-                            </button>
-                        </Link>
-                        <Link to={"/view-pre-conversion-checklist"}>
-                            <button
-                                className="view-pre-conversion-checklist-button">
-                                View/Modify
-                            </button>
-                        </Link>
-                        {/* <div className="popover-container">
-                            <BootstrapPopover
-                                popoverText=
-                                {[<strong>All identifiers </strong>, "added to this request will be ",
-                                    "able to view it and receive updates pertaining to it."]}>
-                            </BootstrapPopover>
-                        </div> */}
+                        <MaterialTextField
+                            label="Load Sheet Name"
+                            // characterLimit={10}
+                            // placeholder="Approximate number of unique records pre-cleanup"
+                            inputValue={handleOnChangeLoadSheetName}
+                            multiline={false}
+                            required={false}
+                            type="text"
+                            authenticationField={true}
+                            textAuthenticationError={textAuthenticationError}>
+                        </MaterialTextField>
+                        <button
+                            className="submit-load-sheet-name-button"
+                            onClick={handleSubmitLoadSheetName}
+                            disabled={submitButtonDisabled}
+                            style={{ backgroundColor: submitButtonColor }}>
+                            Submit
+                        </button>
                     </CardContent>
                 </Collapse>
             </div>

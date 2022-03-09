@@ -18,7 +18,9 @@ export default function MaterialTextField({
   requiresValidation = false,
   upperLimitValue = null,
   lowerLimitValue = null,
-  negativeNumbersAllowed = true
+  negativeNumbersAllowed = true,
+  authenticationField = false,
+  textAuthenticationError = ""
 }) {
   const [value, setValue] = React.useState("");
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -27,7 +29,7 @@ export default function MaterialTextField({
   const [inputLength, setInputLength] = React.useState(defaultValue.length);
 
   const handleOnChange = (value) => {
-    if (value) {
+    if (value.trim() !== "") {
       if (type === "email") {
         checkEmailValidity(value);
       } else if (type === "password" && requiresValidation) {
@@ -71,10 +73,8 @@ export default function MaterialTextField({
   }
 
   const checkNumberValidity = (number) => {
-    // console.log(!negativeNumbersAllowed && number < 0);
     if (limitRangeOfInputs) {
-      if (number < 0 && lowerLimitValue === 0) {
-        console.log("1");
+      if (number < 0 && !negativeNumbersAllowed) {
         handleInvalidNumber("Negative numbers are not permitted");
       } else if (lowerLimitValue !== null && upperLimitValue === null) {
         if (number >= lowerLimitValue) {
@@ -130,13 +130,22 @@ export default function MaterialTextField({
   }
 
   React.useEffect(() => {
-    if (!negativeNumbersAllowed) {
-      lowerLimitValue = 0;
+    if (authenticationField) {
+      if (textAuthenticationError !== "") {
+        setErrorEnabled(true);
+        setDisplayedHelperText(textAuthenticationError);
+      } else {
+        if (value.trim() !== "") {
+          setErrorEnabled(false);
+          setDisplayedHelperText("");
+        }
+      }
     }
-  })
+  }, [authenticationField, textAuthenticationError, errorEnabled, lowerLimitValue])
 
   return (
     <Box
+      onSubmit={event => { event.preventDefault(); }}
       className={className}
       component="form"
       sx={{

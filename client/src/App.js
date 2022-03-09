@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes as Switch } from "react-router-d
 import LandingPage from "./pages/LandingPage";
 import PreConversionChecklist from "./pages/PreConversionChecklist";
 import CreatePreConversionChecklist from "./pages/CreatePreConversionChecklist";
+import ViewPreConversionChecklist from "./pages/ViewPreConversionChecklist";
 import './App.css';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
           <Route exact path="/" element={<LandingPage />} />
           <Route exact path="/pre-conversion-checklist" element={<PreConversionChecklist />} />
           <Route exact path="/create-pre-conversion-checklist" element={<CreatePreConversionChecklist />} />
+          <Route exact path="/view-pre-conversion-checklist" element={<ViewPreConversionChecklist />} />
         </Switch>
       </Router>
     </div>

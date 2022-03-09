@@ -15,6 +15,7 @@ export default function MaterialMultiSelectFreeSolo(
         className = "",
         label = "",
         placeholder = "",
+        defaultValue = "",
         multiSelectOptions = [],
         invalidOptions = [],
         selectedValues = [],
@@ -104,7 +105,7 @@ export default function MaterialMultiSelectFreeSolo(
     // }
 
     const checkInputValueAgainstOptions = (inputValue) => {
-        if (inputValue !== "" && multiSelectOptions.length) {
+        if (inputValue.trim() !== "" && multiSelectOptions.length) {
             for (let i = 0; i < multiSelectOptions.length; i++) {
                 if (inputValue.toLowerCase() === multiSelectOptions[i].label.toLowerCase()) {
                     return false;
@@ -116,7 +117,7 @@ export default function MaterialMultiSelectFreeSolo(
     }
 
     const checkInputValueAgainstSelectedValues = (inputValue) => {
-        if (inputValue !== "" && values.length) {
+        if (inputValue.trim() !== "" && values.length) {
             for (let i = 0; i < values.length; i++) {
                 if (inputValue.toLowerCase() === values[i].label.toLowerCase()) {
                     return false;
@@ -128,10 +129,9 @@ export default function MaterialMultiSelectFreeSolo(
     }
 
     const checkInputValueAgainstInvalidOptions = (inputValue) => {
-        if (inputValue !== "" && invalidOptions.length) {
+        if (inputValue.trim() !== "" && invalidOptions.length) {
             for (let i = 0; i < invalidOptions.length; i++) {
                 if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
-                    console.log("returned false");
                     return false;
                 }
             }
@@ -156,21 +156,26 @@ export default function MaterialMultiSelectFreeSolo(
             firstName: value,
         })
 
-        if (value === "") {
+        if (value.trim() === "") {
             setFirstNameDialogError(true);
             setAddButtonDisabled(true);
         } else {
             setFirstNameDialogError(false);
-            if (dialogValue.lastName !== "") {
+            if (dialogValue.lastName.trim() !== "") {
                 setAddButtonDisabled(false);
             }
         }
     }
 
     const handleOnBlurFirstNameDialog = () => {
-        if (dialogValue.firstName === "") {
+        if (dialogValue.firstName.trim() === "") {
             setFirstNameDialogError(true);
             setAddButtonDisabled(true);
+        } else {
+            setFirstNameDialogError(false);
+            if (dialogValue.lastName.trim() !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -180,21 +185,26 @@ export default function MaterialMultiSelectFreeSolo(
             lastName: value,
         })
 
-        if (value === "") {
+        if (value.trim() === "") {
             setLastNameDialogError(true);
             setAddButtonDisabled(true);
         } else {
             setLastNameDialogError(false);
-            if (dialogValue.firstName !== "") {
+            if (dialogValue.firstName.trim() !== "") {
                 setAddButtonDisabled(false);
             }
         }
     }
 
     const handleOnBlurLastNameDialog = () => {
-        if (dialogValue.lastName === "") {
+        if (dialogValue.lastName.trim() === "") {
             setLastNameDialogError(true);
             setAddButtonDisabled(true);
+        } else {
+            setLastNameDialogError(false);
+            if (dialogValue.firstName.trim() !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -221,6 +231,7 @@ export default function MaterialMultiSelectFreeSolo(
             <Autocomplete
                 multiple
                 value={values}
+                defaultValue={defaultValue}
                 limitTags={limitTags}
                 onBlur={handleOnBlur}
                 onChange={(event, valuesArray) => {
@@ -232,13 +243,9 @@ export default function MaterialMultiSelectFreeSolo(
                         setTimeout(() => {
                             let firstName = newValue.split(" ")[0];
                             let lastName = concatenateLastName(newValue.split(" ").slice(1));
-                            if (lastName === "") {
-                                setLastNameDialogError(true);
-                            } else {
-                                if (firstName !== "") {
-                                    setAddButtonDisabled(false);
-                                }
-                            }
+                            firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
+                            lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
+                            firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
                             toggleOpen(true);
                             setDialogValue({
                                 firstName: firstName,
@@ -249,15 +256,11 @@ export default function MaterialMultiSelectFreeSolo(
                         // console.log(newValue.inputValue);
                         // console.log(newValue.inputValue.split(" ")[0]);
                         // console.log(newValue.inputValue.split(" ").slice(1));
-                        let firstName = newValue.inputValue.split(" ")[0];
-                        let lastName = concatenateLastName(newValue.inputValue.split(" ").slice(1));
-                        if (lastName === "") {
-                            setLastNameDialogError(true);
-                        } else {
-                            if (firstName !== "") {
-                                setAddButtonDisabled(false);
-                            }
-                        }
+                        let firstName = newValue.split(" ")[0];
+                        let lastName = concatenateLastName(newValue.split(" ").slice(1));
+                        firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
+                        lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
+                        firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
                         toggleOpen(true);
                         setDialogValue({
                             firstName: firstName,
@@ -270,16 +273,15 @@ export default function MaterialMultiSelectFreeSolo(
                     handleOnChange(valuesArray);
                 }}
                 filterOptions={(options, params) => {
-
                     const filtered = filter(options, params);
 
-                    if (params.inputValue !== ""
+                    if (params.inputValue.trim() !== ""
                         && checkInputValueAgainstOptions(params.inputValue)
                         && checkInputValueAgainstSelectedValues(params.inputValue)
                         && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
-                            inputValue: params.inputValue,
-                            label: `Add "${params.inputValue}"`,
+                            inputValue: params.inputValue.trimStart(),
+                            label: `Add "${params.inputValue.trimStart()}"`,
                         });
                     }
                     return filtered;

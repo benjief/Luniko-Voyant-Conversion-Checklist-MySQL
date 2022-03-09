@@ -7,7 +7,8 @@ import CheckCircle from '@mui/icons-material/CheckCircle';
 
 export default function MaterialCheckBox({
     label = "",
-    checked = false
+    checked = false,
+    defaultChecked = false
 }) {
     return (
         <FormGroup>
@@ -16,6 +17,7 @@ export default function MaterialCheckBox({
                     color="primary"
                     icon={<CircleOutlined />}
                     checkedIcon={<CheckCircle />}
+                    defaultChecked={defaultChecked}
                     onChange={(event, status) => checked(status)}
                 />}
                 label={label} />

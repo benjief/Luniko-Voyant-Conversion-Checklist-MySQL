@@ -27,6 +27,10 @@
     transform: translate(0px, 0px) scale(0.75) !important;
 }
 
+.enter-valid-load-sheet-name .MuiInputLabel-shrink {
+    background-color: var(--lunikoDarkGrey) !important;
+}
+
 .MuiInputLabel-root.Mui-error {
     color: #d32f2f !important;
 }

@@ -15,6 +15,7 @@ export default function MaterialSingleSelectFreeSolo(
         className = "",
         label = "",
         placeholder = "",
+        defaultValue = "",
         singleSelectOptions = [],
         invalidOptions = [],
         selectedValue = {},
@@ -98,7 +99,7 @@ export default function MaterialSingleSelectFreeSolo(
     // }
 
     const checkInputValueAgainstOptions = (inputValue) => {
-        if (inputValue !== "" && singleSelectOptions.length) {
+        if (inputValue.trim() !== "" && singleSelectOptions.length) {
             for (let i = 0; i < singleSelectOptions.length; i++) {
                 if (inputValue.toLowerCase() === singleSelectOptions[i].label.toLowerCase()) {
                     return false;
@@ -111,7 +112,7 @@ export default function MaterialSingleSelectFreeSolo(
 
     const checkInputValueAgainstInvalidOptions = (inputValue) => {
         // console.log(invalidOptions);
-        if (inputValue !== "" && invalidOptions.length) {
+        if (inputValue.trim() !== "" && invalidOptions.length) {
             for (let i = 0; i < invalidOptions.length; i++) {
                 if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
                     return false;
@@ -149,12 +150,12 @@ export default function MaterialSingleSelectFreeSolo(
             firstName: value,
         })
 
-        if (value === "") {
+        if (value.trim() === "") {
             setFirstNameDialogError(true);
             setAddButtonDisabled(true);
         } else {
             setFirstNameDialogError(false);
-            if (dialogValue.lastName !== "") {
+            if (dialogValue.lastName.trim() !== "") {
                 console.log(dialogValue.firstName);
                 setAddButtonDisabled(false);
             }
@@ -162,9 +163,14 @@ export default function MaterialSingleSelectFreeSolo(
     }
 
     const handleOnBlurFirstNameDialog = () => {
-        if (dialogValue.firstName === "") {
+        if (dialogValue.firstName.trim() === "") {
             setFirstNameDialogError(true);
             setAddButtonDisabled(true);
+        } else {
+            setFirstNameDialogError(false);
+            if (dialogValue.lastName.trim() !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -174,21 +180,26 @@ export default function MaterialSingleSelectFreeSolo(
             lastName: value,
         })
 
-        if (value === "") {
+        if (value.trim() === "") {
             setLastNameDialogError(true);
             setAddButtonDisabled(true);
         } else {
             setLastNameDialogError(false);
-            if (dialogValue.firstName !== "") {
+            if (dialogValue.firstName.trim() !== "") {
                 setAddButtonDisabled(false);
             }
         }
     }
 
     const handleOnBlurLastNameDialog = () => {
-        if (dialogValue.lastName === "") {
+        if (dialogValue.lastName.trim() === "") {
             setLastNameDialogError(true);
             setAddButtonDisabled(true);
+        } else {
+            setLastNameDialogError(false);
+            if (dialogValue.firstName.trim() !== "") {
+                setAddButtonDisabled(false);
+            }
         }
     }
 
@@ -214,6 +225,7 @@ export default function MaterialSingleSelectFreeSolo(
         <React.Fragment>
             <Autocomplete
                 value={value}
+                defaultValue={defaultValue}
                 onBlur={handleOnBlur}
                 onChange={(event, value) => {
                     // let isNewValue = checkValueAgainstOptions(value);
@@ -221,15 +233,11 @@ export default function MaterialSingleSelectFreeSolo(
                     if (typeof value === 'string') {
                         // timeout to avoid instant validation of the dialog's form.
                         setTimeout(() => {
-                            let firstName = value.split(" ")[0];
-                            let lastName = concatenateLastName(value.split(" ").slice(1));
-                            if (lastName === "") {
-                                setLastNameDialogError(true);
-                            } else {
-                                if (firstName !== "") {
-                                    setAddButtonDisabled(false);
-                                }
-                            }
+                            let firstName = value.inputValue.split(" ")[0];
+                            let lastName = concatenateLastName(value.inputValue.split(" ").slice(1));
+                            firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
+                            lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
+                            firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
                             toggleOpen(true);
                             setDialogValue({
                                 firstName: firstName,
@@ -239,13 +247,9 @@ export default function MaterialSingleSelectFreeSolo(
                     } else if (value && value.inputValue) {
                         let firstName = value.inputValue.split(" ")[0];
                         let lastName = concatenateLastName(value.inputValue.split(" ").slice(1));
-                        if (lastName === "") {
-                            setLastNameDialogError(true);
-                        } else {
-                            if (firstName !== "") {
-                                setAddButtonDisabled(false);
-                            }
-                        }
+                        firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
+                        lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
+                        firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
                         toggleOpen(true);
                         setDialogValue({
                             firstName: firstName,
@@ -260,12 +264,12 @@ export default function MaterialSingleSelectFreeSolo(
                 filterOptions={(options, params) => {
                     const filtered = filter(options, params);
 
-                    if (params.inputValue !== ''
+                    if (params.inputValue.trim() !== ''
                         && checkInputValueAgainstOptions(params.inputValue)
                         && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
-                            inputValue: params.inputValue,
-                            label: `Add "${params.inputValue}"`,
+                            inputValue: params.inputValue.trimStart(),
+                            label: `Add "${params.inputValue.trimStart()}"`,
                         });
                     }
                     return filtered;
