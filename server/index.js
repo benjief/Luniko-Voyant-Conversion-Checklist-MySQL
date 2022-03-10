@@ -23,6 +23,17 @@ app.get('/get-all-personnel', (req, res) => {
     });
 });
 
+app.get('/get-personnel-info/:uid', (req, res) => {
+    const uid = req.params.uid;
+    db.query("SELECT CONCAT(pers_fname, ' ', pers_lname) AS pers_name FROM personnel WHERE pers_id = ?", uid, (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 app.get('/get-valid-unapproved-ls-names', (req, res) => {
     db.query("SELECT cc_load_sheet_name FROM conversion_checklist WHERE is_approved = 0", (err, result) => {
         if (err) {
@@ -40,7 +51,6 @@ app.get('/get-conversion-checklist-info/:loadSheetName', (req, res) => {
             cc_id,
             cc_load_sheet_owner, 
             cc_decision_maker, 
-            cc_load_sheet_name, 
             cc_conversion_type, 
             cc_additional_processing, 
             cc_data_sources, 
@@ -52,7 +62,7 @@ app.get('/get-conversion-checklist-info/:loadSheetName', (req, res) => {
         FROM
             conversion_checklist
         WHERE
-	        cc_id = ?;`,
+	        cc_load_sheet_name = ?;`,
         loadSheetName, (err, result) => {
             if (err) {
                 console.log(err);

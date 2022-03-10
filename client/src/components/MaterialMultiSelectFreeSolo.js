@@ -15,7 +15,7 @@ export default function MaterialMultiSelectFreeSolo(
         className = "",
         label = "",
         placeholder = "",
-        defaultValue = "",
+        defaultValue = [],
         multiSelectOptions = [],
         invalidOptions = [],
         selectedValues = [],
@@ -140,6 +140,31 @@ export default function MaterialMultiSelectFreeSolo(
         return true;
     }
 
+    const checkExistingOptionsAgainstInvalidOptions = (existingOption) => {
+        // console.log(invalidOptions);
+        if (existingOption.value && invalidOptions.length) {
+            for (let i = 0; i < invalidOptions.length; i++) {
+                if (invalidOptions[i].value === existingOption.value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    const getObjectsForInvalidOptions = () => { // TODO: make this more efficient (or think of a completely different way of doing it)
+        for (let i = 0; i < invalidOptions.length; i++) {
+            if (!invalidOptions[i].label) {
+                for (let j = 0; j < multiSelectOptions.length; j++) {
+                    if (multiSelectOptions[j].value === invalidOptions[i]) {
+                        invalidOptions[i] = multiSelectOptions[j];
+                    }
+                }
+            }
+        }
+    }
+
     const concatenateLastName = (lastNameArray) => {
         let lastName = "";
         for (let i = 0; i < lastNameArray.length; i++) {
@@ -226,12 +251,16 @@ export default function MaterialMultiSelectFreeSolo(
         }
     }
 
+    React.useEffect(() => {
+        getObjectsForInvalidOptions();
+    });
+
     return (
         <React.Fragment>
             <Autocomplete
                 multiple
                 value={values}
-                defaultValue={defaultValue}
+                // defaultValue={defaultValue}
                 limitTags={limitTags}
                 onBlur={handleOnBlur}
                 onChange={(event, valuesArray) => {
@@ -288,9 +317,9 @@ export default function MaterialMultiSelectFreeSolo(
                 }}
                 id="free-solo-dialog-demo"
                 options={multiSelectOptions}
-                getOptionDisabled={(option) =>
-                    invalidOptions.includes(option)
-                }
+                getOptionDisabled={(option) => {
+                    return checkExistingOptionsAgainstInvalidOptions(option);
+                }}
                 getOptionLabel={(option) => {
                     // e.g value selected with enter, right from the input
                     if (typeof option === 'string') {

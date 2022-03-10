@@ -20,7 +20,8 @@ export default function MaterialTextField({
   lowerLimitValue = null,
   negativeNumbersAllowed = true,
   authenticationField = false,
-  textAuthenticationError = ""
+  textAuthenticationError = "",
+  disabled = false
 }) {
   const [value, setValue] = React.useState("");
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -164,6 +165,7 @@ export default function MaterialTextField({
           error={errorEnabled}
           required={required}
           placeholder={placeholder}
+          disabled={disabled}
           inputProps={{
             maxLength: characterLimit
           }}

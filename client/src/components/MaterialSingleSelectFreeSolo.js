@@ -22,6 +22,7 @@ export default function MaterialSingleSelectFreeSolo(
         required = false
     }) {
     const [value, setValue] = React.useState("");
+    const [defaultValueChanged, setDefaultValueChanged] = React.useState(false);
     const [open, toggleOpen] = React.useState(false);
     const [errorEnabled, setErrorEnabled] = React.useState(false);
     const [displayedHelperText, setDisplayedHelperText] = React.useState("");
@@ -69,6 +70,7 @@ export default function MaterialSingleSelectFreeSolo(
             if (value) {
                 setErrorEnabled(false);
                 setDisplayedHelperText("");
+                // defaultValue = "";
             } else {
                 setErrorEnabled(true);
                 setDisplayedHelperText("Required Field");
@@ -123,6 +125,30 @@ export default function MaterialSingleSelectFreeSolo(
         return true;
     }
 
+    const checkExistingOptionsAgainstInvalidOptions = (existingOption) => {
+        if (existingOption.value && invalidOptions.length) {
+            for (let i = 0; i < invalidOptions.length; i++) {
+                if (invalidOptions[i].value === existingOption.value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+
+    const findDefaultValueInOptions = (defaultValue) => {
+        if (defaultValue && singleSelectOptions.length) {
+            for (let i = 0; i < singleSelectOptions.length; i++) {
+                if (singleSelectOptions[i].value === defaultValue.value) {
+                    return singleSelectOptions[i];
+                }
+            }
+            return "";
+        }
+        return "";
+    }
+
     // const checkInputValueAgainstSelectedValue = (inputValue) => {
     //     if (inputValue !== "" && value) {
     //         if (inputValue === value.label) {
@@ -156,7 +182,6 @@ export default function MaterialSingleSelectFreeSolo(
         } else {
             setFirstNameDialogError(false);
             if (dialogValue.lastName.trim() !== "") {
-                console.log(dialogValue.firstName);
                 setAddButtonDisabled(false);
             }
         }
@@ -221,11 +246,19 @@ export default function MaterialSingleSelectFreeSolo(
         }
     }
 
+    React.useEffect(() => {
+        if (singleSelectOptions.length !== 0 && defaultValue !== "") {
+            let displayedDefaultValue = findDefaultValueInOptions(defaultValue);
+            setValue(displayedDefaultValue);
+            defaultValue = "";
+        }
+    });
+
     return (
         <React.Fragment>
             <Autocomplete
                 value={value}
-                defaultValue={defaultValue}
+                // defaultValue={actualDefaultValue.value}
                 onBlur={handleOnBlur}
                 onChange={(event, value) => {
                     // let isNewValue = checkValueAgainstOptions(value);
@@ -276,9 +309,9 @@ export default function MaterialSingleSelectFreeSolo(
                 }}
                 id="free-solo-dialog-demo"
                 options={singleSelectOptions}
-                getOptionDisabled={(option) =>
-                    invalidOptions.includes(option)
-                }
+                getOptionDisabled={(option) => {
+                    return checkExistingOptionsAgainstInvalidOptions(option);
+                }}
                 getOptionLabel={(option) => {
                     // console.log(singleSelectOptions);
                     // e.g value selected with enter, right from the input

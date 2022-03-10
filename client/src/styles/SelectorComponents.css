@@ -35,10 +35,6 @@
     color: #d32f2f !important;
 }
 
-.MuiInputLabel-root.Mui-disabled {
-    color: rgba(0, 0, 0, 0.38) !important;
-}
-
 .MuiAutocomplete-input {
     /* background-color: white !important; */
     box-shadow: none !important;
@@ -99,6 +95,10 @@
     border-color: rgba(0, 0, 0, 0.7) !important;
 }
 
+.Mui-disabled .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(0, 0, 0, 0.38) !important;
+}
+
 /* .css-154xyx0-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
 .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline,
 .css-dpjnhs-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
@@ -117,4 +117,8 @@
 
 .MuiFormControlLabel-root {
     margin: 0 !important;
+}
+
+.Mui-disabled {
+    color: rgba(0, 0, 0, 0.38) !important;
 }

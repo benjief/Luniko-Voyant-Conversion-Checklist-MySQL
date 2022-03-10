@@ -73,7 +73,7 @@ function CreatePreConversionChecklist() {
                 };
                 tempArray.push(personnel);
             }
-            setPersonnelOptions(...tempArray);
+            setPersonnelOptions([...tempArray]);
         }
         // console.log("personnel fetched!");
         setRendering(false);

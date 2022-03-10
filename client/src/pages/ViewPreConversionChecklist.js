@@ -7,6 +7,7 @@ import EnterLoadSheetNameCard from "../components/EnterLoadSheetNameCard";
 import ViewPreConversionChecklistCard from "../components/ViewPreConversionChecklistCard";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import { getConversionType, getAdditionalProcessing } from "../components/DecoderFunctions";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/ViewPreConversionChecklist.css";
 import "../styles/SelectorComponents.css";
@@ -23,6 +24,7 @@ function ViewPreConversionChecklist() {
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
     const [loadSheetName, setLoadSheetName] = useState("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
+    // const [personnelOptionsMap, setPersonnelOptionsMap] = useState(new Map());
     // const [lsOwnerAndDecisionMakerOptions, setLSOwnerAndDecisionMakerOptions] = useState([]);
     const [newPersonnel, setNewPersonnel] = useState([]);
     const [loadSheetOwner, setLoadSheetOwner] = useState([]);
@@ -40,7 +42,7 @@ function ViewPreConversionChecklist() {
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
     const [postConversionChanges, setPostConversionChanges] = useState("");
-    const [formReviewed, setFormReviewed] = useState(false);
+    const [formReviewed, setFormReviewed] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [valueUpdated, setValueUpdated] = useState(false);
@@ -73,7 +75,7 @@ function ViewPreConversionChecklist() {
             for (let i = 0; i < validLSNamesList.length; i++) {
                 tempArray.push(validLSNamesList[i].cc_load_sheet_name.toLowerCase());
             }
-            setValidLoadSheetNames(...tempArray);
+            setValidLoadSheetNames([...tempArray]);
         }
         setRendering(false);
     }
@@ -81,29 +83,11 @@ function ViewPreConversionChecklist() {
     const getConversionChecklistInfo = async (loadSheetName) => {
         await Axios.get(`http://localhost:3001/get-conversion-checklist-info/${loadSheetName}`, {
         }).then((response) => {
-            getSubmittedContributors(response.data.cc_id);
-            populateSubmittedFields(response.data);
+            getPersonnelInfo(response.data[0]);
+            getSubmittedContributors(response.data[0].cc_id);
         })
     }
 
-    const populateSubmittedFields = (conversionChecklistInfo) => {
-        new Promise(resolve => {
-            setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
-            setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
-            setConversionType(conversionChecklistInfo.cc_conversion_type);
-            setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
-            setDataSources(conversionChecklistInfo.cc_data_sources);
-            setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
-            setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
-            setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
-            setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
-            setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
-        }).then(() => {
-            getPersonnel();
-        })
-    }
-
-    // Personnel functions
     const getSubmittedContributors = async (ccID) => {
         await Axios.get(`http://localhost:3001/get-submitted-contributors/${ccID}`, {
         }).then((response) => {
@@ -112,23 +96,73 @@ function ViewPreConversionChecklist() {
     }
 
     const populateSubmittedContributorsList = (submittedContributorsList) => {
-        if (submittedContributorsList.length) {
-            let tempArray = [];
-            for (let i = 0; i < tempArray.length; i++) {
-                let uid = submittedContributorsList[i].pers_id;
-                let name = submittedContributorsList[i].pers_name;
-                let personnel = {
-                    "value": uid,
-                    "label": name
-                };
-                tempArray.push(personnel);
+        new Promise(resolve => {
+            if (submittedContributorsList.length) {
+                let tempArray = [];
+                for (let i = 0; i < submittedContributorsList.length; i++) {
+                    let uid = submittedContributorsList[i].pers_id;
+                    let name = submittedContributorsList[i].pers_name;
+                    let personnel = {
+                        "value": uid,
+                        "label": name
+                    };
+                    tempArray.push(personnel);
+                }
+                setSubmittedContributors([...tempArray]);
             }
-            setSubmittedContributors(...tempArray);
-        }
+        });
+    }
+
+    // const populateSubmittedLSOwnerAndDecisionMakerFields = (conversionChecklistInfo) => {
+    //     new Promise(resolve => {
+    //         let lsOwnerUID = conversionChecklistInfo.cc_load_sheet_owner;
+    //         let decisionMakerUID = conversionChecklistInfo.cc_decision_maker;
+    //         let lsOwnerName = personnelOptionsMap.get(lsOwnerUID);
+    //         let decisionMakerName = personnelOptionsMap.get(decisionMakerUID);
+    //         setLoadSheetOwner({ "value": lsOwnerUID, "label": lsOwnerName });
+    //         setDecisionMaker({ "value": decisionMakerUID, "label": decisionMakerName });
+    //     });
+    //     populateSubmittedFields(conversionChecklistInfo);
+    // }
+
+    const getPersonnelInfo = async (conversionChecklistInfo) => {
+        new Promise(resolve => {
+            let loadSheetOwner = conversionChecklistInfo.cc_load_sheet_owner;
+            let decisionMaker = conversionChecklistInfo.cc_decision_maker;
+            let ccPersonnel = [loadSheetOwner, decisionMaker];
+
+            for (let i = 0; i < ccPersonnel.length; i++) {
+                Axios.get(`http://localhost:3001/get-personnel-info/${ccPersonnel[i]}`, {
+                }).then((response) => {
+                    let name = response.data[0].pers_name;
+                    let personnel = {
+                        "value": ccPersonnel[i],
+                        "label": name
+                    };
+                    i === 0 ? setLoadSheetOwner(personnel) : setDecisionMaker(personnel);
+                });
+            }
+        });
+        populateSubmittedFields(conversionChecklistInfo);
+    }
+
+    const populateSubmittedFields = (conversionChecklistInfo) => {
+        new Promise(resolve => {
+            // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
+            // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
+            setConversionType(conversionChecklistInfo.cc_conversion_type);
+            setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
+            setDataSources(conversionChecklistInfo.cc_data_sources);
+            setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
+            setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
+            setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
+            setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
+            setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
+        });
+        getPersonnel();
     }
 
     const getPersonnel = async () => {
-        // console.log("fetching personnel!");
         await Axios.get("http://localhost:3001/get-all-personnel", {
         }).then((response) => {
             populatePersonnelList(response.data);
@@ -136,93 +170,83 @@ function ViewPreConversionChecklist() {
     }
 
     const populatePersonnelList = (personnelList) => {
-        if (personnelList.length) { // TODO: change this in other implementations where you had length > 1?
-            let tempArray = [];
-            for (let i = 0; i < personnelList.length; i++) {
-                let uid = personnelList[i].pers_id;
-                let name = personnelList[i].pers_fname + " " + personnelList[i].pers_lname; // TODO: change this (query-side) and CONCAT'd name?
-                let personnel = {
-                    "value": uid,
-                    "label": name
-                };
-                tempArray.push(personnel);
+        new Promise(resolve => {
+            if (personnelList.length) { // TODO: change this in other implementations where you had length > 1?
+                let tempArray = [];
+                for (let i = 0; i < personnelList.length; i++) {
+                    let uid = personnelList[i].pers_id;
+                    let name = personnelList[i].pers_fname + " " + personnelList[i].pers_lname; // TODO: change this (query-side) and CONCAT'd name?
+                    let personnel = {
+                        "value": uid,
+                        "label": name
+                    };
+                    tempArray.push(personnel);
+                }
+                setPersonnelOptions([...tempArray]);
             }
-            setPersonnelOptions(...tempArray);
-        }
-        // console.log("personnel fetched!");
+        });
+        setViewPreConversionChecklistDisplay("visible");
         setRendering(false);
-    }
-
-    const checkValueUpdated = () => {
-        if (!valueUpdated) {
-            setValueUpdated(true);
-            setFormReviewed(false);
-        }
     }
 
     const handleLoadSheetNameCallback = (lsNameFromInput) => {
         setLoadSheetName(lsNameFromInput);
         setInvalidLoadSheetNameError("")
-        checkValueUpdated();
     }
 
+    // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
     const checkLoadSheetNameEntered = () => {
-        return validLoadSheetNames.includes(loadSheetName.toLowerCase());
+        for (let i = 0; i < validLoadSheetNames.length; i++) {
+            let escapeRegExpMatch = loadSheetName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            if (new RegExp(`\\b${escapeRegExpMatch}\\b`).test(validLoadSheetNames[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     const handleLoadSheetOwnerCallback = (lsOwnerFromSelector) => {
         setLoadSheetOwner(lsOwnerFromSelector);
-        checkValueUpdated();
     }
 
     const handleDecisionMakerCallback = (decisionMakerFromSelector) => {
         setDecisionMaker(decisionMakerFromSelector);
-        checkValueUpdated();
     }
 
     const handleContributorsCallback = (contributorsFromSelector) => {
         setContributors(contributorsFromSelector);
-        checkValueUpdated();
     }
 
     const handleConversionTypeCallback = (conversionTypeFromSelector) => {
         setConversionType(conversionTypeFromSelector);
-        checkValueUpdated();
     }
 
     const handleAdditionalProcessingCallback = (additionalProcessingFromSelector) => {
         setAdditionalProcessing(additionalProcessingFromSelector);
-        checkValueUpdated();
     }
 
     const handleDataSourcesCallback = (dataSourcesFromInput) => {
         setDataSources(dataSourcesFromInput);
-        checkValueUpdated();
     }
 
     const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
         setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput);
-        checkValueUpdated();
     }
 
     const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
         setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput);
-        checkValueUpdated();
     }
 
     const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
         setRecordsPreCleanupNotes(recordsPreCleanupNotesFromInput);
-        checkValueUpdated();
     }
 
     const handleRecordsPostCleanupNotesCallback = (recordsPostCleanupNotesFromInput) => {
         setRecordsPostCleanupNotes(recordsPostCleanupNotesFromInput);
-        checkValueUpdated();
     }
 
     const handlePreConversionManipulationCallback = (preConversionManipulationFromInput) => {
         setPreConversionManipulation(preConversionManipulationFromInput);
-        checkValueUpdated();
     }
 
     const handleCheckboxCallback = (checkedFromCheckbox) => {
@@ -353,12 +377,16 @@ function ViewPreConversionChecklist() {
         }, 1000);
     }
 
+    const handleValueUpdated = () => {
+        setValueUpdated(true);
+    }
+
     useEffect(() => {
         if (rendering) {
             if (!validLoadSheetNameEntered) {
                 getValidLoadSheetNames();
             } else {
-                getPersonnel();
+                getConversionChecklistInfo(loadSheetName);
             }
         } else {
             setTransitionElementOpacity("0%");
@@ -366,7 +394,6 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                setViewPreConversionChecklistDisplay("visible");
                 if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                     && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
                     && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed
@@ -425,7 +452,7 @@ function ViewPreConversionChecklist() {
                                 loadSheetName={handleLoadSheetNameCallback}
                                 submittedLoadSheetName={loadSheetName}
                                 personnelOptions={personnelOptions}
-                                invalidPersonnel={[submittedContributors, contributors]}
+                                invalidPersonnel={submittedContributors.concat(contributors)}
                                 // loadSheetOwnerOptions={loadSheetOwnerOptions}
                                 // decisionMakerOptions={decisionMakerOptions}
                                 // contributorOptions={contributorOptions}
@@ -436,15 +463,16 @@ function ViewPreConversionChecklist() {
                                 // invalidPersonnel={contributors}
                                 contributors={handleContributorsCallback}
                                 invalidContributors={
-                                    loadSheetOwner.label && decisionMaker.label ? [submittedContributors, loadSheetOwner, decisionMaker]
-                                        : loadSheetOwner.label ? [submittedContributors, loadSheetOwner]
-                                            : decisionMaker.label ? [submittedContributors, decisionMaker]
-                                                : [submittedContributors]
+                                    loadSheetOwner.label && decisionMaker.label
+                                        ? Array.from(new Set(submittedContributors.concat([loadSheetOwner, decisionMaker]))) // TODO: fix this roundabout way of doing things
+                                        : loadSheetOwner.label ? submittedContributors.concat(loadSheetOwner)
+                                            : decisionMaker.label ? submittedContributors.concat(decisionMaker)
+                                                : submittedContributors
                                 }
                                 conversionType={handleConversionTypeCallback}
-                                submittedConversionType={conversionType}
+                                submittedConversionType={getConversionType(conversionType)}
                                 additionalProcessing={handleAdditionalProcessingCallback}
-                                submittedAdditionalProcessing={additionalProcessing}
+                                submittedAdditionalProcessing={getAdditionalProcessing(additionalProcessing)}
                                 dataSources={handleDataSourcesCallback}
                                 submittedDataSources={dataSources}
                                 uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
@@ -454,15 +482,16 @@ function ViewPreConversionChecklist() {
                                 submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
                                 uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup}
                                 recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
-                                submittedRecordsPreCleanupNotes={recordsPreCleanupNotes}
+                                submittedRecordsPreCleanupNotes={recordsPreCleanupNotes ? recordsPreCleanupNotes : ""}
                                 recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
-                                submittedRecordsPostCleanupNotes={recordsPostCleanupNotes}
+                                submittedRecordsPostCleanupNotes={recordsPostCleanupNotes ? recordsPostCleanupNotes : ""}
                                 preConversionManipulation={handlePreConversionManipulationCallback}
-                                submittedPreConversionManipulation={preConversionManipulation}
+                                submittedPreConversionManipulation={preConversionManipulation ? preConversionManipulation : ""}
                                 // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
                                 // postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                 // postConversionChanges={handlePostConversionChangesCallback}
                                 checked={handleCheckboxCallback}
+                                valueUpdated={handleValueUpdated}
                                 updateButtonDisabled={submitButtonDisabled}
                                 updated={handleOnClickSubmit}>
                             </ViewPreConversionChecklistCard>

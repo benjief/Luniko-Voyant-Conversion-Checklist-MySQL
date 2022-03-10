@@ -35,7 +35,7 @@ export default function MaterialSingleSelect(
     }
 
     const handleOnBlur = () => {
-        if (required && value === "") {
+        if (required && (value === "" && defaultValue == "")) {
             setErrorEnabled(true);
             setErrorMsg("Required Field");
         }
