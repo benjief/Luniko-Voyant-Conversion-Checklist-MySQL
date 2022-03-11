@@ -282,11 +282,12 @@ export default function MaterialMultiSelectFreeSolo(
                             });
                         });
                     } else if (newValue && newValue.inputValue) {
+                        console.log(newValue.inputValue);
                         // console.log(newValue.inputValue);
                         // console.log(newValue.inputValue.split(" ")[0]);
                         // console.log(newValue.inputValue.split(" ").slice(1));
-                        let firstName = newValue.split(" ")[0];
-                        let lastName = concatenateLastName(newValue.split(" ").slice(1));
+                        let firstName = newValue.inputValue.split(" ")[0];
+                        let lastName = concatenateLastName(newValue.inputValue.split(" ").slice(1));
                         firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
                         lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
                         firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);

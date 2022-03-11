@@ -13,6 +13,7 @@ import MaterialSingleSelect from './MaterialSingleSelect';
 import MaterialSingleSelectFreeSolo from './MaterialSingleSelectFreeSolo';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
+import MaterialSingleSelectWithValue from './MaterialSingleSelectWithValue';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 // import BootstrapPopover from "../components/BootstrapPopover";
@@ -253,24 +254,23 @@ export default function ViewPreConversionChecklistCard({
                             invalidOptions={invalidContributors}
                             required={false}>
                         </MaterialMultiSelectFreeSolo>
-                        <MaterialSingleSelect
+                        <MaterialSingleSelectWithValue
                             label="Conversion Type"
                             placeholder="Conversion Type"
                             singleSelectOptions={conversionTypeOptions}
                             selectedValue={handleOnSelectConversionType}
                             required={true}
                             defaultValue={submittedConversionType}>
-                        </MaterialSingleSelect>
-                        <MaterialSingleSelect
+                        </MaterialSingleSelectWithValue>
+                        <MaterialSingleSelectWithValue
                             label="Additional Processing"
                             placeholder="Additional Processing"
                             singleSelectOptions={additionalProcessingOptions}
                             selectedValue={handleOnSelectAdditionalProcessing}
                             required={true}
                             id="additional-processing"
-                            defaultValue={submittedAdditionalProcessing}
-                        >
-                        </MaterialSingleSelect>
+                            defaultValue={submittedAdditionalProcessing}>
+                        </MaterialSingleSelectWithValue>
                         <MaterialTextField
                             className="data-sources"
                             label="Data Sources"

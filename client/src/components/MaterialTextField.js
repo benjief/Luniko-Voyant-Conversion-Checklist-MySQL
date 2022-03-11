@@ -27,7 +27,8 @@ export default function MaterialTextField({
   const [errorEnabled, setErrorEnabled] = React.useState(false);
   // const [errorMsg, setErrorMsg] = React.useState("");
   const [displayedHelperText, setDisplayedHelperText] = React.useState(helperText);
-  const [inputLength, setInputLength] = React.useState(defaultValue.length);
+  const [inputLength, setInputLength] = React.useState(type !== "number" ? defaultValue.length : 0);
+  const [firstRender, setFirstRender] = React.useState(true);
 
   const handleOnChange = (value) => {
     if (value.trim() !== "") {
@@ -114,7 +115,7 @@ export default function MaterialTextField({
   const handleEmptyValue = (value) => {
     setValue("");
     inputValue("");
-    if (value) {
+    if (showCharCounter && value) {
       setInputLength(value.length);
     }
     if (required) {
@@ -125,12 +126,23 @@ export default function MaterialTextField({
   const handleValidValue = (value) => {
     setValue(value);
     inputValue(value);
-    setInputLength(value.length);
+    if (showCharCounter) {
+      setInputLength(value.length);
+    }
     setErrorEnabled(false);
     setDisplayedHelperText(helperText);
   }
 
   React.useEffect(() => {
+    if (type === "number") {
+      console.log(inputLength);
+      console.log(defaultValue);
+    }
+    if (defaultValue !== "" && firstRender) {
+      console.log(defaultValue);
+      setValue(defaultValue);
+      setFirstRender(false);
+    }
     if (authenticationField) {
       if (textAuthenticationError !== "") {
         setErrorEnabled(true);
@@ -142,7 +154,7 @@ export default function MaterialTextField({
         }
       }
     }
-  }, [authenticationField, textAuthenticationError, errorEnabled, lowerLimitValue])
+  }, [authenticationField, textAuthenticationError, errorEnabled, lowerLimitValue, firstRender, inputLength])
 
   return (
     <Box

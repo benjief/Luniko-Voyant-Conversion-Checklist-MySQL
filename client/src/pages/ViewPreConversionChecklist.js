@@ -394,6 +394,7 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
+                // console.log(loadSheetOwner);
                 if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                     && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
                     && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed

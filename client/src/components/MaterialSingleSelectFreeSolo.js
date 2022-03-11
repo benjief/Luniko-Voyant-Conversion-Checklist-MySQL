@@ -22,7 +22,7 @@ export default function MaterialSingleSelectFreeSolo(
         required = false
     }) {
     const [value, setValue] = React.useState("");
-    const [defaultValueChanged, setDefaultValueChanged] = React.useState(false);
+    const [firstRender, setFirstRender] = React.useState(true); // TODO: is this the best way to handle things?
     const [open, toggleOpen] = React.useState(false);
     const [errorEnabled, setErrorEnabled] = React.useState(false);
     const [displayedHelperText, setDisplayedHelperText] = React.useState("");
@@ -247,12 +247,12 @@ export default function MaterialSingleSelectFreeSolo(
     }
 
     React.useEffect(() => {
-        if (singleSelectOptions.length !== 0 && defaultValue !== "") {
+        if (singleSelectOptions.length !== 0 && firstRender) {
             let displayedDefaultValue = findDefaultValueInOptions(defaultValue);
             setValue(displayedDefaultValue);
-            defaultValue = "";
+            setFirstRender(false);
         }
-    });
+    }, [firstRender]);
 
     return (
         <React.Fragment>
@@ -266,8 +266,8 @@ export default function MaterialSingleSelectFreeSolo(
                     if (typeof value === 'string') {
                         // timeout to avoid instant validation of the dialog's form.
                         setTimeout(() => {
-                            let firstName = value.inputValue.split(" ")[0];
-                            let lastName = concatenateLastName(value.inputValue.split(" ").slice(1));
+                            let firstName = value.split(" ")[0];
+                            let lastName = concatenateLastName(value.split(" ").slice(1));
                             firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
                             lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
                             firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
