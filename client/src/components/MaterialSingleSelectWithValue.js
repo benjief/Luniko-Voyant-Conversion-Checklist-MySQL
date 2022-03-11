@@ -17,7 +17,7 @@ export default function MaterialSingleSelectWithValue(
 ) {
     const [errorEnabled, setErrorEnabled] = React.useState(false);
     const [errorMsg, setErrorMsg] = React.useState("");
-    const [displayedValue, setDisplayedValue] = React.useState(value);
+    const [displayedValue, setDisplayedValue] = React.useState(defaultValue);
 
     const handleOnChange = (object) => {
         if (object) {
