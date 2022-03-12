@@ -21,8 +21,11 @@ export default function MaterialSingleSelectFreeSolo(
         selectedValue = {},
         required = false
     }) {
-    const [value, setValue] = React.useState("");
-    const [firstRender, setFirstRender] = React.useState(true); // TODO: is this the best way to handle things?
+    const [value, setValue] = React.useState(defaultValue !== "" ? defaultValue : "");
+    // React.useState(singleSelectOptions.filter(element => element.value === defaultValue.value)[0]
+    // ? singleSelectOptions.filter(element => element.value === defaultValue.value)[0] : "");
+    // const [firstRender, setFirstRender] = React.useState(true); // TODO: is this the best way to handle things?
+    // const [displayedDefaultValue, setDisplayedDefaultValue] = React.useState("");
     const [open, toggleOpen] = React.useState(false);
     const [errorEnabled, setErrorEnabled] = React.useState(false);
     const [displayedHelperText, setDisplayedHelperText] = React.useState("");
@@ -66,6 +69,9 @@ export default function MaterialSingleSelectFreeSolo(
 
 
     const handleOnChange = (value) => {
+        // if (defaultValue !== "" && !singleSelectOptions.includes(defaultValue)) {
+        //     singleSelectOptions.push(defaultValue);
+        // }
         if (required) {
             if (value) {
                 setErrorEnabled(false);
@@ -137,17 +143,17 @@ export default function MaterialSingleSelectFreeSolo(
         return false;
     }
 
-    const findDefaultValueInOptions = (defaultValue) => {
-        if (defaultValue && singleSelectOptions.length) {
-            for (let i = 0; i < singleSelectOptions.length; i++) {
-                if (singleSelectOptions[i].value === defaultValue.value) {
-                    return singleSelectOptions[i];
-                }
-            }
-            return "";
-        }
-        return "";
-    }
+    // const findDefaultValueInOptions = (defaultValue) => {
+    //     if (defaultValue && singleSelectOptions.length) {
+    //         for (let i = 0; i < singleSelectOptions.length; i++) {
+    //             if (singleSelectOptions[i].value === defaultValue.value) {
+    //                 return singleSelectOptions[i];
+    //             }
+    //         }
+    //         return "";
+    //     }
+    //     return "";
+    // }
 
     // const checkInputValueAgainstSelectedValue = (inputValue) => {
     //     if (inputValue !== "" && value) {
@@ -246,13 +252,13 @@ export default function MaterialSingleSelectFreeSolo(
         }
     }
 
-    React.useEffect(() => {
-        if (singleSelectOptions.length !== 0 && firstRender) {
-            let displayedDefaultValue = findDefaultValueInOptions(defaultValue);
-            setValue(displayedDefaultValue);
-            setFirstRender(false);
-        }
-    }, [firstRender]);
+    // React.useEffect(() => {
+    //     if (defaultValue !== "" && !singleSelectOptions.includes(defaultValue)) {
+    //         singleSelectOptions = singleSelectOptions.filter(element => element.value !== defaultValue.value);
+    //         singleSelectOptions.push(defaultValue);
+    //     }
+    //     console.log(singleSelectOptions);
+    // }, [value]);
 
     return (
         <React.Fragment>
@@ -320,6 +326,9 @@ export default function MaterialSingleSelectFreeSolo(
                     }
                     if (option.inputValue) {
                         return option.inputValue;
+                    }
+                    if (option.length !== undefined && option.length === 0) {
+                        return "";
                     }
                     return option.label;
                 }}

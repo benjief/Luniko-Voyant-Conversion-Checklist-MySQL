@@ -222,7 +222,7 @@ export default function ViewPreConversionChecklistCard({
                             className="add-personnel-dialog"
                             label="Load Sheet Owner"
                             placeholder="Who is this load sheet's owner?"
-                            singleSelectOptions={personnelOptions}
+                            singleSelectOptions={personnelOptions.filter(element => element.value !== submittedLoadSheetOwner.value)}
                             invalidOptions={invalidPersonnel}
                             selectedValue={handleOnSelectLoadSheetOwner}
                             required={true}

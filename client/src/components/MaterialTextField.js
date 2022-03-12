@@ -134,15 +134,11 @@ export default function MaterialTextField({
   }
 
   React.useEffect(() => {
-    if (type === "number") {
-      console.log(inputLength);
-      console.log(defaultValue);
-    }
-    if (defaultValue !== "" && firstRender) {
-      console.log(defaultValue);
-      setValue(defaultValue);
-      setFirstRender(false);
-    }
+    // if (defaultValue !== "" && firstRender) {
+    //   console.log(defaultValue);
+    //   setValue(defaultValue);
+    //   setFirstRender(false);
+    // }
     if (authenticationField) {
       if (textAuthenticationError !== "") {
         setErrorEnabled(true);

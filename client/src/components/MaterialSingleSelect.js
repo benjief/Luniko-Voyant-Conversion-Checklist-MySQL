@@ -6,7 +6,6 @@ export default function MaterialSingleSelect(
     {
         label = "",
         placeholder = "",
-        defaultValue = "",
         singleSelectOptions = [],
         selectedValue = "",
         isDisabled = false,
@@ -35,7 +34,7 @@ export default function MaterialSingleSelect(
     }
 
     const handleOnBlur = () => {
-        if (required && (value === "" && defaultValue == "")) {
+        if (required && (value === "")) {
             setErrorEnabled(true);
             setErrorMsg("Required Field");
         }
@@ -49,7 +48,7 @@ export default function MaterialSingleSelect(
             disabled={isDisabled}
             // id="combo-box-demo"
             options={singleSelectOptions}
-            defaultValue={defaultValue}
+            // defaultValue={defaultValue}
             sx={{ width: "100%", marginBottom: "10px" }}
             onChange={(event, object) => handleOnChange(object)}
             onBlur={handleOnBlur}
