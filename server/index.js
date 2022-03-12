@@ -44,7 +44,7 @@ app.get('/get-valid-unapproved-ls-names', (req, res) => {
     });
 });
 
-app.get('/get-conversion-checklist-info/:loadSheetName', (req, res) => {
+app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
     const loadSheetName = req.params.loadSheetName;
     db.query(
         `SELECT
@@ -72,8 +72,8 @@ app.get('/get-conversion-checklist-info/:loadSheetName', (req, res) => {
         });
 });
 
-app.get('/get-submitted-contributors/:ccID', (req, res) => {
-    const ccID = req.params.ccID;
+app.get('/get-submitted-contributors/:conversionChecklistID', (req, res) => {
+    const conversionChecklistID = req.params.conversionChecklistID;
     db.query(`
         SELECT 
 	        pers_id, 
@@ -82,7 +82,7 @@ app.get('/get-submitted-contributors/:ccID', (req, res) => {
 	        personnel JOIN contribution ON pers_id = contributor_id
         WHERE
 	        cc_id = ?;`,
-        ccID, (err, result) => {
+        conversionChecklistID, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
@@ -165,7 +165,7 @@ app.post("/add-contribution", (req, res) => {
             contributor_id
         )
         
-        VALUES (?, ?);`,
+        VALUES (?, ?)`,
         [checklistID, contributorID], (err, result) => {
             if (err) {
                 console.log(err);
@@ -177,7 +177,49 @@ app.post("/add-contribution", (req, res) => {
     );
 });
 
+app.put("/update-checklist/:conversionChecklistID", (req, res) => {
+    const conversionChecklistID = req.params.conversionChecklistID;
+    const loadSheetName = req.body.loadSheetName;
+    const loadSheetOwner = req.body.loadSheetOwner;
+    const decisionMaker = req.body.decisionMaker;
+    const conversionType = req.body.conversionType;
+    const additionalProcessing = req.body.additionalProcessing;
+    const dataSources = req.body.dataSources;
+    const uniqueRecordsPreCleanup = req.body.uniqueRecordsPreCleanup;
+    const uniqueRecordsPostCleanup = req.body.uniqueRecordsPostCleanup;
+    const recordsPreCleanupNotes = req.body.recordsPreCleanupNotes;
+    const recordsPostCleanupNotes = req.body.recordsPostCleanupNotes;
+    const preConversionManipulation = req.body.preConversionManipulation;
 
+    db.query(
+        `UPDATE conversion_checklist 
+         SET
+            cc_load_sheet_name = ?,
+            cc_load_sheet_owner = ?, 
+            cc_decision_maker = ?, 
+            cc_conversion_type = ?, 
+            cc_additional_processing = ?, 
+            cc_data_sources = ?, 
+            uq_records_pre_cleanup = ?, 
+            uq_records_post_cleanup = ?, 
+            cc_records_pre_cleanup_notes = ?, 
+            cc_records_post_cleanup_notes = ?, 
+            cc_pre_conversion_manipulation = ?
+        WHERE cc_id = ?`,
+        [loadSheetName, loadSheetOwner, decisionMaker,
+            conversionType, additionalProcessing, dataSources,
+            uniqueRecordsPreCleanup, uniqueRecordsPostCleanup,
+            recordsPreCleanupNotes, recordsPostCleanupNotes,
+            preConversionManipulation, conversionChecklistID], (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Pre-conversion checklist updated!");
+                    res.send(result);
+                }
+            }
+    );
+});
 
 app.listen(3001, () => {
     console.log("Yay! Your server is running on port 3001.");

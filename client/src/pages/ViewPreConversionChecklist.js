@@ -23,6 +23,7 @@ function ViewPreConversionChecklist() {
     const [validLoadSheetNameEntered, setValidLoadSheetNameEntered] = useState(false);
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
     const [loadSheetName, setLoadSheetName] = useState("");
+    const [conversionChecklistID, setConversionChecklistID] = useState("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
     // const [personnelOptionsMap, setPersonnelOptionsMap] = useState(new Map());
     // const [lsOwnerAndDecisionMakerOptions, setLSOwnerAndDecisionMakerOptions] = useState([]);
@@ -81,15 +82,15 @@ function ViewPreConversionChecklist() {
     }
 
     const getConversionChecklistInfo = async (loadSheetName) => {
-        await Axios.get(`http://localhost:3001/get-conversion-checklist-info/${loadSheetName}`, {
+        await Axios.get(`http://localhost:3001/get-pre-conversion-checklist-info/${loadSheetName}`, {
         }).then((response) => {
             getPersonnelInfo(response.data[0]);
             getSubmittedContributors(response.data[0].cc_id);
         })
     }
 
-    const getSubmittedContributors = async (ccID) => {
-        await Axios.get(`http://localhost:3001/get-submitted-contributors/${ccID}`, {
+    const getSubmittedContributors = async (conversionChecklistID) => {
+        await Axios.get(`http://localhost:3001/get-submitted-contributors/${conversionChecklistID}`, {
         }).then((response) => {
             populateSubmittedContributorsList(response.data);
         });
@@ -129,14 +130,14 @@ function ViewPreConversionChecklist() {
         new Promise(resolve => {
             let loadSheetOwner = conversionChecklistInfo.cc_load_sheet_owner;
             let decisionMaker = conversionChecklistInfo.cc_decision_maker;
-            let ccPersonnel = [loadSheetOwner, decisionMaker];
+            let conversionChecklistPersonnel = [loadSheetOwner, decisionMaker];
 
-            for (let i = 0; i < ccPersonnel.length; i++) {
-                Axios.get(`http://localhost:3001/get-personnel-info/${ccPersonnel[i]}`, {
+            for (let i = 0; i < conversionChecklistPersonnel.length; i++) {
+                Axios.get(`http://localhost:3001/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
                 }).then((response) => {
                     let name = response.data[0].pers_name;
                     let personnel = {
-                        "value": ccPersonnel[i],
+                        "value": conversionChecklistPersonnel[i],
                         "label": name
                     };
                     i === 0 ? setLoadSheetOwner(personnel) : setDecisionMaker(personnel);
@@ -150,6 +151,7 @@ function ViewPreConversionChecklist() {
         new Promise(resolve => {
             // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
             // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
+            setConversionChecklistID(conversionChecklistInfo.cc_id);
             setConversionType(conversionChecklistInfo.cc_conversion_type);
             setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
             setDataSources(conversionChecklistInfo.cc_data_sources);
@@ -279,7 +281,7 @@ function ViewPreConversionChecklist() {
             if (submitted) {
                 await assignUIDsToNewPersonnel();
                 await addNewPersonnelToDB();
-                addConversionChecklist();
+                updateConversionChecklist();
             }
         }
     }
@@ -329,9 +331,9 @@ function ViewPreConversionChecklist() {
         console.log("Personnel added to DB...");
     }
 
-    const addConversionChecklist = () => {
-        console.log("Adding checklist...");
-        Axios.post("http://localhost:3001/add-checklist", {
+    const updateConversionChecklist = () => {
+        console.log("Updating checklist...");
+        Axios.put(`http://localhost:3001/update-checklist/${conversionChecklistID}`, {
             loadSheetName: loadSheetName,
             loadSheetOwner: loadSheetOwner.value,
             decisionMaker: decisionMaker.value,
@@ -345,12 +347,11 @@ function ViewPreConversionChecklist() {
             preConversionManipulation: preConversionManipulation === "" ? null : preConversionManipulation
         }).then((response) => {
             setSubmitted(true);
-            console.log("Pre-conversion checklist successfully added!!");
+            console.log("Pre-conversion checklist successfully updated!");
             if (contributors.length !== 0) {
-                console.log(response.data);
-                addContributions(response.data.insertId);
+                addContributions(conversionChecklistID);
             } else {
-                handleSuccessfulSubmit();
+                handleSuccessfulUpdate();
             }
         });
     };
@@ -363,12 +364,12 @@ function ViewPreConversionChecklist() {
                 contributorID: contributors[i].value
             }).then((response) => {
                 console.log("Contribution successfully added!");
-                handleSuccessfulSubmit();
+                handleSuccessfulUpdate();
             });
         };
     };
 
-    const handleSuccessfulSubmit = () => {
+    const handleSuccessfulUpdate = () => {
         // setTimeout(() => {
         //     setSubmitButtonText("Request Submitted!");
         // }, 500);
@@ -394,7 +395,7 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                console.log(loadSheetOwner);
+                // console.log(loadSheetOwner);
                 if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                     && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
                     && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed
