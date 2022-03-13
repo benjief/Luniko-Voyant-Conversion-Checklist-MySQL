@@ -7,9 +7,24 @@ import CheckCircle from '@mui/icons-material/CheckCircle';
 
 export default function MaterialCheckBox({
     label = "",
-    checked = false,
+    forceOff = false,
+    userChecked = false,
     defaultChecked = false
 }) {
+    const [checked, setChecked] = React.useState(defaultChecked);
+
+    const handleOnChange = (status) => {
+        setChecked(status);
+        userChecked(status);
+    }
+
+    React.useEffect(() => {
+        if (forceOff) {
+            setChecked(false);
+            userChecked(false);
+        }
+    });
+
     return (
         <FormGroup>
             <FormControlLabel control={
@@ -17,8 +32,8 @@ export default function MaterialCheckBox({
                     color="primary"
                     icon={<CircleOutlined />}
                     checkedIcon={<CheckCircle />}
-                    defaultChecked={defaultChecked}
-                    onChange={(event, status) => checked(status)}
+                    checked={checked}
+                    onChange={(event, status) => handleOnChange(status)}
                 />}
                 label={label} />
         </FormGroup>

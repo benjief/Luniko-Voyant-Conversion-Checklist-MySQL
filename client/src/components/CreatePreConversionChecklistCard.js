@@ -310,7 +310,7 @@ export default function CreatePreConversionChecklistCard({
                         </MaterialTextField>
                         <MaterialCheckBox
                             label="Reviewed by Load Sheet Owner and Decision Maker"
-                            checked={handleOnChangeCheck}>
+                            userChecked={handleOnChangeCheck}>
                         </MaterialCheckBox>
                         <button
                             className="submit-checklist-button"

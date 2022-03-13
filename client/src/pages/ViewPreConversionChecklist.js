@@ -43,6 +43,7 @@ function ViewPreConversionChecklist() {
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
     const [postConversionChanges, setPostConversionChanges] = useState("");
+    const [forceCheckboxOff, setForceCheckboxOff] = useState(false);
     const [formReviewed, setFormReviewed] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
@@ -253,6 +254,7 @@ function ViewPreConversionChecklist() {
 
     const handleCheckboxCallback = (checkedFromCheckbox) => {
         setFormReviewed(checkedFromCheckbox);
+        setForceCheckboxOff(false);
     }
 
     // const handlePostConversionLoadingErrorsCallback = (postConversionLoadingErrorsFromInput) => {
@@ -380,6 +382,7 @@ function ViewPreConversionChecklist() {
 
     const handleValueUpdated = () => {
         setValueUpdated(true);
+        setForceCheckboxOff(true);
     }
 
     useEffect(() => {
@@ -492,6 +495,7 @@ function ViewPreConversionChecklist() {
                                 // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
                                 // postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                 // postConversionChanges={handlePostConversionChangesCallback}
+                                forceCheckboxOff={forceCheckboxOff}
                                 checked={handleCheckboxCallback}
                                 valueUpdated={handleValueUpdated}
                                 updateButtonDisabled={submitButtonDisabled}

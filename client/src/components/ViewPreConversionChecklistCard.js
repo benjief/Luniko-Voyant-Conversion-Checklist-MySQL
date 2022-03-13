@@ -65,6 +65,7 @@ export default function ViewPreConversionChecklistCard({
     // postConversionLoadingErrors = "",
     // postConversionValidationResults = "",
     // postConversionChanges = "",
+    forceCheckboxOff = false,
     checked = true,
     valueUpdated = false,
     updated = false,
@@ -346,7 +347,8 @@ export default function ViewPreConversionChecklistCard({
                         </MaterialTextField>
                         <MaterialCheckBox
                             label="Reviewed by Load Sheet Owner and Decision Maker"
-                            checked={handleOnChangeCheck}
+                            forceOff={forceCheckboxOff}
+                            userChecked={handleOnChangeCheck}
                             defaultChecked={true}>
                         </MaterialCheckBox>
                         <button
