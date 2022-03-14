@@ -253,12 +253,8 @@ export default function MaterialSingleSelectFreeSolo(
     }
 
     // React.useEffect(() => {
-    //     if (defaultValue !== "" && !singleSelectOptions.includes(defaultValue)) {
-    //         singleSelectOptions = singleSelectOptions.filter(element => element.value !== defaultValue.value);
-    //         singleSelectOptions.push(defaultValue);
-    //     }
     //     console.log(singleSelectOptions);
-    // }, [value]);
+    // });
 
     return (
         <React.Fragment>

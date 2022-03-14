@@ -233,7 +233,7 @@ export default function ViewPreConversionChecklistCard({
                             className="add-personnel-dialog"
                             label="Decision Maker"
                             placeholder="Who is the decision maker?"
-                            singleSelectOptions={personnelOptions}
+                            singleSelectOptions={personnelOptions.filter(element => element.value !== submittedDecisionMaker.value)}
                             invalidOptions={invalidPersonnel}
                             selectedValue={handleOnSelectDecisionMaker}
                             required={true}
