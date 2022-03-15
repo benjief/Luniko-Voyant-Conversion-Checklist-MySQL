@@ -65,6 +65,11 @@ export default function MaterialMultiSelectFreeSolo(
             });
             setValues(tempArray);
             selectedValues(tempArray);
+        } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
+            let tempArray = values;
+            tempArray.push(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
+            setValues(tempArray);
+            selectedValues(tempArray);
         }
         handleClose();
     };
@@ -163,6 +168,18 @@ export default function MaterialMultiSelectFreeSolo(
                 }
             }
         }
+    }
+
+    const getOptionWithLabel = (name) => {
+        if (name && multiSelectOptions.length) {
+            for (let i = 0; i < multiSelectOptions.length; i++) {
+                if (multiSelectOptions[i].label === name) {
+                    return multiSelectOptions[i];
+                }
+            }
+            return "";
+        }
+        return "";
     }
 
     const concatenateLastName = (lastNameArray) => {

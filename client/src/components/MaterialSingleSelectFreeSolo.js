@@ -64,6 +64,10 @@ export default function MaterialSingleSelectFreeSolo(
             setValue(tempObject);
             selectedValue(tempObject);
         }
+        else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
+            setValue(findNameInOptions(dialogValue.firstName + " " + dialogValue.lastName));
+            selectedValue(findNameInOptions(dialogValue.firstName + " " + dialogValue.lastName));
+        }
         handleClose();
     };
 
@@ -141,6 +145,18 @@ export default function MaterialSingleSelectFreeSolo(
             return false;
         }
         return false;
+    }
+
+    const findNameInOptions = (name) => {
+        if (name && singleSelectOptions.length) {
+            for (let i = 0; i < singleSelectOptions.length; i++) {
+                if (singleSelectOptions[i].label === name) {
+                    return singleSelectOptions[i];
+                }
+            }
+            return "";
+        }
+        return "";
     }
 
     // const findDefaultValueInOptions = (defaultValue) => {
