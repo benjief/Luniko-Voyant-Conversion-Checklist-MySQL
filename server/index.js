@@ -34,6 +34,16 @@ app.get('/get-personnel-info/:uid', (req, res) => {
     });
 });
 
+app.get('/get-all-ls-names', (req, res) => {
+    db.query("SELECT cc_load_sheet_name FROM conversion_checklist", (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 app.get('/get-valid-unapproved-ls-names', (req, res) => {
     db.query("SELECT cc_load_sheet_name FROM conversion_checklist WHERE is_approved = 0", (err, result) => {
         if (err) {

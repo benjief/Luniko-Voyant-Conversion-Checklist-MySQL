@@ -16,6 +16,8 @@ export default function MaterialTextField({
   showCharCounter = false,
   limitRangeOfInputs = false,
   requiresValidation = false,
+  invalidInputs = [],
+  invalidInputMsg = "",
   upperLimitValue = null,
   lowerLimitValue = null,
   negativeNumbersAllowed = true,
@@ -32,7 +34,9 @@ export default function MaterialTextField({
 
   const handleOnChange = (value) => {
     if (value.trim() !== "") {
-      if (type === "email") {
+      if (type === "text" && requiresValidation) {
+        checkInputValidity(value);
+      } else if (type === "email") {
         checkEmailValidity(value);
       } else if (type === "password" && requiresValidation) {
         checkPasswordValidity(value);
@@ -53,6 +57,17 @@ export default function MaterialTextField({
     if (required && value === "") {
       setErrorEnabled(true);
       setDisplayedHelperText("Required Field");
+    }
+  }
+
+  const checkInputValidity = (input) => {
+    if (invalidInputs.includes(input)) {
+      invalidInputMsg === ""
+        ? setDisplayedHelperText("Invalid input")
+        : setDisplayedHelperText(invalidInputMsg);
+      handleEmptyValue(input);
+    } else {
+      handleValidValue(input);
     }
   }
 

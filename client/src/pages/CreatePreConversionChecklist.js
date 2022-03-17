@@ -16,6 +16,7 @@ function CreatePreConversionChecklist() {
     // const navigate = useNavigate();
     const [rendering, setRendering] = useState(true);
     const [loadSheetName, setLoadSheetName] = useState("");
+    const [existingLoadSheetNames, setExistingLoadSheetNames] = useState([]);
     const [personnelOptions, setPersonnelOptions] = useState([]);
     // const [lsOwnerAndDecisionMakerOptions, setLSOwnerAndDecisionMakerOptions] = useState([]);
     const [newPersonnel, setNewPersonnel] = useState([]);
@@ -51,6 +52,24 @@ function CreatePreConversionChecklist() {
         { value: "D", label: "New Data to Be Added" },
         { value: "N", label: "N/A" }
     ];
+
+    const getExistingLoadSheetNames = async () => {
+        await Axios.get("http://localhost:3001/get-all-ls-names", {
+        }).then((response) => {
+            populateExistingLoadSheetNamesList(response.data);
+            getPersonnel();
+        });
+    }
+
+    const populateExistingLoadSheetNamesList = (existingLSNamesList) => {
+        if (existingLSNamesList.length) {
+            let tempArray = [];
+            for (let i = 0; i < existingLSNamesList.length; i++) {
+                tempArray.push(existingLSNamesList[i].cc_load_sheet_name.toLowerCase());
+            }
+            setExistingLoadSheetNames([...tempArray]);
+        }
+    }
 
     // Personnel functions
     const getPersonnel = async () => {
@@ -248,7 +267,7 @@ function CreatePreConversionChecklist() {
 
     useEffect(() => {
         if (rendering) {
-            getPersonnel();
+            getExistingLoadSheetNames();
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
@@ -293,6 +312,7 @@ function CreatePreConversionChecklist() {
                                 loadSheetName={handleLoadSheetNameCallback}
                                 personnelOptions={personnelOptions}
                                 invalidPersonnel={contributors}
+                                invalidLoadSheetNames={existingLoadSheetNames}
                                 // loadSheetOwnerOptions={loadSheetOwnerOptions}
                                 // decisionMakerOptions={decisionMakerOptions}
                                 // contributorOptions={contributorOptions}

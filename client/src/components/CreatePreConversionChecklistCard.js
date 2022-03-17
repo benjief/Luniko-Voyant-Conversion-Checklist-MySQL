@@ -39,6 +39,7 @@ export default function CreatePreConversionChecklistCard({
     invalidPersonnel = [],
     contributors = [],
     invalidContributors = [],
+    invalidLoadSheetNames = [],
     // latestContributor = "",
     conversionType = "",
     additionalProcessing = "",
@@ -189,7 +190,10 @@ export default function CreatePreConversionChecklistCard({
                             inputValue={handleOnChangeLoadSheetName}
                             multiline={false}
                             required={true}
-                            showCharCounter={true}>
+                            showCharCounter={true}
+                            requiresValidation={true}
+                            invalidInputs={invalidLoadSheetNames}
+                            invalidInputMsg="Load sheet name already exists" >
                         </MaterialTextField>
                         <MaterialSingleSelectFreeSolo
                             className="add-personnel-dialog"
