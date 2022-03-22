@@ -15,21 +15,21 @@
     padding: 0 !important;
 }
 
-.add-personnel-dialog .MuiFormControl-root,
+/* .add-personnel-dialog .MuiFormControl-root,
 .add-contributors-dialog .MuiFormControl-root {
     min-height: 70.91px !important;
-}
+} */
 
-.add-personnel-dialog .MuiFormControl-root:last-of-type,
+/* .add-personnel-dialog .MuiFormControl-root:last-of-type,
 .add-contributors-dialog .MuiFormControl-root:last-of-type {
     margin-top: 10px !important;
-}
+} */
 
 
-.add-personnel-dialog #first-name, #last-name,
+/* .add-personnel-dialog #first-name, #last-name,
 .add-contributors-dialog #first-name, #last-name {
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-}
+} */
 
 
 .MuiOutlinedInput-root {
@@ -41,7 +41,8 @@
 .data-sources .MuiOutlinedInput-root,
 .pre-cleanup-notes .MuiOutlinedInput-root,
 .post-cleanup-notes .MuiOutlinedInput-root,
-.pre-conversion-manipulation .MuiOutlinedInput-root {
+.pre-conversion-manipulation .MuiOutlinedInput-root,
+.post-conversion-info .MuiOutlinedInput-root {
     min-height: 200px !important;
 }
 
@@ -49,6 +50,10 @@
     align-self: flex-start !important;
     /* position: relative; */
     /* top: -2.5px; */
+}
+
+.MuiInput-root input {
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
 }
 
 .MuiInputLabel-root {

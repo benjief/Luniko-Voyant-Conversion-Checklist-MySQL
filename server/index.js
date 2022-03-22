@@ -82,6 +82,24 @@ app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
         });
 });
 
+app.get('/get-load-sheet-id/:loadSheetName', (req, res) => {
+    const loadSheetName = req.params.loadSheetName;
+    db.query(
+        `SELECT
+            cc_id
+        FROM
+            conversion_checklist
+        WHERE
+	        cc_load_sheet_name = ?;`,
+        loadSheetName, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
+});
+
 app.get('/get-submitted-contributors/:conversionChecklistID', (req, res) => {
     const conversionChecklistID = req.params.conversionChecklistID;
     db.query(`
@@ -187,7 +205,7 @@ app.post("/add-contribution", (req, res) => {
     );
 });
 
-app.put("/update-checklist/:conversionChecklistID", (req, res) => {
+app.put("/update-pre-conversion-checklist/:conversionChecklistID", (req, res) => {
     const conversionChecklistID = req.params.conversionChecklistID;
     const loadSheetName = req.body.loadSheetName;
     const loadSheetOwner = req.body.loadSheetOwner;
@@ -228,6 +246,31 @@ app.put("/update-checklist/:conversionChecklistID", (req, res) => {
                     res.send(result);
                 }
             }
+    );
+});
+
+app.put("/update-post-conversion-checklist/:conversionChecklistID", (req, res) => {
+    const conversionChecklistID = req.params.conversionChecklistID;
+    const postConversionLoadingErrors = req.body.postConversionLoadingErrors;
+    const postConversionValidationResults = req.body.postConversionValidationResults;
+    const postConversionChanges = req.body.postConversionChanges;
+
+    db.query(
+        `UPDATE conversion_checklist 
+         SET
+            cc_post_conversion_loading_errors = ?,
+            cc_post_conversion_validation_results = ?,
+            cc_post_conversion_changes = ?
+        WHERE cc_id = ?`,
+        [postConversionLoadingErrors, postConversionValidationResults, postConversionChanges, conversionChecklistID],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Pre-conversion checklist updated!");
+                res.send(result);
+            }
+        }
     );
 });
 

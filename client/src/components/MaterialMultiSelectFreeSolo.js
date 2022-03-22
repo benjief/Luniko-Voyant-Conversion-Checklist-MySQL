@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import "../styles/DialogComponents.css";
 
 const filter = createFilterOptions();
 
@@ -367,7 +368,7 @@ export default function MaterialMultiSelectFreeSolo(
             <Dialog
                 open={open}
                 onClose={handleClose}
-                className={className}>
+                className={"dialog-component"}>
                 <form onSubmit={handleSubmit}>
                     <DialogTitle>Add Personnel</DialogTitle>
                     <DialogContent>
@@ -375,7 +376,7 @@ export default function MaterialMultiSelectFreeSolo(
                             Someone missing? Please, add them!
                         </DialogContentText>
                         <TextField
-                            autoFocus
+                            // autoFocus
                             margin="dense"
                             id="first-name"
                             value={dialogValue.firstName}

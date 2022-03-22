@@ -1,0 +1,100 @@
+.form-approval-container {
+    display: flex;
+    flex-direction: row !important;
+    max-height: 27px;
+    padding: 0 !important;
+    margin-top: 5px;
+    /* margin-left: 9px; */
+    /* margin-bottom: 10px !important; */
+    width: 100% !important;
+    height: 40px !important;
+}
+
+.no-valid-credential-approval-container,
+.valid-credential-approval-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.no-valid-credential-approval-container {
+    margin-left: 9px;
+}
+
+.no-valid-credential-approval-container svg {
+    color: var(--lunikoBlue) !important;
+}
+
+.no-valid-credential-approval-container svg:hover {
+    cursor: pointer;
+}
+
+.form-approval-container p {
+    display: flex;
+    height: 100%;
+    align-items: center !important;
+}
+
+.password-form-dialog-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.dialog-component .MuiInput-root::after {
+    border-bottom: 2px solid var(--lunikoBlue) !important;
+}
+
+.dialog-component .Mui-error:after {
+    border-bottom: 2px solid #d32f2f !important;
+}
+
+/* prevents dialog box from growing when helper text is posted */
+.dialog-component .MuiDialogContent-root {
+    padding-bottom: 0 !important;
+}
+
+.dialog-component .MuiInputLabel-shrink {
+    padding-right: 0 !important;
+    background-color: transparent !important;
+    transform: translate(0px, 0px) scale(0.75) !important;
+}
+
+.dialog-component .MuiTypography-root {
+    font-size: 11pt !important;
+    padding-bottom: 0;
+}
+
+/* .dialog-component .MuiDialogContentText-root {
+    margin-bottom: 0 !important;
+} */
+
+.dialog-component .MuiFormControl-root {
+    min-height: 68.98px;
+}
+
+.dialog-component .MuiFormControl-root:last-of-type:not(:first-of-type) {
+    margin-top: 15px !important;
+}
+
+.dialog-component .MuiInput-root {
+    font-size: 11pt;
+}
+
+.dialog-component .MuiButton-root {
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
+    color: var(--lunikoBlue);
+    font-size: 1.75ch;
+    font-weight: 700;
+}
+
+/* .MuiDialogContent-root {
+    background-image: url("../img/background_pattern.png");
+} */
+
+/* .checkbox-dialog button {
+    color: var(--lunikoBlue);
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    box-shadow: none !important;
+} */

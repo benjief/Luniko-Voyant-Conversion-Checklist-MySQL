@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import "../styles/DialogComponents.css";
 
 const filter = createFilterOptions();
 
@@ -63,10 +64,9 @@ export default function MaterialSingleSelectFreeSolo(
             let tempObject = { label: dialogValue.firstName + " " + dialogValue.lastName, value: -1 }
             setValue(tempObject);
             selectedValue(tempObject);
-        }
-        else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
-            setValue(findNameInOptions(dialogValue.firstName + " " + dialogValue.lastName));
-            selectedValue(findNameInOptions(dialogValue.firstName + " " + dialogValue.lastName));
+        } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
+            setValue(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
+            selectedValue(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
         }
         handleClose();
     };
@@ -147,7 +147,7 @@ export default function MaterialSingleSelectFreeSolo(
         return false;
     }
 
-    const findNameInOptions = (name) => {
+    const getOptionWithLabel = (name) => {
         if (name && singleSelectOptions.length) {
             for (let i = 0; i < singleSelectOptions.length; i++) {
                 if (singleSelectOptions[i].label === name) {
@@ -363,7 +363,7 @@ export default function MaterialSingleSelectFreeSolo(
             <Dialog
                 open={open}
                 onClose={handleClose}
-                className={className}>
+                className={"dialog-component"}>
                 <form onSubmit={handleSubmit}>
                     <DialogTitle>Add Personnel</DialogTitle>
                     <DialogContent>
@@ -371,7 +371,7 @@ export default function MaterialSingleSelectFreeSolo(
                             Is someone missing? Please, add them!
                         </DialogContentText>
                         <TextField
-                            autoFocus
+                            // autoFocus
                             margin="dense"
                             id="first-name"
                             value={dialogValue.firstName}

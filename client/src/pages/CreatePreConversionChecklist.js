@@ -31,9 +31,6 @@ function CreatePreConversionChecklist() {
     const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
     const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
     const [preConversionManipulation, setPreConversionManipulation] = useState("");
-    const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
-    const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
-    const [postConversionChanges, setPostConversionChanges] = useState("");
     const [formReviewed, setFormReviewed] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);

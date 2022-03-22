@@ -20,13 +20,6 @@
     transform: translate(14px, -8.5px) scale(0.75) !important;
 }
 
-.add-personnel-dialog .MuiInputLabel-shrink,
-.add-contributors-dialog .MuiInputLabel-shrink {
-    padding-right: 0 !important;
-    background-color: transparent !important;
-    transform: translate(0px, 0px) scale(0.75) !important;
-}
-
 .enter-valid-load-sheet-name .MuiInputLabel-shrink {
     background-color: var(--lunikoDarkGrey) !important;
 }

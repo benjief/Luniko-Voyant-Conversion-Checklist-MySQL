@@ -1,0 +1,59 @@
+.post-conversion-checklist-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    height: calc(100vh - 76.52px);
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.post-conversion-checklist-options::-webkit-scrollbar {
+    display: none;
+}
+
+.post-conversion-checklist-options-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 95%;
+    max-width: 600px;
+    padding-bottom: 20px;
+}
+
+.post-conversion-checklist-options-card {
+    width: 100%;
+}
+
+.post-conversion-checklist-options-container a {
+    width: 100%;
+}
+
+.create-post-conversion-checklist-button, .view-post-conversion-checklist-button {
+    padding: 10px;
+    margin-top: 5px !important;
+    /* margin-bottom: 10px; */
+    border: none;
+    color: white;
+    background-color: var(--lunikoBlue);
+    border-radius: 5px;
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 600;
+    font-size: 13pt;
+    height: 50px;
+    width: 100%;
+    transition: 0.1s;
+    box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
+}
+
+.view-post-conversion-checklist-button {
+    margin-top: 10px !important;
+    margin-bottom: 0
+}
+
+.post-conversion-checklist-options-container button:hover {
+    cursor: pointer;
+    background-color: var(--lunikoOrange);
+}

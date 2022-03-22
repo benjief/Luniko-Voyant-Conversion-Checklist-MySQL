@@ -13,6 +13,7 @@ import MaterialSingleSelect from './MaterialSingleSelect';
 import MaterialSingleSelectFreeSolo from './MaterialSingleSelectFreeSolo';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
+import MaterialSingleSelectWithValue from './MaterialSingleSelectWithValue';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 // import BootstrapPopover from "../components/BootstrapPopover";
@@ -28,85 +29,109 @@ const ExpandMore = styled((props) => {
     }),
 }));
 
-export default function CreatePreConversionChecklistCard({
+export default function ViewPostConversionChecklistCard({
     conversionTypeOptions = [],
     additionalProcessingOptions = [],
     loadSheetName = "",
+    submittedLoadSheetName = "",
     personnelOptions = [],
     contributorOptions = [],
     loadSheetOwner = "",
+    submittedLoadSheetOwner = "",
     decisionMaker = "",
+    submittedDecisionMaker = "",
     invalidPersonnel = [],
     contributors = [],
     invalidContributors = [],
-    invalidLoadSheetNames = [],
     // latestContributor = "",
     conversionType = "",
+    submittedConversionType = "",
     additionalProcessing = "",
+    submittedAdditionalProcessing = "",
     dataSources = "",
+    submittedDataSources = "",
     uniqueRecordsPreCleanup = 0,
+    submittedUniqueRecordsPreCleanup = 0,
     uniqueRecordsPreCleanupLowerLimit = null,
     uniqueRecordsPostCleanup = 0,
+    submittedUniqueRecordsPostCleanup = 0,
     uniqueRecordsPostCleanupUpperLimit = null,
     recordsPreCleanupNotes = "",
+    submittedRecordsPreCleanupNotes = "",
     recordsPostCleanupNotes = "",
+    submittedRecordsPostCleanupNotes = "",
     preConversionManipulation = "",
+    submittedPreConversionManipulation = "",
     // postConversionLoadingErrors = "",
     // postConversionValidationResults = "",
     // postConversionChanges = "",
-    checked = false,
-    submitted = false,
-    submitButtonDisabled = true
+    forceCheckboxOff = false,
+    checked = true,
+    valueUpdated = false,
+    updated = false,
+    updateButtonDisabled = true
 }) {
     const [expanded, setExpanded] = React.useState(true);
-    const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
+    const [updateButtonColor, setUpdateButtonColor] = React.useState("#BFBFBF");
 
     const handleOnChangeLoadSheetName = (updatedText) => {
         loadSheetName(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnSelectLoadSheetOwner = (valueFromSelector) => {
         loadSheetOwner(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectDecisionMaker = (valueFromSelector) => {
         decisionMaker(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectContributors = (valuesFromSelector) => {
         contributors(valuesFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectConversionType = (valueFromSelector) => {
         conversionType(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectAdditionalProcessing = (valueFromSelector) => {
         additionalProcessing(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnChangeDataSources = (updatedText) => {
         dataSources(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangeUniqueRecordsPreCleanup = (updatedValue) => {
         uniqueRecordsPreCleanup(updatedValue);
+        valueUpdated(true);
     }
 
     const handleOnChangeUniqueRecordsPostCleanup = (updatedValue) => {
         uniqueRecordsPostCleanup(updatedValue);
+        valueUpdated(true);
     }
 
     const handleOnChangeRecordsPreCleanupNotes = (updatedText) => {
         recordsPreCleanupNotes(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangeRecordsPostCleanupNotes = (updatedText) => {
         recordsPostCleanupNotes(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangePreConversionManipulation = (updatedText) => {
         preConversionManipulation(updatedText);
+        valueUpdated(true);
     }
 
     // const handleOnChangePostConversionLoadingErrors = (updatedText) => {
@@ -125,17 +150,17 @@ export default function CreatePreConversionChecklistCard({
         checked(checkedFromCheckbox);
     }
 
-    const handleSubmitChecklist = () => {
-        submitted(true);
+    const handleUpdateChecklist = () => {
+        updated(true);
     }
 
     React.useEffect(() => {
-        if (!submitButtonDisabled) {
-            setSubmitButtonColor("var(--lunikoBlue)");
+        if (!updateButtonDisabled) {
+            setUpdateButtonColor("var(--lunikoBlue)");
         } else {
-            setSubmitButtonColor("#BFBFBF");
+            setUpdateButtonColor("#BFBFBF");
         }
-    }, [submitButtonDisabled]);
+    }, [updateButtonDisabled]);
 
     return (
         <Card
@@ -191,27 +216,28 @@ export default function CreatePreConversionChecklistCard({
                             multiline={false}
                             required={true}
                             showCharCounter={true}
-                            requiresValidation={true}
-                            invalidInputs={invalidLoadSheetNames}
-                            invalidInputMsg="Load sheet name already exists" >
+                            defaultValue={submittedLoadSheetName}
+                            disabled={true}>
                         </MaterialTextField>
                         <MaterialSingleSelectFreeSolo
                             className="add-personnel-dialog"
                             label="Load Sheet Owner"
                             placeholder="Who is this load sheet's owner?"
-                            singleSelectOptions={personnelOptions}
+                            singleSelectOptions={personnelOptions.filter(element => element.value !== submittedLoadSheetOwner.value)}
                             invalidOptions={invalidPersonnel}
                             selectedValue={handleOnSelectLoadSheetOwner}
-                            required={true}>
+                            required={true}
+                            defaultValue={submittedLoadSheetOwner}>
                         </MaterialSingleSelectFreeSolo>
                         <MaterialSingleSelectFreeSolo
                             className="add-personnel-dialog"
                             label="Decision Maker"
                             placeholder="Who is the decision maker?"
-                            singleSelectOptions={personnelOptions}
+                            singleSelectOptions={personnelOptions.filter(element => element.value !== submittedDecisionMaker.value)}
                             invalidOptions={invalidPersonnel}
                             selectedValue={handleOnSelectDecisionMaker}
-                            required={true}>
+                            required={true}
+                            defaultValue={submittedDecisionMaker}>
                         </MaterialSingleSelectFreeSolo>
                         {/* <MaterialMultiSelect
                             label="Other Contributors"
@@ -222,29 +248,30 @@ export default function CreatePreConversionChecklistCard({
                         </MaterialMultiSelect> */}
                         <MaterialMultiSelectFreeSolo
                             className="add-contributors-dialog"
-                            label="Other Contributors"
+                            label="Add Other Contributors"
                             placeholder="Who else was involved?"
                             multiSelectOptions={personnelOptions}
                             selectedValues={handleOnSelectContributors}
                             invalidOptions={invalidContributors}
                             required={false}>
                         </MaterialMultiSelectFreeSolo>
-                        <MaterialSingleSelect
+                        <MaterialSingleSelectWithValue
                             label="Conversion Type"
                             placeholder="Conversion Type"
                             singleSelectOptions={conversionTypeOptions}
                             selectedValue={handleOnSelectConversionType}
-                            required={true}>
-                        </MaterialSingleSelect>
-                        <MaterialSingleSelect
+                            required={true}
+                            defaultValue={submittedConversionType}>
+                        </MaterialSingleSelectWithValue>
+                        <MaterialSingleSelectWithValue
                             label="Additional Processing"
                             placeholder="Additional Processing"
                             singleSelectOptions={additionalProcessingOptions}
                             selectedValue={handleOnSelectAdditionalProcessing}
                             required={true}
                             id="additional-processing"
-                        >
-                        </MaterialSingleSelect>
+                            defaultValue={submittedAdditionalProcessing}>
+                        </MaterialSingleSelectWithValue>
                         <MaterialTextField
                             className="data-sources"
                             label="Data Sources"
@@ -253,7 +280,8 @@ export default function CreatePreConversionChecklistCard({
                             inputValue={handleOnChangeDataSources}
                             multiline={true}
                             required={true}
-                            showCharCounter={true}>
+                            showCharCounter={true}
+                            defaultValue={submittedDataSources}>
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Pre-Cleanup"
@@ -265,7 +293,8 @@ export default function CreatePreConversionChecklistCard({
                             type="number"
                             limitRangeOfInputs={true}
                             lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}
-                            negativeNumbersAllowed={false}>
+                            negativeNumbersAllowed={false}
+                            defaultValue={submittedUniqueRecordsPreCleanup}>
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
@@ -277,7 +306,8 @@ export default function CreatePreConversionChecklistCard({
                             type="number"
                             limitRangeOfInputs={true}
                             upperLimitValue={uniqueRecordsPostCleanupUpperLimit}
-                            negativeNumbersAllowed={false}>
+                            negativeNumbersAllowed={false}
+                            defaultValue={submittedUniqueRecordsPostCleanup}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-cleanup-notes"
@@ -288,7 +318,8 @@ export default function CreatePreConversionChecklistCard({
                             multiline={true}
                             required={false}
                             type="text"
-                            showCharCounter={true}>
+                            showCharCounter={true}
+                            defaultValue={submittedRecordsPreCleanupNotes}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="post-cleanup-notes"
@@ -299,7 +330,8 @@ export default function CreatePreConversionChecklistCard({
                             multiline={true}
                             required={false}
                             type="text"
-                            showCharCounter={true}>
+                            showCharCounter={true}
+                            defaultValue={submittedRecordsPostCleanupNotes}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-conversion-manipulation"
@@ -310,19 +342,29 @@ export default function CreatePreConversionChecklistCard({
                             multiline={true}
                             required={false}
                             type="text"
-                            showCharCounter={true}>
+                            showCharCounter={true}
+                            defaultValue={submittedPreConversionManipulation}>
                         </MaterialTextField>
                         <MaterialCheckBox
                             label="Reviewed by Load Sheet Owner and Decision Maker"
-                            userChecked={handleOnChangeCheck}>
+                            forceOff={forceCheckboxOff}
+                            userChecked={handleOnChangeCheck}
+                            defaultChecked={true}>
                         </MaterialCheckBox>
                         <button
-                            className="submit-checklist-button"
-                            onClick={handleSubmitChecklist}
-                            disabled={submitButtonDisabled}
-                            style={{ backgroundColor: submitButtonColor }}>
-                            Submit
+                            className="update-checklist-button"
+                            onClick={handleUpdateChecklist}
+                            disabled={updateButtonDisabled}
+                            style={{ backgroundColor: updateButtonColor }}>
+                            Update
                         </button>
+                        {/* <div className="popover-container">
+                            <BootstrapPopover
+                                popoverText=
+                                {[<strong>All identifiers </strong>, "added to this request will be ",
+                                    "able to view it and receive updates pertaining to it."]}>
+                            </BootstrapPopover>
+                        </div> */}
                     </CardContent>
                 </Collapse>
             </div>

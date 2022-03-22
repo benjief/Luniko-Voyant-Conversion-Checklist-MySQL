@@ -29,6 +29,7 @@ export default function MaterialCheckBox({
         <FormGroup>
             <FormControlLabel control={
                 <Checkbox
+                    disableRipple
                     color="primary"
                     icon={<CircleOutlined />}
                     checkedIcon={<CheckCircle />}

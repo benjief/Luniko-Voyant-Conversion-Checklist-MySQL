@@ -4,17 +4,17 @@ import NavBar from "../components/Navbar";
 import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import EnterLoadSheetNameCard from "../components/EnterLoadSheetNameCard";
-import ViewPreConversionChecklistCard from "../components/ViewPreConversionChecklistCard";
+import ViewPostConversionChecklistCard from "../components/ViewPostConversionChecklistCard";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { getConversionType, getAdditionalProcessing } from "../components/DecoderFunctions";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
-import "../styles/ViewPreConversionChecklist.css";
+import "../styles/ViewPostConversionChecklist.css";
 import "../styles/SelectorComponents.css";
 import "../styles/InputComponents.css";
 import "../styles/CardComponents.css";
 
-function ViewPreConversionChecklist() {
+function ViewPostConversionChecklist() {
     // const navigate = useNavigate();
     const [rendering, setRendering] = useState(true);
     const [enterLoadSheetNameDisplay, setEnterLoadSheetNameDisplay] = useState("visible");
@@ -194,7 +194,7 @@ function ViewPreConversionChecklist() {
 
     const handleLoadSheetNameCallback = (lsNameFromInput) => {
         setLoadSheetName(lsNameFromInput);
-        setInvalidLoadSheetNameError("");
+        setInvalidLoadSheetNameError("")
     }
 
     // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
@@ -335,7 +335,7 @@ function ViewPreConversionChecklist() {
 
     const updateConversionChecklist = () => {
         console.log("Updating checklist...");
-        Axios.put(`http://localhost:3001/update-pre-conversion-checklist/${conversionChecklistID}`, {
+        Axios.put(`http://localhost:3001/update-checklist/${conversionChecklistID}`, {
             loadSheetName: loadSheetName,
             loadSheetOwner: loadSheetOwner.value,
             decisionMaker: decisionMaker.value,
@@ -344,9 +344,9 @@ function ViewPreConversionChecklist() {
             dataSources: dataSources,
             uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
             uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes.trim() === "" ? null : recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes.trim() === "" ? null : recordsPostCleanupNotes,
-            preConversionManipulation: preConversionManipulation.trim() === "" ? null : preConversionManipulation
+            recordsPreCleanupNotes: recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
+            recordsPostCleanupNotes: recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
+            preConversionManipulation: preConversionManipulation === "" ? null : preConversionManipulation
         }).then((response) => {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully updated!");
@@ -451,7 +451,7 @@ function ViewPreConversionChecklist() {
                     style={{ display: viewPreConversionChecklistDisplay }}>
                     <div className="view-pre-conversion-checklist-container">
                         <div className="view-pre-conversion-checklist-card">
-                            <ViewPreConversionChecklistCard
+                            <ViewPostConversionChecklistCard
                                 conversionTypeOptions={conversionTypeOptions}
                                 additionalProcessingOptions={additionalProcessingOptions}
                                 loadSheetName={handleLoadSheetNameCallback}
@@ -500,7 +500,7 @@ function ViewPreConversionChecklist() {
                                 valueUpdated={handleValueUpdated}
                                 updateButtonDisabled={submitButtonDisabled}
                                 updated={handleOnClickSubmit}>
-                            </ViewPreConversionChecklistCard>
+                            </ViewPostConversionChecklistCard>
                         </div>
                     </div>
                 </div>
@@ -508,4 +508,4 @@ function ViewPreConversionChecklist() {
     )
 }
 
-export default ViewPreConversionChecklist;
+export default ViewPostConversionChecklist;
