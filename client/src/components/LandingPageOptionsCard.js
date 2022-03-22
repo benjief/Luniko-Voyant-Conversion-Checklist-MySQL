@@ -32,7 +32,7 @@ export default function LandingPageOptionsCard({
             sx={{
                 // minWidth: 1,
                 // maxWidth: 1,
-                minHeight: "205px",
+                minHeight: "262px",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",
@@ -83,6 +83,12 @@ export default function LandingPageOptionsCard({
                             <button
                                 className="post-conversion-checklist-button">
                                 Post-Conversion Checklist
+                            </button>
+                        </Link>
+                        <Link to={"/view-completed-conversion-checklist"}>
+                            <button
+                                className="completed-conversion-checklist-button">
+                                View Completed Checklist
                             </button>
                         </Link>
                         {/* <div className="popover-container">

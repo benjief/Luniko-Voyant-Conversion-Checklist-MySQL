@@ -96,6 +96,40 @@ app.get('/get-valid-post-conversion-ls-names', (req, res) => {
         });
 });
 
+
+
+app.get('/get-all-conversion-checklist-info/:loadSheetName', (req, res) => {
+    const loadSheetName = req.params.loadSheetName;
+    db.query(
+        `SELECT
+            cc_id,
+            cc_load_sheet_owner, 
+            cc_decision_maker, 
+            cc_conversion_type, 
+            cc_additional_processing, 
+            cc_data_sources, 
+            uq_records_pre_cleanup, 
+            uq_records_post_cleanup, 
+            cc_records_pre_cleanup_notes, 
+            cc_records_post_cleanup_notes, 
+            cc_pre_conversion_manipulation,
+            cc_post_conversion_loading_errors,
+            cc_post_conversion_validation_results,
+            cc_post_conversion_changes,
+            is_approved
+        FROM
+            conversion_checklist
+        WHERE
+	        cc_load_sheet_name = ?`,
+        loadSheetName, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
+});
+
 app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
     const loadSheetName = req.params.loadSheetName;
     db.query(

@@ -42,6 +42,7 @@ export default function PasswordFormDialog({
 
     const handleClose = () => {
         setOpen(false);
+        setErrorEnabled(false);
     };
 
     React.useEffect(() => {

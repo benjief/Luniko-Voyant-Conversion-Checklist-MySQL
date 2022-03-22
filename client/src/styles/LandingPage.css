@@ -31,9 +31,9 @@
     width: 100%;
 }
 
-.pre-conversion-checklist-button, .post-conversion-checklist-button {
+.pre-conversion-checklist-button, .post-conversion-checklist-button, .completed-conversion-checklist-button {
     padding: 10px;
-    margin-top: 5px !important;
+    /* margin-top: 5px !important; */
     /* margin-bottom: 10px; */
     border: none;
     color: white;
@@ -48,9 +48,8 @@
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
-.post-conversion-checklist-button {
+.post-conversion-checklist-button, .completed-conversion-checklist-button {
     margin-top: 10px !important;
-    margin-bottom: 0
 }
 
 .landing-page-options-container button:hover {

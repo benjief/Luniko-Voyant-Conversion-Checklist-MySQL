@@ -44,6 +44,14 @@
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
+.submit-load-sheet-name-button:hover {
+    background-color: var(--lunikoOrange) !important;
+}
+
+.update-checklist-button:hover {
+    background-color: #009952 !important;
+}
+
 .update-checklist-button {
     margin-top: 25px !important;
 }

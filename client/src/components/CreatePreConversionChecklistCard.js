@@ -142,7 +142,7 @@ export default function CreatePreConversionChecklistCard({
             sx={{
                 // minWidth: 1,
                 // maxWidth: 1,
-                maxHeight: "calc(100vh - 96.52px)",
+                maxHeight: "calc(100vh - 166.52px)",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",

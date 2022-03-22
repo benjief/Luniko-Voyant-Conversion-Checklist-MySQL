@@ -27,7 +27,7 @@
     width: 100%;
 }
 
-.submit-checklist-button {
+.submit-load-sheet-name-button, .submit-checklist-button {
     padding: 10px;
     margin-top: 25px;
     margin-bottom: 10px;
@@ -42,4 +42,12 @@
     width: 100%;
     transition: 0.1s;
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
+}
+
+.submit-load-sheet-name-button:hover {
+    background-color: var(--lunikoOrange) !important;
+}
+
+.submit-checklist-button:hover {
+    background-color: #009952 !important;
 }

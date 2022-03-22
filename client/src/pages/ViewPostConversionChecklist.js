@@ -19,7 +19,7 @@ function ViewPostConversionChecklist() {
     // const navigate = useNavigate();
     const [rendering, setRendering] = useState(true);
     const [enterLoadSheetNameDisplay, setEnterLoadSheetNameDisplay] = useState("visible");
-    const [viewPreConversionChecklistDisplay, setViewPreConversionChecklistDisplay] = useState("none");
+    const [viewPostConversionChecklistDisplay, setViewPostConversionChecklistDisplay] = useState("none");
     const [validLoadSheetNames, setValidLoadSheetNames] = useState([]);
     const [validLoadSheetNameEntered, setValidLoadSheetNameEntered] = useState(false);
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
@@ -57,6 +57,7 @@ function ViewPostConversionChecklist() {
             }
             setValidLoadSheetNames([...tempArray]);
         }
+        setViewPostConversionChecklistDisplay("visible");
         setRendering(false);
     }
 
@@ -241,18 +242,27 @@ function ViewPostConversionChecklist() {
                     className="enter-valid-load-sheet-name"
                     style={{ display: enterLoadSheetNameDisplay }}>
                     <div className="enter-valid-load-sheet-name-container">
+                        <div className="page-message">
+                            Retrieve Your Load Sheet Below:
+                        </div>
                         <div className="enter-valid-load-sheet-name-card">
                             <EnterLoadSheetNameCard
                                 loadSheetName={handleLoadSheetNameCallback}
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
-                                textAuthenticationError={invalidLoadSheetNameError}>
+                                textAuthenticationError={invalidLoadSheetNameError}
+                                input="post">
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>
                 </div>
-                <div className="view-post-conversion-checklist">
-                    <div className="view-post-conversion-checklist-container">
+                <div className="view-post-conversion-checklist"
+                    style={{ display: viewPostConversionChecklistDisplay }}>
+                    <div className="page-message">
+                        Please Review/Modify the Fields Below:
+                    </div>
+                    <div className="view-post-conversion-checklist-container"
+                        style={{ display: viewPostConversionChecklistDisplay }}>
                         <div className="view-post-conversion-checklist-card">
                             <ViewPostConversionChecklistCard
                                 postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}

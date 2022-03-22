@@ -43,3 +43,11 @@
     transition: 0.1s;
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
+
+.back-button {
+    margin-top: 0 !important;
+}
+
+.submit-checklist-button {
+    background-color: #009952 !important;
+}

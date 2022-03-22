@@ -28,7 +28,8 @@ export default function EnterLoadSheetNameCard({
     loadSheetName = "",
     submitted = false,
     submitButtonDisabled = true,
-    textAuthenticationError = ""
+    textAuthenticationError = "",
+    input = ""
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
@@ -62,7 +63,7 @@ export default function EnterLoadSheetNameCard({
                 backgroundColor: "var(--lunikoDarkGrey)",
                 marginBottom: "20px"
             }}>
-            <div className="card-content">
+            <div className="load-sheet-name-card-content">
                 <CardHeader
                     titleTypographyProps={{ color: "white", fontFamily: "'Raleway', Verdana, Geneva, Tahoma, sans-serif", fontSize: "10.5pt" }}
                     // subheaderTypographyProps={{ color: "rgba(0, 0, 0, 0.7)", fontFamily: "'Raleway', Verdana, Geneva, Tahoma, sans-serif", fontSize: "10.5pt" }}
@@ -74,7 +75,7 @@ export default function EnterLoadSheetNameCard({
                     //         {statusAbbreviation}
                     //     </Avatar>
                     // }
-                    title={<strong>Please enter a valid load sheet name</strong>}
+                    title={<strong>Please enter a valid <u>{input}</u>-conversion load sheet name</strong>}
                 />
                 {/* < CardActions
                 disableSpacing

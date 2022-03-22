@@ -66,3 +66,15 @@ input[type=number]::-webkit-outer-spin-button {
   cursor: default !important;
   background-color: #BFBFBF !important;
 }
+
+.load-sheet-name-card-content .material-text-field {
+  min-height: 76.98px !important;
+}
+
+.load-sheet-name-card-content .MuiBox-root {
+  margin-bottom: 0 !important;
+}
+
+.load-sheet-name-card-content button {
+  margin-top: 5px !important;
+}

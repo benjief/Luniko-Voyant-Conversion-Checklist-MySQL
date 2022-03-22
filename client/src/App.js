@@ -6,6 +6,7 @@ import CreatePreConversionChecklist from "./pages/CreatePreConversionChecklist";
 import ViewPreConversionChecklist from "./pages/ViewPreConversionChecklist";
 import CreatePostConversionChecklist from "./pages/CreatePostConversionChecklist";
 import ViewPostConversionChecklist from "./pages/ViewPostConversionChecklist";
+import ViewCompletedConversionChecklist from "./pages/ViewCompletedConversionChecklist";
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route exact path="/view-pre-conversion-checklist" element={<ViewPreConversionChecklist />} />
           <Route exact path="/create-post-conversion-checklist" element={<CreatePostConversionChecklist />} />
           <Route exact path="/view-post-conversion-checklist" element={<ViewPostConversionChecklist />} />
+          <Route exact path="/view-completed-conversion-checklist" element={<ViewCompletedConversionChecklist />} />
         </Switch>
       </Router>
     </div>

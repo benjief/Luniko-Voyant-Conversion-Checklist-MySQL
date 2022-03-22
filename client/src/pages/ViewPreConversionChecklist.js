@@ -453,12 +453,16 @@ function ViewPreConversionChecklist() {
                     className="enter-valid-load-sheet-name"
                     style={{ display: enterLoadSheetNameDisplay }}>
                     <div className="enter-valid-load-sheet-name-container">
+                        <div className="page-message">
+                            Retrieve Your Load Sheet Below:
+                        </div>
                         <div className="enter-valid-load-sheet-name-card">
                             <EnterLoadSheetNameCard
                                 loadSheetName={handleLoadSheetNameCallback}
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
-                                textAuthenticationError={invalidLoadSheetNameError}>
+                                textAuthenticationError={invalidLoadSheetNameError}
+                                input="pre">
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>
@@ -466,6 +470,9 @@ function ViewPreConversionChecklist() {
                 <div
                     className="view-pre-conversion-checklist"
                     style={{ display: viewPreConversionChecklistDisplay }}>
+                    <div className="page-message">
+                        Please Review/Modify the Fields Below:
+                    </div>
                     <div className="view-pre-conversion-checklist-container">
                         <div className="view-pre-conversion-checklist-card">
                             <ViewPreConversionChecklistCard

@@ -32,7 +32,7 @@ export default function PostConversionChecklistOptionsCard({
             sx={{
                 // minWidth: 1,
                 // maxWidth: 1,
-                minHeight: "205px",
+                minHeight: "202px",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",
