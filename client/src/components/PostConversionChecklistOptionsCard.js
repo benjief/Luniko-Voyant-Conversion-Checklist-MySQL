@@ -82,7 +82,7 @@ export default function PostConversionChecklistOptionsCard({
                         <Link to={"/view-post-conversion-checklist"}>
                             <button
                                 className="view-post-conversion-checklist-button">
-                                View
+                                View/Modify
                             </button>
                         </Link>
                         {/* <div className="popover-container">

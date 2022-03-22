@@ -25,7 +25,7 @@ export default function MaterialTextField({
   textAuthenticationError = "",
   disabled = false
 }) {
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(defaultValue);
   const [errorEnabled, setErrorEnabled] = React.useState(false);
   // const [errorMsg, setErrorMsg] = React.useState("");
   const [displayedHelperText, setDisplayedHelperText] = React.useState(helperText);

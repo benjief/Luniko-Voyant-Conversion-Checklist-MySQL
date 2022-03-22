@@ -5,6 +5,7 @@ import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import EnterLoadSheetNameCard from "../components/EnterLoadSheetNameCard";
 import CreatePostConversionChecklistCard from "../components/CreatePostConversionChecklistCard";
+import PositionedSnackbar from "../components/PositionedSnackbar";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
@@ -33,10 +34,11 @@ function CreatePostConversionChecklist() {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
+    const [alert, setAlert] = useState(false);
     const navigate = useNavigate();
 
     const getValidLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-valid-unapproved-ls-names", {
+        await Axios.get("http://localhost:3001/get-valid-pre-conversion-ls-names", {
         }).then((response) => {
             populateValidLoadSheetNamesList(response.data);
         });
@@ -106,7 +108,7 @@ function CreatePostConversionChecklist() {
                     setEnterLoadSheetNameDisplay("none");
                     setSubmitButtonDisabled(true);
                 } else {
-                    setInvalidLoadSheetNameError("Invalid load sheet name");
+                    setInvalidLoadSheetNameError("Invalid pre-conversion load sheet name");
                 }
             } else {
                 if (submitted) {
@@ -119,23 +121,32 @@ function CreatePostConversionChecklist() {
     const updateConversionChecklist = () => {
         console.log("Updating checklist...");
         Axios.put(`http://localhost:3001/update-post-conversion-checklist/${conversionChecklistID}`, {
-            postConversionLoadingErrors: postConversionLoadingErrors.trim === "" ? null : postConversionLoadingErrors,
-            postConversionValidationResults: postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
-            postConversionChanges: postConversionChanges.trim() === "" ? null : postConversionChanges
+            postConversionLoadingErrors: postConversionLoadingErrors === null ? null : postConversionLoadingErrors.trim === "" ? null : postConversionLoadingErrors,
+            postConversionValidationResults: postConversionValidationResults === null ? null : postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
+            postConversionChanges: postConversionChanges === null ? null : postConversionChanges.trim() === "" ? null : postConversionChanges,
+            approvedByITDirector: formApproved
         }).then((response) => {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully updated!");
-            handleSuccessfulUpdate();
+            // handleSuccessfulUpdate();
+            setAlert(true);
         });
     };
 
-    const handleSuccessfulUpdate = () => {
-        // setTimeout(() => {
-        //     setSubmitButtonText("Request Submitted!");
-        // }, 500);
-        setTimeout(() => {
+    // const handleSuccessfulUpdate = () => {
+    //     // setTimeout(() => {
+    //     //     setSubmitButtonText("Request Submitted!");
+    //     // }, 500);
+    //     setTimeout(() => {
+    //         navigate("/");
+    //     }, 1000);
+    // }
+
+    const handleAlertClosed = (alertClosed) => {
+        if (alertClosed) {
+            setAlert(false);
             navigate("/");
-        }, 1000);
+        }
     }
 
     useEffect(() => {
@@ -183,6 +194,14 @@ function CreatePostConversionChecklist() {
                 </div>
                 <NavBar>
                 </NavBar>
+                {alert
+                    ? <div className="alert-container">
+                        <PositionedSnackbar
+                            message="Post-conversion checklist successfully created!"
+                            closed={handleAlertClosed}>
+                        </PositionedSnackbar>
+                    </div>
+                    : <div></div>}
                 <div
                     className="enter-valid-load-sheet-name"
                     style={{ display: enterLoadSheetNameDisplay }}>

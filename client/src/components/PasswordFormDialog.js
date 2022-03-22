@@ -6,7 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 // import DialogTitle from '@mui/material/DialogTitle';
-import CircleOutlined from '@mui/icons-material/CircleOutlined';
+// import CircleOutlined from '@mui/icons-material/CircleOutlined';
+import LockOpenTwoTone from '@mui/icons-material/LockOpenTwoTone';
 import "../styles/DialogComponents.css";
 
 export default function PasswordFormDialog({
@@ -51,7 +52,7 @@ export default function PasswordFormDialog({
 
     return (
         <div className="password-form-dialog-container">
-            <CircleOutlined onClick={handleClickOpen} />
+            <LockOpenTwoTone onClick={handleClickOpen} />
             {/* <Button variant="outlined" onClick={handleClickOpen}>
                 Open form dialog
             </Button> */}

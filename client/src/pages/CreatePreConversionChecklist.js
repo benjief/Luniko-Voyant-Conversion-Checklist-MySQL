@@ -4,6 +4,7 @@ import NavBar from "../components/Navbar";
 import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import CreatePreConversionChecklistCard from "../components/CreatePreConversionChecklistCard";
+import PositionedSnackbar from "../components/PositionedSnackbar";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
@@ -36,6 +37,7 @@ function CreatePreConversionChecklist() {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
+    const [alert, setAlert] = useState(false);
     const navigate = useNavigate();
 
     // Single select options
@@ -225,9 +227,9 @@ function CreatePreConversionChecklist() {
             dataSources: dataSources,
             uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
             uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
-            preConversionManipulation: preConversionManipulation === "" ? null : preConversionManipulation
+            recordsPreCleanupNotes: recordsPreCleanupNotes === null ? null : recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
+            recordsPostCleanupNotes: recordsPostCleanupNotes === null ? null : recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
+            preConversionManipulation: preConversionManipulation === null ? null : preConversionManipulation === "" ? null : preConversionManipulation
         }).then((response) => {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully added!!");
@@ -235,7 +237,7 @@ function CreatePreConversionChecklist() {
                 console.log(response.data);
                 addContributions(response.data.insertId);
             } else {
-                handleSuccessfulSubmit();
+                setAlert(true);
             }
         });
     };
@@ -248,18 +250,25 @@ function CreatePreConversionChecklist() {
                 contributorID: contributors[i].value
             }).then((response) => {
                 console.log("Contribution successfully added!");
-                handleSuccessfulSubmit();
+                setAlert(true);
             });
         };
     };
 
-    const handleSuccessfulSubmit = () => {
-        // setTimeout(() => {
-        //     setSubmitButtonText("Request Submitted!");
-        // }, 500);
-        setTimeout(() => {
+    // const handleSuccessfulSubmit = () => {
+    //     // setTimeout(() => {
+    //     //     setSubmitButtonText("Request Submitted!");
+    //     // }, 500);
+    //     setTimeout(() => {
+    //         navigate("/");
+    //     }, 1000);
+    // }
+
+    const handleAlertClosed = (alertClosed) => {
+        if (alertClosed) {
+            setAlert(false);
             navigate("/");
-        }, 1000);
+        }
     }
 
     useEffect(() => {
@@ -300,6 +309,14 @@ function CreatePreConversionChecklist() {
                 </div>
                 <NavBar>
                 </NavBar>
+                {alert
+                    ? <div className="alert-container">
+                        <PositionedSnackbar
+                            message="Pre-conversion checklist successfully created!"
+                            closed={handleAlertClosed}>
+                        </PositionedSnackbar>
+                    </div>
+                    : <div></div>}
                 <div className="create-pre-conversion-checklist">
                     <div className="create-pre-conversion-checklist-container">
                         <div className="create-pre-conversion-checklist-card">

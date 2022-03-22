@@ -16,6 +16,7 @@ import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 import PasswordFormDialog from './PasswordFormDialog';
+import DraggableDialog from './DraggableDialog';
 // import BootstrapPopover from "../components/BootstrapPopover";
 
 const ExpandMore = styled((props) => {
@@ -40,7 +41,6 @@ export default function CreatePostConversionChecklistCard({
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
-    const [displayEnterITCode, setDisplayEnterITCode] = React.useState(false);
     const [approveUnlocked, setApproveUnlocked] = React.useState(false);
 
     const handleOnChangePostConversionLoadingErrors = (updatedText) => {
@@ -187,6 +187,11 @@ export default function CreatePostConversionChecklistCard({
                             style={{ backgroundColor: submitButtonColor }}>
                             Submit
                         </button>
+                        <DraggableDialog
+                            dialogText={["Checklists ", <strong>can no longer be updated </strong>, "once approved by ",
+                                "an IT Director."]}
+                            buttonText="!"
+                        ></DraggableDialog>
                     </CardContent>
                 </Collapse>
             </div>

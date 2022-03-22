@@ -14,7 +14,11 @@ const db = mysql.createConnection({
 });
 
 app.get('/get-all-personnel', (req, res) => {
-    db.query("SELECT * FROM personnel", (err, result) => {
+    db.query(
+        `SELECT 
+            * 
+         FROM 
+            personnel`, (err, result) => {
         if (err) {
             console.log(err);
         } else {
@@ -25,7 +29,13 @@ app.get('/get-all-personnel', (req, res) => {
 
 app.get('/get-personnel-info/:uid', (req, res) => {
     const uid = req.params.uid;
-    db.query("SELECT CONCAT(pers_fname, ' ', pers_lname) AS pers_name FROM personnel WHERE pers_id = ?", uid, (err, result) => {
+    db.query(
+        `SELECT 
+             CONCAT(pers_fname, ' ', pers_lname) AS pers_name 
+         FROM 
+             personnel 
+         WHERE 
+            pers_id = ?`, uid, (err, result) => {
         if (err) {
             console.log(err);
         } else {
@@ -35,7 +45,11 @@ app.get('/get-personnel-info/:uid', (req, res) => {
 });
 
 app.get('/get-all-ls-names', (req, res) => {
-    db.query("SELECT cc_load_sheet_name FROM conversion_checklist", (err, result) => {
+    db.query(
+        `SELECT 
+            cc_load_sheet_name 
+         FROM 
+            conversion_checklist`, (err, result) => {
         if (err) {
             console.log(err);
         } else {
@@ -44,14 +58,42 @@ app.get('/get-all-ls-names', (req, res) => {
     });
 });
 
-app.get('/get-valid-unapproved-ls-names', (req, res) => {
-    db.query("SELECT cc_load_sheet_name FROM conversion_checklist WHERE is_approved = 0", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
+app.get('/get-valid-pre-conversion-ls-names', (req, res) => {
+    db.query(
+        `SELECT 
+            cc_load_sheet_name 
+         FROM 
+            conversion_checklist 
+         WHERE 
+            cc_post_conversion_loading_errors IS NULL AND
+            cc_post_conversion_validation_results IS NULL AND
+            cc_post_conversion_changes IS NULL`,
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
+});
+
+app.get('/get-valid-post-conversion-ls-names', (req, res) => {
+    db.query(
+        `SELECT 
+            cc_load_sheet_name 
+         FROM 
+            conversion_checklist 
+         WHERE 
+            cc_post_conversion_loading_errors IS NOT NULL AND
+            cc_post_conversion_validation_results IS NOT NULL AND
+            cc_post_conversion_changes IS NOT NULL`,
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
 });
 
 app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
@@ -72,7 +114,29 @@ app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
         FROM
             conversion_checklist
         WHERE
-	        cc_load_sheet_name = ?;`,
+	        cc_load_sheet_name = ?`,
+        loadSheetName, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
+});
+
+app.get('/get-post-conversion-checklist-info/:loadSheetName', (req, res) => {
+    const loadSheetName = req.params.loadSheetName;
+    db.query(
+        `SELECT
+             cc_id,
+             cc_post_conversion_loading_errors,
+             cc_post_conversion_validation_results,
+             cc_post_conversion_changes,
+             is_approved
+         FROM
+             conversion_checklist
+         WHERE
+            cc_load_sheet_name = ?`,
         loadSheetName, (err, result) => {
             if (err) {
                 console.log(err);
@@ -90,7 +154,7 @@ app.get('/get-load-sheet-id/:loadSheetName', (req, res) => {
         FROM
             conversion_checklist
         WHERE
-	        cc_load_sheet_name = ?;`,
+	        cc_load_sheet_name = ?`,
         loadSheetName, (err, result) => {
             if (err) {
                 console.log(err);
@@ -109,7 +173,7 @@ app.get('/get-submitted-contributors/:conversionChecklistID', (req, res) => {
         FROM
 	        personnel JOIN contribution ON pers_id = contributor_id
         WHERE
-	        cc_id = ?;`,
+	        cc_id = ?`,
         conversionChecklistID, (err, result) => {
             if (err) {
                 console.log(err);
@@ -254,15 +318,18 @@ app.put("/update-post-conversion-checklist/:conversionChecklistID", (req, res) =
     const postConversionLoadingErrors = req.body.postConversionLoadingErrors;
     const postConversionValidationResults = req.body.postConversionValidationResults;
     const postConversionChanges = req.body.postConversionChanges;
+    const approvedByITDirector = req.body.approvedByITDirector;
 
     db.query(
         `UPDATE conversion_checklist 
          SET
             cc_post_conversion_loading_errors = ?,
             cc_post_conversion_validation_results = ?,
-            cc_post_conversion_changes = ?
+            cc_post_conversion_changes = ?,
+            is_approved = ?
         WHERE cc_id = ?`,
-        [postConversionLoadingErrors, postConversionValidationResults, postConversionChanges, conversionChecklistID],
+        [postConversionLoadingErrors, postConversionValidationResults,
+            postConversionChanges, approvedByITDirector, conversionChecklistID],
         (err, result) => {
             if (err) {
                 console.log(err);

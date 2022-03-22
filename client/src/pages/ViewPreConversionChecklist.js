@@ -5,6 +5,7 @@ import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import EnterLoadSheetNameCard from "../components/EnterLoadSheetNameCard";
 import ViewPreConversionChecklistCard from "../components/ViewPreConversionChecklistCard";
+import PositionedSnackbar from "../components/PositionedSnackbar";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { getConversionType, getAdditionalProcessing } from "../components/DecoderFunctions";
@@ -40,9 +41,6 @@ function ViewPreConversionChecklist() {
     const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
     const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
     const [preConversionManipulation, setPreConversionManipulation] = useState("");
-    const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
-    const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
-    const [postConversionChanges, setPostConversionChanges] = useState("");
     const [forceCheckboxOff, setForceCheckboxOff] = useState(false);
     const [formReviewed, setFormReviewed] = useState(true);
     const [submitted, setSubmitted] = useState(false);
@@ -50,6 +48,7 @@ function ViewPreConversionChecklist() {
     const [valueUpdated, setValueUpdated] = useState(false);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
+    const [alert, setAlert] = useState(false);
     const navigate = useNavigate();
 
     // Single select options
@@ -65,7 +64,7 @@ function ViewPreConversionChecklist() {
     ];
 
     const getValidLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-valid-unapproved-ls-names", {
+        await Axios.get("http://localhost:3001/get-valid-pre-conversion-ls-names", {
         }).then((response) => {
             populateValidLoadSheetNamesList(response.data);
         });
@@ -277,7 +276,7 @@ function ViewPreConversionChecklist() {
                 setEnterLoadSheetNameDisplay("none");
                 setSubmitButtonDisabled(true);
             } else {
-                setInvalidLoadSheetNameError("Invalid load sheet name");
+                setInvalidLoadSheetNameError("Invalid pre-conversion load sheet name");
             }
         } else {
             if (submitted) {
@@ -344,16 +343,17 @@ function ViewPreConversionChecklist() {
             dataSources: dataSources,
             uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
             uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes.trim() === "" ? null : recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes.trim() === "" ? null : recordsPostCleanupNotes,
-            preConversionManipulation: preConversionManipulation.trim() === "" ? null : preConversionManipulation
+            recordsPreCleanupNotes: recordsPreCleanupNotes === null ? null : recordsPreCleanupNotes.trim() === "" ? null : recordsPreCleanupNotes,
+            recordsPostCleanupNotes: recordsPostCleanupNotes === null ? null : recordsPostCleanupNotes.trim() === "" ? null : recordsPostCleanupNotes,
+            preConversionManipulation: preConversionManipulation === null ? null : preConversionManipulation.trim() === "" ? null : preConversionManipulation
         }).then((response) => {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully updated!");
             if (contributors.length !== 0) {
                 addContributions(conversionChecklistID);
             } else {
-                handleSuccessfulUpdate();
+                // handleSuccessfulUpdate();
+                setAlert(true);
             }
         });
     };
@@ -366,23 +366,32 @@ function ViewPreConversionChecklist() {
                 contributorID: contributors[i].value
             }).then((response) => {
                 console.log("Contribution successfully added!");
-                handleSuccessfulUpdate();
+                // handleSuccessfulUpdate();
+                setAlert(true);
             });
         };
     };
 
-    const handleSuccessfulUpdate = () => {
-        // setTimeout(() => {
-        //     setSubmitButtonText("Request Submitted!");
-        // }, 500);
-        setTimeout(() => {
-            navigate("/");
-        }, 1000);
-    }
+    // const handleSuccessfulUpdate = () => {
+    //     // setTimeout(() => {
+    //     //     setSubmitButtonText("Request Submitted!");
+    //     // }, 500);
+    //     setTimeout(() => {
+    //         navigate("/");
+    //     }, 1000);
+    // }
 
     const handleValueUpdated = () => {
         setValueUpdated(true);
         setForceCheckboxOff(true);
+    }
+
+    const handleAlertClosed = (alertClosed) => {
+        if (alertClosed) {
+            console.log("navigating back");
+            setAlert(false);
+            navigate("/");
+        }
     }
 
     useEffect(() => {
@@ -432,6 +441,14 @@ function ViewPreConversionChecklist() {
                 </div>
                 <NavBar>
                 </NavBar>
+                {alert
+                    ? <div className="alert-container">
+                        <PositionedSnackbar
+                            message="Pre-conversion checklist successfully updated!"
+                            closed={handleAlertClosed}>
+                        </PositionedSnackbar>
+                    </div>
+                    : <div></div>}
                 <div
                     className="enter-valid-load-sheet-name"
                     style={{ display: enterLoadSheetNameDisplay }}>

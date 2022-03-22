@@ -9,7 +9,8 @@ export default function MaterialCheckBox({
     label = "",
     forceOff = false,
     userChecked = false,
-    defaultChecked = false
+    defaultChecked = false,
+    disabled = false
 }) {
     const [checked, setChecked] = React.useState(defaultChecked);
 
@@ -29,6 +30,7 @@ export default function MaterialCheckBox({
         <FormGroup>
             <FormControlLabel control={
                 <Checkbox
+                    disabled={disabled}
                     disableRipple
                     color="primary"
                     icon={<CircleOutlined />}

@@ -5,14 +5,15 @@ import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
 import EnterLoadSheetNameCard from "../components/EnterLoadSheetNameCard";
 import ViewPostConversionChecklistCard from "../components/ViewPostConversionChecklistCard";
+import PositionedSnackbar from "../components/PositionedSnackbar";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { getConversionType, getAdditionalProcessing } from "../components/DecoderFunctions";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/ViewPostConversionChecklist.css";
 import "../styles/SelectorComponents.css";
 import "../styles/InputComponents.css";
 import "../styles/CardComponents.css";
+import "../styles/AlertComponents.css";
 
 function ViewPostConversionChecklist() {
     // const navigate = useNavigate();
@@ -24,48 +25,25 @@ function ViewPostConversionChecklist() {
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
     const [loadSheetName, setLoadSheetName] = useState("");
     const [conversionChecklistID, setConversionChecklistID] = useState("");
-    const [personnelOptions, setPersonnelOptions] = useState([]);
-    // const [personnelOptionsMap, setPersonnelOptionsMap] = useState(new Map());
-    // const [lsOwnerAndDecisionMakerOptions, setLSOwnerAndDecisionMakerOptions] = useState([]);
-    const [newPersonnel, setNewPersonnel] = useState([]);
-    const [loadSheetOwner, setLoadSheetOwner] = useState([]);
-    const [decisionMaker, setDecisionMaker] = useState([]);
-    const [submittedContributors, setSubmittedContributors] = useState([]);
-    const [contributors, setContributors] = useState([]);
-    const [conversionType, setConversionType] = useState("");
-    const [additionalProcessing, setAdditionalProcessing] = useState("");
-    const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0); // Needs to be <= pre #
-    const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
-    const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
-    const [preConversionManipulation, setPreConversionManipulation] = useState("");
+    const [existingLoadSheetNames, setExistingLoadSheetNames] = useState([]);
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
     const [postConversionChanges, setPostConversionChanges] = useState("");
-    const [forceCheckboxOff, setForceCheckboxOff] = useState(false);
+    const [forceReviewedOff, setForceReviewedOff] = useState(false);
+    const [forceApproveLocked, setForceApproveLocked] = useState(false);
     const [formReviewed, setFormReviewed] = useState(true);
+    const [formApproved, setFormApproved] = useState(false);
+    const [formDisabled, setFormDisabled] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
     const [valueUpdated, setValueUpdated] = useState(false);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
+    const [alert, setAlert] = useState(false);
     const navigate = useNavigate();
 
-    // Single select options
-    const conversionTypeOptions = [
-        { value: "M", label: "Manual" },
-        { value: "D", label: "DMT" }
-    ];
-
-    const additionalProcessingOptions = [
-        { value: "C", label: "Cleanup Needed" },
-        { value: "D", label: "New Data to Be Added" },
-        { value: "N", label: "N/A" }
-    ];
-
     const getValidLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-valid-unapproved-ls-names", {
+        await Axios.get("http://localhost:3001/get-valid-post-conversion-ls-names", {
         }).then((response) => {
             populateValidLoadSheetNamesList(response.data);
         });
@@ -82,119 +60,9 @@ function ViewPostConversionChecklist() {
         setRendering(false);
     }
 
-    const getConversionChecklistInfo = async (loadSheetName) => {
-        await Axios.get(`http://localhost:3001/get-pre-conversion-checklist-info/${loadSheetName}`, {
-        }).then((response) => {
-            getPersonnelInfo(response.data[0]);
-            getSubmittedContributors(response.data[0].cc_id);
-        })
-    }
-
-    const getSubmittedContributors = async (conversionChecklistID) => {
-        await Axios.get(`http://localhost:3001/get-submitted-contributors/${conversionChecklistID}`, {
-        }).then((response) => {
-            populateSubmittedContributorsList(response.data);
-        });
-    }
-
-    const populateSubmittedContributorsList = (submittedContributorsList) => {
-        new Promise(resolve => {
-            if (submittedContributorsList.length) {
-                let tempArray = [];
-                for (let i = 0; i < submittedContributorsList.length; i++) {
-                    let uid = submittedContributorsList[i].pers_id;
-                    let name = submittedContributorsList[i].pers_name;
-                    let personnel = {
-                        "value": uid,
-                        "label": name
-                    };
-                    tempArray.push(personnel);
-                }
-                setSubmittedContributors([...tempArray]);
-            }
-        });
-    }
-
-    // const populateSubmittedLSOwnerAndDecisionMakerFields = (conversionChecklistInfo) => {
-    //     new Promise(resolve => {
-    //         let lsOwnerUID = conversionChecklistInfo.cc_load_sheet_owner;
-    //         let decisionMakerUID = conversionChecklistInfo.cc_decision_maker;
-    //         let lsOwnerName = personnelOptionsMap.get(lsOwnerUID);
-    //         let decisionMakerName = personnelOptionsMap.get(decisionMakerUID);
-    //         setLoadSheetOwner({ "value": lsOwnerUID, "label": lsOwnerName });
-    //         setDecisionMaker({ "value": decisionMakerUID, "label": decisionMakerName });
-    //     });
-    //     populateSubmittedFields(conversionChecklistInfo);
-    // }
-
-    const getPersonnelInfo = async (conversionChecklistInfo) => {
-        new Promise(resolve => {
-            let loadSheetOwner = conversionChecklistInfo.cc_load_sheet_owner;
-            let decisionMaker = conversionChecklistInfo.cc_decision_maker;
-            let conversionChecklistPersonnel = [loadSheetOwner, decisionMaker];
-
-            for (let i = 0; i < conversionChecklistPersonnel.length; i++) {
-                Axios.get(`http://localhost:3001/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
-                }).then((response) => {
-                    let name = response.data[0].pers_name;
-                    let personnel = {
-                        "value": conversionChecklistPersonnel[i],
-                        "label": name
-                    };
-                    i === 0 ? setLoadSheetOwner(personnel) : setDecisionMaker(personnel);
-                });
-            }
-        });
-        populateSubmittedFields(conversionChecklistInfo);
-    }
-
-    const populateSubmittedFields = (conversionChecklistInfo) => {
-        new Promise(resolve => {
-            // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
-            // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
-            setConversionChecklistID(conversionChecklistInfo.cc_id);
-            setConversionType(conversionChecklistInfo.cc_conversion_type);
-            setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
-            setDataSources(conversionChecklistInfo.cc_data_sources);
-            setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
-            setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
-            setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
-            setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
-            setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
-        });
-        getPersonnel();
-    }
-
-    const getPersonnel = async () => {
-        await Axios.get("http://localhost:3001/get-all-personnel", {
-        }).then((response) => {
-            populatePersonnelList(response.data);
-        });
-    }
-
-    const populatePersonnelList = (personnelList) => {
-        new Promise(resolve => {
-            if (personnelList.length) { // TODO: change this in other implementations where you had length > 1?
-                let tempArray = [];
-                for (let i = 0; i < personnelList.length; i++) {
-                    let uid = personnelList[i].pers_id;
-                    let name = personnelList[i].pers_fname + " " + personnelList[i].pers_lname; // TODO: change this (query-side) and CONCAT'd name?
-                    let personnel = {
-                        "value": uid,
-                        "label": name
-                    };
-                    tempArray.push(personnel);
-                }
-                setPersonnelOptions([...tempArray]);
-            }
-        });
-        setViewPreConversionChecklistDisplay("visible");
-        setRendering(false);
-    }
-
     const handleLoadSheetNameCallback = (lsNameFromInput) => {
         setLoadSheetName(lsNameFromInput);
-        setInvalidLoadSheetNameError("")
+        setInvalidLoadSheetNameError("");
     }
 
     // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
@@ -208,181 +76,113 @@ function ViewPostConversionChecklist() {
         return false;
     }
 
-    const handleLoadSheetOwnerCallback = (lsOwnerFromSelector) => {
-        setLoadSheetOwner(lsOwnerFromSelector);
+    const getConversionChecklistInfo = async (loadSheetName) => {
+        await Axios.get(`http://localhost:3001/get-post-conversion-checklist-info/${loadSheetName}`, {
+        }).then((response) => {
+            populateSubmittedFields(response.data[0]);
+            // setRendering(false);
+        })
     }
 
-    const handleDecisionMakerCallback = (decisionMakerFromSelector) => {
-        setDecisionMaker(decisionMakerFromSelector);
+    const populateSubmittedFields = (conversionChecklistInfo) => {
+        setConversionChecklistID(conversionChecklistInfo.cc_id);
+        setPostConversionLoadingErrors(conversionChecklistInfo.cc_post_conversion_loading_errors);
+        setPostConversionValidationResults(conversionChecklistInfo.cc_post_conversion_validation_results);
+        setPostConversionChanges(conversionChecklistInfo.cc_post_conversion_changes);
+        setFormDisabled(conversionChecklistInfo.is_approved.data[0] ? true : false);
+        setRendering(false);
     }
 
-    const handleContributorsCallback = (contributorsFromSelector) => {
-        setContributors(contributorsFromSelector);
+    const handlePostConversionLoadingErrorsCallback = (postConversionLoadingErrorsFromInput) => {
+        setPostConversionLoadingErrors(postConversionLoadingErrorsFromInput);
     }
 
-    const handleConversionTypeCallback = (conversionTypeFromSelector) => {
-        setConversionType(conversionTypeFromSelector);
+    const handlePostConversionValidationResultsCallback = (postConversionValidationResultsFromInput) => {
+        setPostConversionValidationResults(postConversionValidationResultsFromInput);
     }
 
-    const handleAdditionalProcessingCallback = (additionalProcessingFromSelector) => {
-        setAdditionalProcessing(additionalProcessingFromSelector);
+    const handlePostConversionChangesCallback = (postConversionChangesFromInput) => {
+        setPostConversionChanges(postConversionChangesFromInput);
     }
 
-    const handleDataSourcesCallback = (dataSourcesFromInput) => {
-        setDataSources(dataSourcesFromInput);
-    }
-
-    const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput);
-    }
-
-    const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput);
-    }
-
-    const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
-        setRecordsPreCleanupNotes(recordsPreCleanupNotesFromInput);
-    }
-
-    const handleRecordsPostCleanupNotesCallback = (recordsPostCleanupNotesFromInput) => {
-        setRecordsPostCleanupNotes(recordsPostCleanupNotesFromInput);
-    }
-
-    const handlePreConversionManipulationCallback = (preConversionManipulationFromInput) => {
-        setPreConversionManipulation(preConversionManipulationFromInput);
-    }
-
-    const handleCheckboxCallback = (checkedFromCheckbox) => {
+    const handleReviewedCallback = (checkedFromCheckbox) => {
         setFormReviewed(checkedFromCheckbox);
-        setForceCheckboxOff(false);
+        setForceReviewedOff(false);
     }
 
-    // const handlePostConversionLoadingErrorsCallback = (postConversionLoadingErrorsFromInput) => {
-    //     setPostConversionLoadingErrors(postConversionLoadingErrorsFromInput);
-    // }
+    const handleApprovedCallback = (checkedFromCheckbox) => {
+        setFormApproved(checkedFromCheckbox);
+        setForceApproveLocked(false);
+        if (checkedFromCheckbox) {
+            handleValueUpdated(true);
+        }
+    }
 
-    // const handlePostConversionValidationResultsCallback = (postConversionValidationResultsFromInput) => {
-    //     setPostConversionValidationResults(postConversionValidationResultsFromInput);
-    // }
-
-    // const handlePostConversionChangesCallback = (postConversionChangesFromInput) => {
-    //     setPostConversionChanges(postConversionChangesFromInput);
-    // }
+    const handleApproveUnlockedByUser = (unlocked) => {
+        if (unlocked) {
+            setForceApproveLocked(false);
+        }
+    }
 
     const handleOnClickSubmit = async (submitted) => {
-        if (!validLoadSheetNameEntered && submitted) {
-            if (checkLoadSheetNameEntered()) {
-                setValidLoadSheetNameEntered(true)
-                setRendering(true);
-                setEnterLoadSheetNameDisplay("none");
-                setSubmitButtonDisabled(true);
+        if (submitted) {
+            if (!validLoadSheetNameEntered && submitted) {
+                if (checkLoadSheetNameEntered()) {
+                    setValidLoadSheetNameEntered(true)
+                    setRendering(true);
+                    setEnterLoadSheetNameDisplay("none");
+                    setSubmitButtonDisabled(true);
+                } else {
+                    setInvalidLoadSheetNameError("Invalid post-conversion load sheet name");
+                }
             } else {
-                setInvalidLoadSheetNameError("Invalid load sheet name");
-            }
-        } else {
-            if (submitted) {
-                await assignUIDsToNewPersonnel();
-                await addNewPersonnelToDB();
-                updateConversionChecklist();
+                if (submitted) {
+                    updateConversionChecklist();
+                }
             }
         }
     }
 
-    const assignUIDsToNewPersonnel = () => {
-        console.log("Assigning UIDs...");
-        new Promise(resolve => {
-            if (loadSheetOwner.value === -1) {
-                loadSheetOwner.value = uuidv4();
-                newPersonnel.push(loadSheetOwner);
-                setNewPersonnel(newPersonnel);
-            }
-            if (decisionMaker.value === -1) {
-                // Don't want to try and add duplicate personnel to DB
-                decisionMaker.value = (decisionMaker.label.toLowerCase() === loadSheetOwner.label.toLowerCase()) ?
-                    loadSheetOwner.value
-                    : uuidv4();
-                newPersonnel.push(decisionMaker);
-                setNewPersonnel(newPersonnel);
-            }
-            for (let i = 0; i < contributors.length; i++) {
-                if (contributors[i].value === -1) {
-                    contributors[i].value = uuidv4();
-                    newPersonnel.push(contributors[i]);
-                }
-            }
-            setNewPersonnel(newPersonnel);
-        });
-        console.log("UIDs assigned...")
-    }
-
-    const addNewPersonnelToDB = () => {
-        console.log("Adding personnel to DB...");
-        new Promise(resolve => {
-            // console.log(newPersonnel);
-            for (let i = 0; i < newPersonnel.length; i++) {
-                let name = newPersonnel[i].label;
-                let firstName = name.split(" ")[0];
-                let lastName = name.substring(name.indexOf(" ") + 1);
-                Axios.post("http://localhost:3001/add-personnel", {
-                    pers_id: newPersonnel[i].value,
-                    pers_fname: firstName,
-                    pers_lname: lastName
-                })
-            }
-        });
-        console.log("Personnel added to DB...");
-    }
-
     const updateConversionChecklist = () => {
         console.log("Updating checklist...");
-        Axios.put(`http://localhost:3001/update-checklist/${conversionChecklistID}`, {
-            loadSheetName: loadSheetName,
-            loadSheetOwner: loadSheetOwner.value,
-            decisionMaker: decisionMaker.value,
-            conversionType: conversionType,
-            additionalProcessing: additionalProcessing,
-            dataSources: dataSources,
-            uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
-            uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
-            preConversionManipulation: preConversionManipulation === "" ? null : preConversionManipulation
+        Axios.put(`http://localhost:3001/update-post-conversion-checklist/${conversionChecklistID}`, {
+            postConversionLoadingErrors: postConversionLoadingErrors === null ? null : postConversionLoadingErrors.trim() === "" ? null : postConversionLoadingErrors,
+            postConversionValidationResults: postConversionValidationResults === null ? null : postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
+            postConversionChanges: postConversionChanges === null ? null : postConversionChanges.trim() === "" ? null : postConversionChanges,
+            approvedByITDirector: formApproved
         }).then((response) => {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully updated!");
-            if (contributors.length !== 0) {
-                addContributions(conversionChecklistID);
-            } else {
-                handleSuccessfulUpdate();
-            }
+            // handleSuccessfulUpdate();
+            setAlert(true);
         });
     };
 
-    const addContributions = (conversionChecklistID) => {
-        console.log("Moving on to contributions...");
-        for (let i = 0; i < contributors.length; i++) {
-            Axios.post("http://localhost:3001/add-contribution", {
-                checklistID: conversionChecklistID,
-                contributorID: contributors[i].value
-            }).then((response) => {
-                console.log("Contribution successfully added!");
-                handleSuccessfulUpdate();
-            });
-        };
-    };
+    // const handleSuccessfulUpdate = () => {
+    //     // setTimeout(() => {
+    //     //     setSubmitButtonText("Request Submitted!");
+    //     // }, 500);
+    //     setTimeout(() => {
+    //         navigate("/");
+    //     }, 1000);
+    // }
 
-    const handleSuccessfulUpdate = () => {
-        // setTimeout(() => {
-        //     setSubmitButtonText("Request Submitted!");
-        // }, 500);
-        setTimeout(() => {
-            navigate("/");
-        }, 1000);
+    const handleValueUpdated = (approvedUpdated) => {
+        console.log(approvedUpdated);
+        if (!approvedUpdated) {
+            setValueUpdated(true);
+            setForceReviewedOff(true);
+            setForceApproveLocked(true);
+        } else {
+            setValueUpdated(true);
+        }
     }
 
-    const handleValueUpdated = () => {
-        setValueUpdated(true);
-        setForceCheckboxOff(true);
+    const handleAlertClosed = (alertClosed) => {
+        if (alertClosed) {
+            setAlert(false);
+            navigate("/");
+        }
     }
 
     useEffect(() => {
@@ -398,19 +198,16 @@ function ViewPostConversionChecklist() {
             if (!validLoadSheetNameEntered) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                // console.log(loadSheetOwner);
-                if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
-                    && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
-                    && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed
-                    && valueUpdated) {
+                if (valueUpdated && postConversionLoadingErrors.trim() !== "" && postConversionValidationResults.trim() !== ""
+                    && postConversionChanges.trim() !== "" && formReviewed) {
                     setSubmitButtonDisabled(false);
                 } else {
                     setSubmitButtonDisabled(true);
                 }
             }
         }
-    }, [validLoadSheetNameEntered, loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
-        dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, valueUpdated, rendering]);
+    }, [loadSheetName, postConversionLoadingErrors, postConversionValidationResults, postConversionChanges, formReviewed, formApproved, rendering]);
+
 
     return (
         rendering ?
@@ -432,6 +229,14 @@ function ViewPostConversionChecklist() {
                 </div>
                 <NavBar>
                 </NavBar>
+                {alert
+                    ? <div className="alert-container">
+                        <PositionedSnackbar
+                            message="Post-conversion checklist successfully updated!"
+                            closed={handleAlertClosed}>
+                        </PositionedSnackbar>
+                    </div>
+                    : <div></div>}
                 <div
                     className="enter-valid-load-sheet-name"
                     style={{ display: enterLoadSheetNameDisplay }}>
@@ -446,57 +251,22 @@ function ViewPostConversionChecklist() {
                         </div>
                     </div>
                 </div>
-                <div
-                    className="view-pre-conversion-checklist"
-                    style={{ display: viewPreConversionChecklistDisplay }}>
-                    <div className="view-pre-conversion-checklist-container">
-                        <div className="view-pre-conversion-checklist-card">
+                <div className="view-post-conversion-checklist">
+                    <div className="view-post-conversion-checklist-container">
+                        <div className="view-post-conversion-checklist-card">
                             <ViewPostConversionChecklistCard
-                                conversionTypeOptions={conversionTypeOptions}
-                                additionalProcessingOptions={additionalProcessingOptions}
-                                loadSheetName={handleLoadSheetNameCallback}
-                                submittedLoadSheetName={loadSheetName}
-                                personnelOptions={personnelOptions}
-                                invalidPersonnel={submittedContributors.concat(contributors)}
-                                // loadSheetOwnerOptions={loadSheetOwnerOptions}
-                                // decisionMakerOptions={decisionMakerOptions}
-                                // contributorOptions={contributorOptions}
-                                loadSheetOwner={handleLoadSheetOwnerCallback}
-                                submittedLoadSheetOwner={loadSheetOwner}
-                                decisionMaker={handleDecisionMakerCallback}
-                                submittedDecisionMaker={decisionMaker}
-                                // invalidPersonnel={contributors}
-                                contributors={handleContributorsCallback}
-                                invalidContributors={
-                                    loadSheetOwner.label && decisionMaker.label
-                                        ? Array.from(new Set(submittedContributors.concat([loadSheetOwner, decisionMaker]))) // TODO: fix this roundabout way of doing things
-                                        : loadSheetOwner.label ? submittedContributors.concat(loadSheetOwner)
-                                            : decisionMaker.label ? submittedContributors.concat(decisionMaker)
-                                                : submittedContributors
-                                }
-                                conversionType={handleConversionTypeCallback}
-                                submittedConversionType={getConversionType(conversionType)}
-                                additionalProcessing={handleAdditionalProcessingCallback}
-                                submittedAdditionalProcessing={getAdditionalProcessing(additionalProcessing)}
-                                dataSources={handleDataSourcesCallback}
-                                submittedDataSources={dataSources}
-                                uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
-                                submittedUniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
-                                uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup}
-                                uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
-                                submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
-                                uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup}
-                                recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
-                                submittedRecordsPreCleanupNotes={recordsPreCleanupNotes ? recordsPreCleanupNotes : ""}
-                                recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
-                                submittedRecordsPostCleanupNotes={recordsPostCleanupNotes ? recordsPostCleanupNotes : ""}
-                                preConversionManipulation={handlePreConversionManipulationCallback}
-                                submittedPreConversionManipulation={preConversionManipulation ? preConversionManipulation : ""}
-                                // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
-                                // postConversionValidationResults={handlePostConversionValidationResultsCallback}
-                                // postConversionChanges={handlePostConversionChangesCallback}
-                                forceCheckboxOff={forceCheckboxOff}
-                                checked={handleCheckboxCallback}
+                                postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
+                                submittedPostConversionLoadingErrors={postConversionLoadingErrors}
+                                postConversionValidationResults={handlePostConversionValidationResultsCallback}
+                                submittedPostConversionValidationResults={postConversionValidationResults}
+                                postConversionChanges={handlePostConversionChangesCallback}
+                                submittedPostConversionChanges={postConversionChanges}
+                                reviewed={handleReviewedCallback}
+                                forceReviewedOff={forceReviewedOff}
+                                approved={handleApprovedCallback}
+                                formDisabled={formDisabled}
+                                forceApproveLocked={forceApproveLocked}
+                                approveUnlockedByUser={handleApproveUnlockedByUser}
                                 valueUpdated={handleValueUpdated}
                                 updateButtonDisabled={submitButtonDisabled}
                                 updated={handleOnClickSubmit}>
