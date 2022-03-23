@@ -75,7 +75,7 @@ export default function EnterLoadSheetNameCard({
                     //         {statusAbbreviation}
                     //     </Avatar>
                     // }
-                    title={<strong>Please enter a valid <u>{input}</u>-conversion load sheet name</strong>}
+                    title={<strong>Please enter a valid {input}conversion load sheet name</strong>}
                 />
                 {/* < CardActions
                 disableSpacing

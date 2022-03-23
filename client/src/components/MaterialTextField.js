@@ -21,9 +21,11 @@ export default function MaterialTextField({
   upperLimitValue = null,
   lowerLimitValue = null,
   negativeNumbersAllowed = true,
+  zerosAllowed = true,
   authenticationField = false,
   textAuthenticationError = "",
-  disabled = false
+  disabled = false,
+  forceErrorOff = false
 }) {
   const [value, setValue] = React.useState(defaultValue);
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -92,24 +94,26 @@ export default function MaterialTextField({
   const checkNumberValidity = (number) => {
     if (limitRangeOfInputs) {
       if (number < 0 && !negativeNumbersAllowed) {
-        handleInvalidNumber("Negative numbers are not permitted");
+        handleInvalidNumber(number, "Negative numbers are not permitted");
+      } else if (number === 0 && !zerosAllowed) {
+        handleInvalidNumber(number, "Number must be > 0");
       } else if (lowerLimitValue !== null && upperLimitValue === null) {
         if (number >= lowerLimitValue) {
           handleValidValue(number);
         } else {
-          handleInvalidNumber("Number is too low");
+          handleInvalidNumber(number, "Number is too low");
         }
       } else if (lowerLimitValue === null && upperLimitValue !== null) {
         if (number <= upperLimitValue) {
           handleValidValue(number);
         } else {
-          handleInvalidNumber("Number is too high");
+          handleInvalidNumber(number, "Number is too high");
         }
       } else if (lowerLimitValue !== null && upperLimitValue !== null) {
         if (lowerLimitValue <= number && number <= upperLimitValue) {
           handleValidValue(number);
         } else {
-          handleInvalidNumber("Number outside of valid range");
+          handleInvalidNumber(number, "Number outside of valid range");
         }
       }
       // if (!negativeNumbersAllowed && number < 0) {
@@ -120,9 +124,10 @@ export default function MaterialTextField({
     }
   }
 
-  const handleInvalidNumber = (helperText) => {
-    setValue(null);
-    inputValue(null);
+  const handleInvalidNumber = (number, helperText) => {
+    // setValue(null);
+    setValue(number);
+    inputValue(number);
     setDisplayedHelperText(helperText);
     setErrorEnabled(true);
   }
@@ -149,6 +154,17 @@ export default function MaterialTextField({
   }
 
   React.useEffect(() => {
+    if (type === "number" && errorEnabled) {
+      if (value && (value <= upperLimitValue || !upperLimitValue) && (value >= lowerLimitValue || !lowerLimitValue)) {
+        setErrorEnabled(false);
+        setDisplayedHelperText("");
+      }
+    } else if (type === "number" && !errorEnabled) {
+      if (value && ((upperLimitValue && value > upperLimitValue) || (lowerLimitValue && value < lowerLimitValue))) {
+        setErrorEnabled(true);
+        setDisplayedHelperText((upperLimitValue && value > upperLimitValue) ? "Number is too high" : "Number is too low");
+      }
+    }
     // if (defaultValue !== "" && firstRender) {
     //   console.log(defaultValue);
     //   setValue(defaultValue);
@@ -165,7 +181,7 @@ export default function MaterialTextField({
         }
       }
     }
-  }, [authenticationField, textAuthenticationError, errorEnabled, lowerLimitValue, firstRender, inputLength])
+  }, [authenticationField, textAuthenticationError, errorEnabled, firstRender, value, lowerLimitValue, upperLimitValue]) //TODO: check need for firstRender
 
   return (
     <Box

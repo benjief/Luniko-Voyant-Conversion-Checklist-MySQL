@@ -58,6 +58,22 @@ app.get('/get-all-ls-names', (req, res) => {
     });
 });
 
+app.get('/get-valid-completed-ls-names', (req, res) => {
+    db.query(
+        `SELECT 
+            cc_load_sheet_name 
+         FROM 
+            conversion_checklist
+         WHERE 
+            is_approved = 1`, (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 app.get('/get-valid-pre-conversion-ls-names', (req, res) => {
     db.query(
         `SELECT 

@@ -27,8 +27,8 @@ function CreatePreConversionChecklist() {
     const [conversionType, setConversionType] = useState("");
     const [additionalProcessing, setAdditionalProcessing] = useState("");
     const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0); // Needs to be <= pre #
+    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(Number.MAX_SAFE_INTEGER);
+    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(1); // Needs to be <= pre #
     const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
     const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
     const [preConversionManipulation, setPreConversionManipulation] = useState("");
@@ -128,11 +128,11 @@ function CreatePreConversionChecklist() {
     }
 
     const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput);
+        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : Number.MAX_SAFE_INTEGER);
     }
 
     const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput);
+        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 1);
     }
 
     const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
@@ -280,7 +280,9 @@ function CreatePreConversionChecklist() {
             // console.log(loadSheetOwner);
             if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                 && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
-                && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed) {
+                && (uniqueRecordsPreCleanup > 0 && uniqueRecordsPreCleanup >= uniqueRecordsPostCleanup)
+                && (uniqueRecordsPostCleanup > 0 && uniqueRecordsPostCleanup <= uniqueRecordsPreCleanup)
+                && formReviewed) {
                 setSubmitButtonDisabled(false);
             } else {
                 setSubmitButtonDisabled(true);

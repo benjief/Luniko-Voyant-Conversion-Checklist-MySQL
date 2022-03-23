@@ -216,7 +216,7 @@ function CreatePostConversionChecklist() {
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
                                 textAuthenticationError={invalidLoadSheetNameError}
-                                input="pre">
+                                input={<u>pre</u>}>
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>

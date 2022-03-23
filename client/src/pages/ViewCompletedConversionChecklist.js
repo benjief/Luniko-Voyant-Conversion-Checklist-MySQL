@@ -45,7 +45,7 @@ function ViewCompletedConversionChecklist() {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
     const getValidLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-valid-post-conversion-ls-names", {
+        await Axios.get("http://localhost:3001/get-valid-completed-ls-names", {
         }).then((response) => {
             populateValidLoadSheetNamesList(response.data);
         });
@@ -155,7 +155,7 @@ function ViewCompletedConversionChecklist() {
                     setEnterLoadSheetNameDisplay("none");
                     setSubmitButtonDisabled(true);
                 } else {
-                    setInvalidLoadSheetNameError("Invalid post-conversion load sheet name");
+                    setInvalidLoadSheetNameError("Invalid completed load sheet name");
                 }
             }
         }
@@ -208,7 +208,7 @@ function ViewCompletedConversionChecklist() {
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
                                 textAuthenticationError={invalidLoadSheetNameError}
-                                input="post">
+                                input={[<u>completed</u>, " "]}>
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>

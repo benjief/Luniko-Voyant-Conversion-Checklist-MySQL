@@ -54,5 +54,5 @@
 
 .post-conversion-checklist-options-container button:hover {
     cursor: pointer;
-    background-color: var(--lunikoOrange);
+    background-color: var(--lunikoOrange) !important;
 }

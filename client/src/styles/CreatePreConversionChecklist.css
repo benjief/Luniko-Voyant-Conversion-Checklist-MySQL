@@ -48,6 +48,6 @@
     margin-top: 0 !important;
 }
 
-.submit-checklist-button {
+.submit-checklist-button:hover {
     background-color: #009952 !important;
 }

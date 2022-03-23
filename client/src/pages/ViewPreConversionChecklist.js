@@ -36,8 +36,8 @@ function ViewPreConversionChecklist() {
     const [conversionType, setConversionType] = useState("");
     const [additionalProcessing, setAdditionalProcessing] = useState("");
     const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0); // Needs to be <= pre #
+    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(Number.MAX_SAFE_INTEGER);
+    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(1); // Needs to be <= pre #
     const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
     const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
     const [preConversionManipulation, setPreConversionManipulation] = useState("");
@@ -144,10 +144,12 @@ function ViewPreConversionChecklist() {
                 });
             }
         });
+        // console.log("load sheet owner and decision maker fields populated...");
         populateSubmittedFields(conversionChecklistInfo);
     }
 
     const populateSubmittedFields = (conversionChecklistInfo) => {
+        // console.log("populating other submitted fields");
         new Promise(resolve => {
             // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
             // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
@@ -232,11 +234,11 @@ function ViewPreConversionChecklist() {
     }
 
     const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput);
+        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : Number.MAX_SAFE_INTEGER);
     }
 
     const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput);
+        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 1);
     }
 
     const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
@@ -410,8 +412,9 @@ function ViewPreConversionChecklist() {
                 // console.log(loadSheetOwner);
                 if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                     && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
-                    && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0 && formReviewed
-                    && valueUpdated) {
+                    && (uniqueRecordsPreCleanup > 0 && uniqueRecordsPreCleanup >= uniqueRecordsPostCleanup)
+                    && (uniqueRecordsPostCleanup > 0 && uniqueRecordsPostCleanup <= uniqueRecordsPreCleanup)
+                    && formReviewed && valueUpdated) {
                     setSubmitButtonDisabled(false);
                 } else {
                     setSubmitButtonDisabled(true);
@@ -462,7 +465,7 @@ function ViewPreConversionChecklist() {
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
                                 textAuthenticationError={invalidLoadSheetNameError}
-                                input="pre">
+                                input={<u>pre-</u>}>
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>

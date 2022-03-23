@@ -294,6 +294,7 @@ export default function ViewPreConversionChecklistCard({
                             limitRangeOfInputs={true}
                             lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}
                             negativeNumbersAllowed={false}
+                            zerosAllowed={false}
                             defaultValue={submittedUniqueRecordsPreCleanup}>
                         </MaterialTextField>
                         <MaterialTextField
@@ -307,6 +308,7 @@ export default function ViewPreConversionChecklistCard({
                             limitRangeOfInputs={true}
                             upperLimitValue={uniqueRecordsPostCleanupUpperLimit}
                             negativeNumbersAllowed={false}
+                            zerosAllowed={false}
                             defaultValue={submittedUniqueRecordsPostCleanup}>
                         </MaterialTextField>
                         <MaterialTextField

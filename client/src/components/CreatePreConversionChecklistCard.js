@@ -265,7 +265,8 @@ export default function CreatePreConversionChecklistCard({
                             type="number"
                             limitRangeOfInputs={true}
                             lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}
-                            negativeNumbersAllowed={false}>
+                            negativeNumbersAllowed={false}
+                            zerosAllowed={false}>
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
@@ -277,7 +278,8 @@ export default function CreatePreConversionChecklistCard({
                             type="number"
                             limitRangeOfInputs={true}
                             upperLimitValue={uniqueRecordsPostCleanupUpperLimit}
-                            negativeNumbersAllowed={false}>
+                            negativeNumbersAllowed={false}
+                            zerosAllowed={false}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-cleanup-notes"
