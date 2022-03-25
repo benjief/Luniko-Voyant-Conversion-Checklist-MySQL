@@ -102,6 +102,7 @@ function CreatePostConversionChecklist() {
 
     const handleOnClickSubmit = async (submitted) => {
         if (submitted) {
+            setSubmitButtonDisabled(true);
             if (!validLoadSheetNameEntered && submitted) {
                 if (checkLoadSheetNameEntered()) {
                     setValidLoadSheetNameEntered(true)
@@ -112,9 +113,7 @@ function CreatePostConversionChecklist() {
                     setInvalidLoadSheetNameError("Invalid pre-conversion load sheet name");
                 }
             } else {
-                if (submitted) {
-                    updateConversionChecklist();
-                }
+                updateConversionChecklist();
             }
         }
     }
@@ -216,7 +215,7 @@ function CreatePostConversionChecklist() {
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
                                 textAuthenticationError={invalidLoadSheetNameError}
-                                input={<u>pre</u>}>
+                                input={<u>pre-</u>}>
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>

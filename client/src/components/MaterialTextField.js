@@ -14,12 +14,12 @@ export default function MaterialTextField({
   type = "text",
   required = false,
   showCharCounter = false,
-  limitRangeOfInputs = false,
+  // limitRangeOfInputs = false,
   requiresValidation = false,
   invalidInputs = [],
   invalidInputMsg = "",
-  upperLimitValue = null,
-  lowerLimitValue = null,
+  // upperLimitValue = null,
+  // lowerLimitValue = null,
   negativeNumbersAllowed = true,
   zerosAllowed = true,
   authenticationField = false,
@@ -92,37 +92,40 @@ export default function MaterialTextField({
   }
 
   const checkNumberValidity = (number) => {
-    if (limitRangeOfInputs) {
-      if (number < 0 && !negativeNumbersAllowed) {
-        handleInvalidNumber(number, "Negative numbers are not permitted");
-      } else if (number === 0 && !zerosAllowed) {
-        handleInvalidNumber(number, "Number must be > 0");
-      } else if (lowerLimitValue !== null && upperLimitValue === null) {
-        if (number >= lowerLimitValue) {
-          handleValidValue(number);
-        } else {
-          handleInvalidNumber(number, "Number is too low");
-        }
-      } else if (lowerLimitValue === null && upperLimitValue !== null) {
-        if (number <= upperLimitValue) {
-          handleValidValue(number);
-        } else {
-          handleInvalidNumber(number, "Number is too high");
-        }
-      } else if (lowerLimitValue !== null && upperLimitValue !== null) {
-        if (lowerLimitValue <= number && number <= upperLimitValue) {
-          handleValidValue(number);
-        } else {
-          handleInvalidNumber(number, "Number outside of valid range");
-        }
-      }
-      // if (!negativeNumbersAllowed && number < 0) {
-      //   handleInvalidNumber("Negative numbers aren't allowed");
-      // } else {
-      //   handleValidValue(number);
-      // }
+    // if (limitRangeOfInputs) {
+    //   if (number < 0 && !negativeNumbersAllowed) {
+    //     handleInvalidNumber(number, "Negative numbers are not permitted");
+    //   } else if (number === 0 && !zerosAllowed) {
+    //     handleInvalidNumber(number, "Number must be > 0");
+    //   } else if (lowerLimitValue !== null && upperLimitValue === null) {
+    //     if (number >= lowerLimitValue) {
+    //       handleValidValue(number);
+    //     } else {
+    //       handleInvalidNumber(number, "Number is too low");
+    //     }
+    //   } else if (lowerLimitValue === null && upperLimitValue !== null) {
+    //     if (number <= upperLimitValue) {
+    //       handleValidValue(number);
+    //     } else {
+    //       handleInvalidNumber(number, "Number is too high");
+    //     }
+    //   } else if (lowerLimitValue !== null && upperLimitValue !== null) {
+    //     if (lowerLimitValue <= number && number <= upperLimitValue) {
+    //       handleValidValue(number);
+    //     } else {
+    //       handleInvalidNumber(number, "Number outside of valid range");
+    //     }
+    //   }
+    // console.log(number);
+    if (!negativeNumbersAllowed && number < 0) {
+      handleInvalidNumber(number, "Negative numbers aren't allowed");
+    } else if (number === 0 && !zerosAllowed) {
+      handleInvalidNumber(number, "Number must be > 0");
+    } else {
+      handleValidValue(number);
     }
   }
+
 
   const handleInvalidNumber = (number, helperText) => {
     // setValue(null);
@@ -154,17 +157,6 @@ export default function MaterialTextField({
   }
 
   React.useEffect(() => {
-    if (type === "number" && errorEnabled) {
-      if (value && (value <= upperLimitValue || !upperLimitValue) && (value >= lowerLimitValue || !lowerLimitValue)) {
-        setErrorEnabled(false);
-        setDisplayedHelperText("");
-      }
-    } else if (type === "number" && !errorEnabled) {
-      if (value && ((upperLimitValue && value > upperLimitValue) || (lowerLimitValue && value < lowerLimitValue))) {
-        setErrorEnabled(true);
-        setDisplayedHelperText((upperLimitValue && value > upperLimitValue) ? "Number is too high" : "Number is too low");
-      }
-    }
     // if (defaultValue !== "" && firstRender) {
     //   console.log(defaultValue);
     //   setValue(defaultValue);
@@ -181,7 +173,7 @@ export default function MaterialTextField({
         }
       }
     }
-  }, [authenticationField, textAuthenticationError, errorEnabled, firstRender, value, lowerLimitValue, upperLimitValue]) //TODO: check need for firstRender
+  }, [authenticationField, textAuthenticationError, errorEnabled, firstRender, value]) //TODO: check need for firstRender
 
   return (
     <Box

@@ -42,7 +42,7 @@ export default function CreatePreConversionChecklistCard({
     invalidLoadSheetNames = [],
     // latestContributor = "",
     conversionType = "",
-    additionalProcessing = "",
+    additionalProcessing = [],
     dataSources = "",
     uniqueRecordsPreCleanup = 0,
     uniqueRecordsPreCleanupLowerLimit = null,
@@ -81,8 +81,8 @@ export default function CreatePreConversionChecklistCard({
         conversionType(valueFromSelector);
     }
 
-    const handleOnSelectAdditionalProcessing = (valueFromSelector) => {
-        additionalProcessing(valueFromSelector);
+    const handleOnSelectAdditionalProcessing = (valuesFromSelector) => {
+        additionalProcessing(valuesFromSelector);
     }
 
     const handleOnChangeDataSources = (updatedText) => {
@@ -236,15 +236,15 @@ export default function CreatePreConversionChecklistCard({
                             selectedValue={handleOnSelectConversionType}
                             required={true}>
                         </MaterialSingleSelect>
-                        <MaterialSingleSelect
+                        <MaterialMultiSelect
                             label="Additional Processing"
                             placeholder="Additional Processing"
-                            singleSelectOptions={additionalProcessingOptions}
-                            selectedValue={handleOnSelectAdditionalProcessing}
+                            multiSelectOptions={additionalProcessingOptions}
+                            selectedValues={handleOnSelectAdditionalProcessing}
                             required={true}
                             id="additional-processing"
                         >
-                        </MaterialSingleSelect>
+                        </MaterialMultiSelect>
                         <MaterialTextField
                             className="data-sources"
                             label="Data Sources"
@@ -263,8 +263,6 @@ export default function CreatePreConversionChecklistCard({
                             multiline={false}
                             required={true}
                             type="number"
-                            limitRangeOfInputs={true}
-                            lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}>
                         </MaterialTextField>
@@ -276,8 +274,6 @@ export default function CreatePreConversionChecklistCard({
                             multiline={false}
                             required={true}
                             type="number"
-                            limitRangeOfInputs={true}
-                            upperLimitValue={uniqueRecordsPostCleanupUpperLimit}
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}>
                         </MaterialTextField>

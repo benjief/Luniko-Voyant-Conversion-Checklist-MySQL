@@ -276,6 +276,7 @@ export default function MaterialMultiSelectFreeSolo(
     return (
         <React.Fragment>
             <Autocomplete
+                disablePortal
                 multiple
                 value={values}
                 // defaultValue={defaultValue}

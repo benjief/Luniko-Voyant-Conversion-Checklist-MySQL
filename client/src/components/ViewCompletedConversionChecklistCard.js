@@ -106,7 +106,7 @@ export default function ViewCompletedConversionChecklistCard({
                             <strong>Contributors<br /></strong>
                             {contributors.map((val, key) => {
                                 return <li
-                                    className="contributor-list"
+                                    // className="contributor-list"
                                     key={key}
                                     style={{ listStyle: "none" }}>
                                     {val}

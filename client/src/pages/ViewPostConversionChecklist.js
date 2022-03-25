@@ -137,9 +137,8 @@ function ViewPostConversionChecklist() {
                     setInvalidLoadSheetNameError("Invalid post-conversion load sheet name");
                 }
             } else {
-                if (submitted) {
-                    updateConversionChecklist();
-                }
+                setSubmitButtonDisabled(true);
+                updateConversionChecklist();
             }
         }
     }

@@ -122,7 +122,6 @@ app.get('/get-all-conversion-checklist-info/:loadSheetName', (req, res) => {
             cc_load_sheet_owner, 
             cc_decision_maker, 
             cc_conversion_type, 
-            cc_additional_processing, 
             cc_data_sources, 
             uq_records_pre_cleanup, 
             uq_records_post_cleanup, 
@@ -154,7 +153,6 @@ app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
             cc_load_sheet_owner, 
             cc_decision_maker, 
             cc_conversion_type, 
-            cc_additional_processing, 
             cc_data_sources, 
             uq_records_pre_cleanup, 
             uq_records_post_cleanup, 
@@ -166,6 +164,24 @@ app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
         WHERE
 	        cc_load_sheet_name = ?`,
         loadSheetName, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send(result);
+            }
+        });
+});
+
+app.get('/get-additional-processing/:checklistID', (req, res) => {
+    const checklistID = req.params.checklistID;
+    db.query(
+        `SELECT
+            ap_type
+        FROM
+            additional_processing
+        WHERE
+	        cc_id = ?`,
+        checklistID, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
@@ -258,7 +274,6 @@ app.post("/add-checklist", (req, res) => {
     const loadSheetOwner = req.body.loadSheetOwner;
     const decisionMaker = req.body.decisionMaker;
     const conversionType = req.body.conversionType;
-    const additionalProcessing = req.body.additionalProcessing;
     const dataSources = req.body.dataSources;
     const uniqueRecordsPreCleanup = req.body.uniqueRecordsPreCleanup;
     const uniqueRecordsPostCleanup = req.body.uniqueRecordsPostCleanup;
@@ -272,7 +287,6 @@ app.post("/add-checklist", (req, res) => {
             cc_load_sheet_owner, 
             cc_decision_maker, 
             cc_conversion_type, 
-            cc_additional_processing, 
             cc_data_sources, 
             uq_records_pre_cleanup, 
             uq_records_post_cleanup, 
@@ -281,9 +295,9 @@ app.post("/add-checklist", (req, res) => {
             cc_pre_conversion_manipulation
         )
         
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [loadSheetName, loadSheetOwner, decisionMaker,
-            conversionType, additionalProcessing, dataSources,
+            conversionType, dataSources,
             uniqueRecordsPreCleanup, uniqueRecordsPostCleanup,
             recordsPreCleanupNotes, recordsPostCleanupNotes,
             preConversionManipulation], (err, result) => {
@@ -314,6 +328,28 @@ app.post("/add-contribution", (req, res) => {
             } else {
                 console.log("Contribution added!");
                 res.send("Contribution added!");
+            }
+        }
+    );
+});
+
+app.post("/add-additional-processing", (req, res) => {
+    const checklistID = req.body.checklistID;
+    const apType = req.body.apType;
+
+    db.query(
+        `INSERT INTO additional_processing (
+            cc_id,
+            ap_type
+        )
+        
+        VALUES (?, ?)`,
+        [checklistID, apType], (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Additional processing added!");
+                res.send("Additional processing added!");
             }
         }
     );

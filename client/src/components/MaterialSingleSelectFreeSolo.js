@@ -275,6 +275,7 @@ export default function MaterialSingleSelectFreeSolo(
     return (
         <React.Fragment>
             <Autocomplete
+                disablePortal
                 value={value}
                 // defaultValue={actualDefaultValue.value}
                 onBlur={handleOnBlur}

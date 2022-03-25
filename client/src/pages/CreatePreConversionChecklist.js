@@ -24,11 +24,11 @@ function CreatePreConversionChecklist() {
     const [loadSheetOwner, setLoadSheetOwner] = useState({});
     const [decisionMaker, setDecisionMaker] = useState({});
     const [contributors, setContributors] = useState([]);
-    const [conversionType, setConversionType] = useState("");
+    const [conversionType, setConversionType] = useState([]);
     const [additionalProcessing, setAdditionalProcessing] = useState("");
     const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(Number.MAX_SAFE_INTEGER);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(1); // Needs to be <= pre #
+    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
+    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0);
     const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
     const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
     const [preConversionManipulation, setPreConversionManipulation] = useState("");
@@ -128,11 +128,11 @@ function CreatePreConversionChecklist() {
     }
 
     const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : Number.MAX_SAFE_INTEGER);
+        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : 0);
     }
 
     const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 1);
+        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 0);
     }
 
     const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
@@ -223,7 +223,6 @@ function CreatePreConversionChecklist() {
             loadSheetOwner: loadSheetOwner.value,
             decisionMaker: decisionMaker.value,
             conversionType: conversionType,
-            additionalProcessing: additionalProcessing,
             dataSources: dataSources,
             uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
             uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
@@ -234,12 +233,28 @@ function CreatePreConversionChecklist() {
             setSubmitted(true);
             console.log("Pre-conversion checklist successfully added!!");
             if (contributors.length !== 0) {
-                console.log(response.data);
-                addContributions(response.data.insertId);
-            } else {
-                setAlert(true);
+                // console.log(response.data);
+                addAdditionalProcessing(response.data.insertId);
             }
         });
+    };
+
+    const addAdditionalProcessing = (conversionChecklistID) => {
+        console.log("Moving on to additional processing...");
+        for (let i = 0; i < additionalProcessing.length; i++) {
+            Axios.post("http://localhost:3001/add-additional-processing", {
+                checklistID: conversionChecklistID,
+                apType: additionalProcessing[i].value
+            }).then((response) => {
+                console.log("Additional processing successfully added!");
+                if (contributors.length) {
+                    addContributions(conversionChecklistID);
+                } else {
+                    setSubmitButtonDisabled(true);
+                    setAlert(true);
+                }
+            });
+        };
     };
 
     const addContributions = (conversionChecklistID) => {
@@ -250,6 +265,7 @@ function CreatePreConversionChecklist() {
                 contributorID: contributors[i].value
             }).then((response) => {
                 console.log("Contribution successfully added!");
+                setSubmitButtonDisabled(true);
                 setAlert(true);
             });
         };
@@ -277,11 +293,9 @@ function CreatePreConversionChecklist() {
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
-            // console.log(loadSheetOwner);
             if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
-                && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
-                && (uniqueRecordsPreCleanup > 0 && uniqueRecordsPreCleanup >= uniqueRecordsPostCleanup)
-                && (uniqueRecordsPostCleanup > 0 && uniqueRecordsPostCleanup <= uniqueRecordsPreCleanup)
+                && conversionType !== "" && additionalProcessing !== [] && dataSources !== {}
+                && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
                 && formReviewed) {
                 setSubmitButtonDisabled(false);
             } else {

@@ -67,6 +67,10 @@
     /* transition: 100ms !important; */
 }
 
+.MuiAutocomplete-listbox {
+    max-height: 185px !important;
+}
+
 /* .MuiAutocomplete-popper[data-popper-escaped] {
     visibility: hidden !important;
     pointer-events: none !important;

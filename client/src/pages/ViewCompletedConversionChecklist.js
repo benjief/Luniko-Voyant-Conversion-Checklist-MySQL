@@ -226,7 +226,7 @@ function ViewCompletedConversionChecklist() {
                                 decisionMaker={decisionMaker}
                                 contributors={contributors}
                                 conversionType={DecoderFunctions.getConversionType(conversionType)}
-                                additionalProcessing={DecoderFunctions.getAdditionalProcessing(additionalProcessing)}
+                                additionalProcessing={additionalProcessing}
                                 dataSources={dataSources}
                                 uniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
                                 uniqueRecordsPostCleanup={uniqueRecordsPostCleanup}

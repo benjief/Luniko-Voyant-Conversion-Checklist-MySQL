@@ -7,19 +7,19 @@ import Stack from '@mui/material/Stack';
 export default function MaterialMultiSelect({
   label = "",
   placeholder = "",
+  defaultValue = [],
   multiSelectOptions = [],
   selectedValues = [],
   limitTags = 1,
   required = false
 }) {
 
-  const [values, setValues] = React.useState([]);
+  const [values, setValues] = React.useState(defaultValue);
   const [errorEnabled, setErrorEnabled] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState("");
 
   const handleOnChange = (object) => {
     if (object.length) {
-      console.log(object);
       setValues(object);
       selectedValues(object);
       setErrorEnabled(false);
@@ -41,16 +41,42 @@ export default function MaterialMultiSelect({
     }
   }
 
+  const checkForLabelInValues = (label) => {
+    for (let i = 0; i < values.length; i++) {
+      if (values[i].label === label) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  const setDisabledOptions = (option) => {
+    if (!values.length) {
+      return false;
+    } else {
+      if (option.label === "N/A") {
+        return !checkForLabelInValues(option);
+      } else {
+        return checkForLabelInValues("N/A");
+      }
+    }
+  }
+
   return (
     <Autocomplete
       // Override of option equality is needed for MUI to properly compare options and values
-      // isOptionEqualToValue={(option, value) => option.id === value.id}
+      isOptionEqualToValue={(option, value) => {
+        return value !== "" ? option.value === value.value : true;
+      }}
       multiple
-      values={values}
+      value={values}
       disablePortal
       limitTags={limitTags}
       // id="tags-outlined"
       options={multiSelectOptions}
+      getOptionDisabled={(option) => {
+        return setDisabledOptions(option);
+      }}
       getOptionLabel={(option) => option.label}
       // defaultValue={[top100Films[13]]}
       filterSelectedOptions

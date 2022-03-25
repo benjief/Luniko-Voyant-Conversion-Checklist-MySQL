@@ -8,7 +8,7 @@ import ViewPreConversionChecklistCard from "../components/ViewPreConversionCheck
 import PositionedSnackbar from "../components/PositionedSnackbar";
 import Axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { getConversionType, getAdditionalProcessing } from "../components/DecoderFunctions";
+import * as DecoderFunctions from "../components/DecoderFunctions";
 import Hypnosis from "react-cssfx-loading/lib/Hypnosis";
 import "../styles/ViewPreConversionChecklist.css";
 import "../styles/SelectorComponents.css";
@@ -34,10 +34,10 @@ function ViewPreConversionChecklist() {
     const [submittedContributors, setSubmittedContributors] = useState([]);
     const [contributors, setContributors] = useState([]);
     const [conversionType, setConversionType] = useState("");
-    const [additionalProcessing, setAdditionalProcessing] = useState("");
+    const [additionalProcessing, setAdditionalProcessing] = useState([]);
     const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(Number.MAX_SAFE_INTEGER);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(1); // Needs to be <= pre #
+    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
+    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0);
     const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
     const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
     const [preConversionManipulation, setPreConversionManipulation] = useState("");
@@ -84,8 +84,8 @@ function ViewPreConversionChecklist() {
     const getConversionChecklistInfo = async (loadSheetName) => {
         await Axios.get(`http://localhost:3001/get-pre-conversion-checklist-info/${loadSheetName}`, {
         }).then((response) => {
-            getPersonnelInfo(response.data[0]);
             getSubmittedContributors(response.data[0].cc_id);
+            getPersonnelInfo(response.data[0]);
         })
     }
 
@@ -97,71 +97,77 @@ function ViewPreConversionChecklist() {
     }
 
     const populateSubmittedContributorsList = (submittedContributorsList) => {
-        new Promise(resolve => {
-            if (submittedContributorsList.length) {
-                let tempArray = [];
-                for (let i = 0; i < submittedContributorsList.length; i++) {
-                    let uid = submittedContributorsList[i].pers_id;
-                    let name = submittedContributorsList[i].pers_name;
-                    let personnel = {
-                        "value": uid,
-                        "label": name
-                    };
-                    tempArray.push(personnel);
-                }
-                setSubmittedContributors([...tempArray]);
+        if (submittedContributorsList.length) {
+            let tempArray = [];
+            for (let i = 0; i < submittedContributorsList.length; i++) {
+                let uid = submittedContributorsList[i].pers_id;
+                let name = submittedContributorsList[i].pers_name;
+                let personnel = {
+                    "value": uid,
+                    "label": name
+                };
+                tempArray.push(personnel);
             }
-        });
+            setSubmittedContributors([...tempArray]);
+        }
     }
 
-    // const populateSubmittedLSOwnerAndDecisionMakerFields = (conversionChecklistInfo) => {
-    //     new Promise(resolve => {
-    //         let lsOwnerUID = conversionChecklistInfo.cc_load_sheet_owner;
-    //         let decisionMakerUID = conversionChecklistInfo.cc_decision_maker;
-    //         let lsOwnerName = personnelOptionsMap.get(lsOwnerUID);
-    //         let decisionMakerName = personnelOptionsMap.get(decisionMakerUID);
-    //         setLoadSheetOwner({ "value": lsOwnerUID, "label": lsOwnerName });
-    //         setDecisionMaker({ "value": decisionMakerUID, "label": decisionMakerName });
-    //     });
-    //     populateSubmittedFields(conversionChecklistInfo);
-    // }
-
-    const getPersonnelInfo = async (conversionChecklistInfo) => {
+    const getPersonnelInfo = (conversionChecklistInfo) => {
         new Promise(resolve => {
             let loadSheetOwner = conversionChecklistInfo.cc_load_sheet_owner;
             let decisionMaker = conversionChecklistInfo.cc_decision_maker;
             let conversionChecklistPersonnel = [loadSheetOwner, decisionMaker];
 
-            for (let i = 0; i < conversionChecklistPersonnel.length; i++) {
-                Axios.get(`http://localhost:3001/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
-                }).then((response) => {
-                    let name = response.data[0].pers_name;
-                    let personnel = {
-                        "value": conversionChecklistPersonnel[i],
-                        "label": name
-                    };
-                    i === 0 ? setLoadSheetOwner(personnel) : setDecisionMaker(personnel);
-                });
-            }
-        });
-        // console.log("load sheet owner and decision maker fields populated...");
-        populateSubmittedFields(conversionChecklistInfo);
+            new Promise(resolve => {
+                for (let i = 0; i < conversionChecklistPersonnel.length; i++) {
+                    Axios.get(`http://localhost:3001/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
+                    }).then((response) => {
+                        let name = response.data[0].pers_name;
+                        let personnel = {
+                            "value": conversionChecklistPersonnel[i],
+                            "label": name
+                        };
+                        i === 0 ? setLoadSheetOwner(personnel) : setDecisionMaker(personnel);
+                    });
+                }
+            });
+        }).then(populateSubmittedFields(conversionChecklistInfo));
     }
 
     const populateSubmittedFields = (conversionChecklistInfo) => {
-        // console.log("populating other submitted fields");
         new Promise(resolve => {
-            // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
-            // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
             setConversionChecklistID(conversionChecklistInfo.cc_id);
-            setConversionType(conversionChecklistInfo.cc_conversion_type);
-            setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
+            let value = conversionChecklistInfo.cc_conversion_type;
+            let label = DecoderFunctions.getConversionType(value);
+            let conversionType = {
+                "value": value,
+                "label": label
+            };
+            setConversionType(conversionType);
             setDataSources(conversionChecklistInfo.cc_data_sources);
             setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
             setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
             setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
             setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
             setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
+        }).then(getAdditionalProcessing(conversionChecklistInfo.cc_id));
+    }
+
+    const getAdditionalProcessing = async (checklistID) => {
+        await Axios.get(`http://localhost:3001/get-additional-processing/${checklistID}`, {
+        }).then((response) => {
+            let tempArray = [];
+            for (let i = 0; i < response.data.length; i++) {
+                let value = response.data[i].ap_type;
+                let label = DecoderFunctions.getAdditionalProcessingType(value);
+                let additionalProcessing = {
+                    "value": value,
+                    "label": label
+                }
+                tempArray.push(additionalProcessing);
+            }
+            // console.log(tempArray);
+            setAdditionalProcessing([...tempArray]);
         });
         getPersonnel();
     }
@@ -188,9 +194,7 @@ function ViewPreConversionChecklist() {
                 }
                 setPersonnelOptions([...tempArray]);
             }
-        });
-        setViewPreConversionChecklistDisplay("visible");
-        setRendering(false);
+        }).then(setViewPreConversionChecklistDisplay("visible"), setRendering(false));
     }
 
     const handleLoadSheetNameCallback = (lsNameFromInput) => {
@@ -234,11 +238,11 @@ function ViewPreConversionChecklist() {
     }
 
     const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : Number.MAX_SAFE_INTEGER);
+        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : 0);
     }
 
     const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 1);
+        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 0);
     }
 
     const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
@@ -282,6 +286,7 @@ function ViewPreConversionChecklist() {
             }
         } else {
             if (submitted) {
+                setSubmitButtonDisabled(true);
                 await assignUIDsToNewPersonnel();
                 await addNewPersonnelToDB();
                 updateConversionChecklist();
@@ -409,11 +414,9 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                // console.log(loadSheetOwner);
                 if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
-                    && conversionType !== "" && additionalProcessing !== "" && dataSources !== {}
-                    && (uniqueRecordsPreCleanup > 0 && uniqueRecordsPreCleanup >= uniqueRecordsPostCleanup)
-                    && (uniqueRecordsPostCleanup > 0 && uniqueRecordsPostCleanup <= uniqueRecordsPreCleanup)
+                    && conversionType !== "" && additionalProcessing !== [] && dataSources !== {}
+                    && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
                     && formReviewed && valueUpdated) {
                     setSubmitButtonDisabled(false);
                 } else {
@@ -502,9 +505,9 @@ function ViewPreConversionChecklist() {
                                                 : submittedContributors
                                 }
                                 conversionType={handleConversionTypeCallback}
-                                submittedConversionType={getConversionType(conversionType)}
+                                submittedConversionType={conversionType}
                                 additionalProcessing={handleAdditionalProcessingCallback}
-                                submittedAdditionalProcessing={getAdditionalProcessing(additionalProcessing)}
+                                submittedAdditionalProcessing={additionalProcessing}
                                 dataSources={handleDataSourcesCallback}
                                 submittedDataSources={dataSources}
                                 uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}

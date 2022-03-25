@@ -44,7 +44,7 @@
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
-.submit-load-sheet-name-button:hover {
+.submit-load-sheet-name-button:not(:disabled):hover {
     background-color: var(--lunikoOrange) !important;
 }
 

@@ -13,7 +13,6 @@ import MaterialSingleSelect from './MaterialSingleSelect';
 import MaterialSingleSelectFreeSolo from './MaterialSingleSelectFreeSolo';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
-import MaterialSingleSelectWithValue from './MaterialSingleSelectWithValue';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 // import BootstrapPopover from "../components/BootstrapPopover";
@@ -46,8 +45,8 @@ export default function ViewPreConversionChecklistCard({
     // latestContributor = "",
     conversionType = "",
     submittedConversionType = "",
-    additionalProcessing = "",
-    submittedAdditionalProcessing = "",
+    additionalProcessing = [],
+    submittedAdditionalProcessing = [],
     dataSources = "",
     submittedDataSources = "",
     uniqueRecordsPreCleanup = 0,
@@ -99,8 +98,8 @@ export default function ViewPreConversionChecklistCard({
         valueUpdated(true);
     }
 
-    const handleOnSelectAdditionalProcessing = (valueFromSelector) => {
-        additionalProcessing(valueFromSelector);
+    const handleOnSelectAdditionalProcessing = (valuesFromSelector) => {
+        additionalProcessing(valuesFromSelector);
         valueUpdated(true);
     }
 
@@ -255,23 +254,25 @@ export default function ViewPreConversionChecklistCard({
                             invalidOptions={invalidContributors}
                             required={false}>
                         </MaterialMultiSelectFreeSolo>
-                        <MaterialSingleSelectWithValue
+                        <MaterialSingleSelect
                             label="Conversion Type"
                             placeholder="Conversion Type"
+                            defaultValue={submittedConversionType}
                             singleSelectOptions={conversionTypeOptions}
                             selectedValue={handleOnSelectConversionType}
                             required={true}
                             defaultValue={submittedConversionType}>
-                        </MaterialSingleSelectWithValue>
-                        <MaterialSingleSelectWithValue
+                        </MaterialSingleSelect>
+                        <MaterialMultiSelect
                             label="Additional Processing"
                             placeholder="Additional Processing"
-                            singleSelectOptions={additionalProcessingOptions}
-                            selectedValue={handleOnSelectAdditionalProcessing}
+                            defaultValue={submittedAdditionalProcessing}
+                            multiSelectOptions={additionalProcessingOptions}
+                            selectedValues={handleOnSelectAdditionalProcessing}
                             required={true}
                             id="additional-processing"
                             defaultValue={submittedAdditionalProcessing}>
-                        </MaterialSingleSelectWithValue>
+                        </MaterialMultiSelect>
                         <MaterialTextField
                             className="data-sources"
                             label="Data Sources"
@@ -291,8 +292,6 @@ export default function ViewPreConversionChecklistCard({
                             multiline={false}
                             required={true}
                             type="number"
-                            limitRangeOfInputs={true}
-                            lowerLimitValue={uniqueRecordsPreCleanupLowerLimit}
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}
                             defaultValue={submittedUniqueRecordsPreCleanup}>
@@ -305,8 +304,6 @@ export default function ViewPreConversionChecklistCard({
                             multiline={false}
                             required={true}
                             type="number"
-                            limitRangeOfInputs={true}
-                            upperLimitValue={uniqueRecordsPostCleanupUpperLimit}
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}
                             defaultValue={submittedUniqueRecordsPostCleanup}>

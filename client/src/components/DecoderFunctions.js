@@ -5,7 +5,7 @@ function getConversionType(conversionTypeCode) {
     return conversionType;
 }
 
-function getAdditionalProcessing(additionalProcessingCode) {
+function getAdditionalProcessingType(additionalProcessingCode) {
     let additionalProcessing = additionalProcessingCode === "C" ? "Cleanup Needed"
         : additionalProcessingCode === "D" ? "New Data to Be Added"
             : "N/A";
@@ -15,5 +15,5 @@ function getAdditionalProcessing(additionalProcessingCode) {
 
 export {
     getConversionType as getConversionType,
-    getAdditionalProcessing as getAdditionalProcessing
+    getAdditionalProcessingType as getAdditionalProcessingType
 }
