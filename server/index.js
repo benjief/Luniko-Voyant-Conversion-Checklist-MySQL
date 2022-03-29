@@ -6,11 +6,18 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+// const db = mysql.createConnection({
+//     user: "root",
+//     host: "localhost",
+//     password: "",
+//     database: "voyant_conversion_checklist"
+// });
+
 const db = mysql.createConnection({
-    user: "root",
-    host: "localhost",
-    password: "",
-    database: "voyant_conversion_checklist"
+    user: "smalbqxwpdi81cf1",
+    host: "uyu7j8yohcwo35j3.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    password: "p2q1f0vjwbjayzke",
+    database: "cei6b44h3w9lie0t"
 });
 
 app.get('/get-all-personnel', (req, res) => {
@@ -333,6 +340,23 @@ app.post("/add-contribution", (req, res) => {
     );
 });
 
+app.post("/remove-contribution", (req, res) => {
+    const checklistID = req.body.conversionChecklistID;
+
+    db.query(
+        `DELETE FROM contribution
+         WHERE cc_id = ?`,
+        [checklistID], (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Contribution deleted!");
+                res.send("Contribution deleted!");
+            }
+        }
+    );
+});
+
 app.post("/add-additional-processing", (req, res) => {
     const checklistID = req.body.checklistID;
     const apType = req.body.apType;
@@ -355,13 +379,30 @@ app.post("/add-additional-processing", (req, res) => {
     );
 });
 
+app.delete("/remove-additional-processing/:conversionChecklistID", (req, res) => {
+    const checklistID = req.params.conversionChecklistID;
+
+    db.query(
+        `DELETE 
+         FROM additional_processing
+         WHERE cc_id = ?`,
+        checklistID, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Additional processing deleted!");
+                res.send("Additional processing deleted!");
+            }
+        }
+    );
+});
+
 app.put("/update-pre-conversion-checklist/:conversionChecklistID", (req, res) => {
     const conversionChecklistID = req.params.conversionChecklistID;
     const loadSheetName = req.body.loadSheetName;
     const loadSheetOwner = req.body.loadSheetOwner;
     const decisionMaker = req.body.decisionMaker;
     const conversionType = req.body.conversionType;
-    const additionalProcessing = req.body.additionalProcessing;
     const dataSources = req.body.dataSources;
     const uniqueRecordsPreCleanup = req.body.uniqueRecordsPreCleanup;
     const uniqueRecordsPostCleanup = req.body.uniqueRecordsPostCleanup;
@@ -376,7 +417,6 @@ app.put("/update-pre-conversion-checklist/:conversionChecklistID", (req, res) =>
             cc_load_sheet_owner = ?, 
             cc_decision_maker = ?, 
             cc_conversion_type = ?, 
-            cc_additional_processing = ?, 
             cc_data_sources = ?, 
             uq_records_pre_cleanup = ?, 
             uq_records_post_cleanup = ?, 
@@ -385,7 +425,7 @@ app.put("/update-pre-conversion-checklist/:conversionChecklistID", (req, res) =>
             cc_pre_conversion_manipulation = ?
         WHERE cc_id = ?`,
         [loadSheetName, loadSheetOwner, decisionMaker,
-            conversionType, additionalProcessing, dataSources,
+            conversionType, dataSources,
             uniqueRecordsPreCleanup, uniqueRecordsPostCleanup,
             recordsPreCleanupNotes, recordsPostCleanupNotes,
             preConversionManipulation, conversionChecklistID], (err, result) => {
@@ -427,6 +467,10 @@ app.put("/update-post-conversion-checklist/:conversionChecklistID", (req, res) =
     );
 });
 
-app.listen(3001, () => {
-    console.log("Yay! Your server is running on port 3001.");
+// app.listen(3001, () => {
+//     console.log("Yay! Your server is running on port 3001.");
+// });
+
+app.listen(process.env.PORT || 3001, () => {
+    console.log("Your server is running!");
 });

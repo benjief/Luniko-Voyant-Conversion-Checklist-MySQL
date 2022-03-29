@@ -53,7 +53,7 @@ function CreatePreConversionChecklist() {
     ];
 
     const getExistingLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-all-ls-names", {
+        await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-all-ls-names", {
         }).then((response) => {
             populateExistingLoadSheetNamesList(response.data);
             getPersonnel();
@@ -73,7 +73,7 @@ function CreatePreConversionChecklist() {
     // Personnel functions
     const getPersonnel = async () => {
         // console.log("fetching personnel!");
-        await Axios.get("http://localhost:3001/get-all-personnel", {
+        await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-all-personnel", {
         }).then((response) => {
             populatePersonnelList(response.data);
         });
@@ -206,7 +206,7 @@ function CreatePreConversionChecklist() {
                 let name = newPersonnel[i].label;
                 let firstName = name.split(" ")[0];
                 let lastName = name.substring(name.indexOf(" ") + 1);
-                Axios.post("http://localhost:3001/add-personnel", {
+                Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-personnel", {
                     pers_id: newPersonnel[i].value,
                     pers_fname: firstName,
                     pers_lname: lastName
@@ -218,7 +218,7 @@ function CreatePreConversionChecklist() {
 
     const addConversionChecklist = () => {
         console.log("Adding checklist...");
-        Axios.post("http://localhost:3001/add-checklist", {
+        Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-checklist", {
             loadSheetName: loadSheetName,
             loadSheetOwner: loadSheetOwner.value,
             decisionMaker: decisionMaker.value,
@@ -231,6 +231,7 @@ function CreatePreConversionChecklist() {
             preConversionManipulation: preConversionManipulation === null ? null : preConversionManipulation === "" ? null : preConversionManipulation
         }).then((response) => {
             setSubmitted(true);
+            setSubmitButtonDisabled(true);
             console.log("Pre-conversion checklist successfully added!!");
             if (contributors.length !== 0) {
                 // console.log(response.data);
@@ -242,7 +243,7 @@ function CreatePreConversionChecklist() {
     const addAdditionalProcessing = (conversionChecklistID) => {
         console.log("Moving on to additional processing...");
         for (let i = 0; i < additionalProcessing.length; i++) {
-            Axios.post("http://localhost:3001/add-additional-processing", {
+            Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-additional-processing", {
                 checklistID: conversionChecklistID,
                 apType: additionalProcessing[i].value
             }).then((response) => {
@@ -250,7 +251,6 @@ function CreatePreConversionChecklist() {
                 if (contributors.length) {
                     addContributions(conversionChecklistID);
                 } else {
-                    setSubmitButtonDisabled(true);
                     setAlert(true);
                 }
             });
@@ -259,16 +259,16 @@ function CreatePreConversionChecklist() {
 
     const addContributions = (conversionChecklistID) => {
         console.log("Moving on to contributions...");
-        for (let i = 0; i < contributors.length; i++) {
-            Axios.post("http://localhost:3001/add-contribution", {
-                checklistID: conversionChecklistID,
-                contributorID: contributors[i].value
-            }).then((response) => {
-                console.log("Contribution successfully added!");
-                setSubmitButtonDisabled(true);
-                setAlert(true);
-            });
-        };
+        new Promise(resolve => {
+            for (let i = 0; i < contributors.length; i++) {
+                Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-contribution", {
+                    checklistID: conversionChecklistID,
+                    contributorID: contributors[i].value
+                }).then((response) => {
+                    console.log("Contribution successfully added!");
+                });
+            }
+        }).then(setSubmitButtonDisabled(true), setAlert(true));
     };
 
     // const handleSuccessfulSubmit = () => {
@@ -293,6 +293,7 @@ function CreatePreConversionChecklist() {
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
+            console.log(conversionType);
             if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                 && conversionType !== "" && additionalProcessing !== [] && dataSources !== {}
                 && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0

@@ -28,7 +28,7 @@ function ViewCompletedConversionChecklist() {
     const [decisionMaker, setDecisionMaker] = useState([]);
     const [contributors, setContributors] = useState([]);
     const [conversionType, setConversionType] = useState("");
-    const [additionalProcessing, setAdditionalProcessing] = useState("");
+    const [additionalProcessing, setAdditionalProcessing] = useState([]);
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
     const [postConversionChanges, setPostConversionChanges] = useState("");
@@ -110,8 +110,8 @@ function ViewCompletedConversionChecklist() {
             // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
             // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
             setConversionChecklistID(conversionChecklistInfo.cc_id);
-            setConversionType(conversionChecklistInfo.cc_conversion_type);
-            setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
+            setConversionType(DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversionType));
+            // setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
             setDataSources(conversionChecklistInfo.cc_data_sources);
             setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
             setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
@@ -123,7 +123,21 @@ function ViewCompletedConversionChecklist() {
             setPostConversionValidationResults(conversionChecklistInfo.cc_post_conversion_validation_results);
             setPostConversionChanges(conversionChecklistInfo.cc_post_conversion_changes);
         });
-        getContributors(conversionChecklistInfo.cc_id);
+        getAdditionalProcessing(conversionChecklistInfo.cc_id);
+        // getContributors(conversionChecklistInfo.cc_id);
+    }
+
+    const getAdditionalProcessing = async (checklistID) => {
+        await Axios.get(`http://localhost:3001/get-additional-processing/${checklistID}`, {
+        }).then((response) => {
+            let tempArray = [];
+            for (let i = 0; i < response.data.length; i++) {
+                tempArray.push(DecoderFunctions.getAdditionalProcessingType(response.data[i].ap_type));
+            }
+            // console.log(tempArray);
+            setAdditionalProcessing([...tempArray]);
+        });
+        getContributors(checklistID);
     }
 
     const getContributors = async (conversionChecklistID) => {
@@ -225,7 +239,7 @@ function ViewCompletedConversionChecklist() {
                                 loadSheetOwner={loadSheetOwner}
                                 decisionMaker={decisionMaker}
                                 contributors={contributors}
-                                conversionType={DecoderFunctions.getConversionType(conversionType)}
+                                conversionType={conversionType}
                                 additionalProcessing={additionalProcessing}
                                 dataSources={dataSources}
                                 uniqueRecordsPreCleanup={uniqueRecordsPreCleanup}

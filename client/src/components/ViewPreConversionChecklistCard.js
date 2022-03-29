@@ -41,6 +41,7 @@ export default function ViewPreConversionChecklistCard({
     submittedDecisionMaker = "",
     invalidPersonnel = [],
     contributors = [],
+    submittedContributors = [],
     invalidContributors = [],
     // latestContributor = "",
     conversionType = "",
@@ -249,6 +250,7 @@ export default function ViewPreConversionChecklistCard({
                             className="add-contributors-dialog"
                             label="Add Other Contributors"
                             placeholder="Who else was involved?"
+                            defaultValue={submittedContributors}
                             multiSelectOptions={personnelOptions}
                             selectedValues={handleOnSelectContributors}
                             invalidOptions={invalidContributors}

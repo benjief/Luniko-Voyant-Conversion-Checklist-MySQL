@@ -38,7 +38,7 @@ function CreatePostConversionChecklist() {
     const navigate = useNavigate();
 
     const getValidLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-valid-pre-conversion-ls-names", {
+        await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-valid-pre-conversion-ls-names", {
         }).then((response) => {
             populateValidLoadSheetNamesList(response.data);
         });
@@ -73,7 +73,7 @@ function CreatePostConversionChecklist() {
     }
 
     const getConversionChecklistID = async (loadSheetName) => {
-        await Axios.get(`http://localhost:3001/get-load-sheet-id/${loadSheetName}`, {
+        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-load-sheet-id/${loadSheetName}`, {
         }).then((response) => {
             setConversionChecklistID(response.data[0].cc_id);
             setRendering(false);
@@ -102,8 +102,7 @@ function CreatePostConversionChecklist() {
 
     const handleOnClickSubmit = async (submitted) => {
         if (submitted) {
-            setSubmitButtonDisabled(true);
-            if (!validLoadSheetNameEntered && submitted) {
+            if (!validLoadSheetNameEntered) {
                 if (checkLoadSheetNameEntered()) {
                     setValidLoadSheetNameEntered(true)
                     setRendering(true);
@@ -120,13 +119,14 @@ function CreatePostConversionChecklist() {
 
     const updateConversionChecklist = () => {
         console.log("Updating checklist...");
-        Axios.put(`http://localhost:3001/update-post-conversion-checklist/${conversionChecklistID}`, {
+        Axios.put(`https://voyant-conversion-checklist.herokuapp.com/update-post-conversion-checklist/${conversionChecklistID}`, {
             postConversionLoadingErrors: postConversionLoadingErrors === null ? null : postConversionLoadingErrors.trim === "" ? null : postConversionLoadingErrors,
             postConversionValidationResults: postConversionValidationResults === null ? null : postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
             postConversionChanges: postConversionChanges === null ? null : postConversionChanges.trim() === "" ? null : postConversionChanges,
             approvedByITDirector: formApproved
         }).then((response) => {
             setSubmitted(true);
+            setSubmitButtonDisabled(true);
             console.log("Pre-conversion checklist successfully updated!");
             // handleSuccessfulUpdate();
             setAlert(true);
@@ -215,7 +215,7 @@ function CreatePostConversionChecklist() {
                                 submitted={handleOnClickSubmit}
                                 submitButtonDisabled={submitButtonDisabled}
                                 textAuthenticationError={invalidLoadSheetNameError}
-                                input={<u>pre-</u>}>
+                                input={[<u>pre</u>, "-"]}>
                             </EnterLoadSheetNameCard>
                         </div>
                     </div>

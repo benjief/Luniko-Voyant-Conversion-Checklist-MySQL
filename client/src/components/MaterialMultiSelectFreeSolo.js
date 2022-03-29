@@ -23,7 +23,7 @@ export default function MaterialMultiSelectFreeSolo(
         limitTags = 1,
         required = false,
     }) {
-    const [values, setValues] = React.useState([]);
+    const [values, setValues] = React.useState(defaultValue);
     const [open, toggleOpen] = React.useState(false);
     const [errorEnabled, setErrorEnabled] = React.useState(false);
     const [displayedHelperText, setDisplayedHelperText] = React.useState("");

@@ -29,7 +29,7 @@ export default function ViewCompletedConversionChecklistCard({
     decisionMaker = "",
     contributors = [],
     conversionType = "",
-    additionalProcessing = "",
+    additionalProcessing = [],
     dataSources = "",
     uniqueRecordsPreCleanup = 0,
     uniqueRecordsPostCleanup = 0,
@@ -106,7 +106,6 @@ export default function ViewCompletedConversionChecklistCard({
                             <strong>Contributors<br /></strong>
                             {contributors.map((val, key) => {
                                 return <li
-                                    // className="contributor-list"
                                     key={key}
                                     style={{ listStyle: "none" }}>
                                     {val}
@@ -117,7 +116,14 @@ export default function ViewCompletedConversionChecklistCard({
                             <strong>Conversion Type<br /></strong> {conversionType}
                         </Typography>
                         <Typography paragraph>
-                            <strong>Additional Processing<br /></strong> {additionalProcessing}
+                            <strong>Additional Processing<br /></strong>
+                            {additionalProcessing.map((val, key) => {
+                                return <li
+                                    key={key}
+                                    style={{ listStyle: "none" }}>
+                                    {val}
+                                </li>
+                            })}
                         </Typography>
                         <Typography paragraph>
                             <strong>Data Sources<br /></strong> {dataSources}

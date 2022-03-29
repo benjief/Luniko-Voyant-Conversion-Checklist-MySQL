@@ -11,7 +11,8 @@ export default function MaterialMultiSelect({
   multiSelectOptions = [],
   selectedValues = [],
   limitTags = 1,
-  required = false
+  required = false,
+  invalidOptions = []
 }) {
 
   const [values, setValues] = React.useState(defaultValue);
