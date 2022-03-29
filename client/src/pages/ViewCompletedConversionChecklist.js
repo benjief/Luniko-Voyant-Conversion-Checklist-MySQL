@@ -45,7 +45,7 @@ function ViewCompletedConversionChecklist() {
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
     const getValidLoadSheetNames = async () => {
-        await Axios.get("http://localhost:3001/get-valid-completed-ls-names", {
+        await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-valid-completed-ls-names", {
         }).then((response) => {
             populateValidLoadSheetNamesList(response.data);
         });
@@ -80,7 +80,7 @@ function ViewCompletedConversionChecklist() {
     }
 
     const getConversionChecklistInfo = async (loadSheetName) => {
-        await Axios.get(`http://localhost:3001/get-all-conversion-checklist-info/${loadSheetName}`, {
+        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-all-conversion-checklist-info/${loadSheetName}`, {
         }).then((response) => {
             getPersonnelInfo(response.data[0]);
         });
@@ -92,7 +92,7 @@ function ViewCompletedConversionChecklist() {
         let conversionChecklistPersonnel = [loadSheetOwner, decisionMaker];
 
         for (let i = 0; i < conversionChecklistPersonnel.length; i++) {
-            Axios.get(`http://localhost:3001/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
+            Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
             }).then((response) => {
                 let name = response.data[0].pers_name;
                 let personnel = {
@@ -128,7 +128,7 @@ function ViewCompletedConversionChecklist() {
     }
 
     const getAdditionalProcessing = async (checklistID) => {
-        await Axios.get(`http://localhost:3001/get-additional-processing/${checklistID}`, {
+        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-additional-processing/${checklistID}`, {
         }).then((response) => {
             let tempArray = [];
             for (let i = 0; i < response.data.length; i++) {
@@ -141,7 +141,7 @@ function ViewCompletedConversionChecklist() {
     }
 
     const getContributors = async (conversionChecklistID) => {
-        await Axios.get(`http://localhost:3001/get-submitted-contributors/${conversionChecklistID}`, {
+        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-submitted-contributors/${conversionChecklistID}`, {
         }).then((response) => {
             populateContributorsList(response.data);
         });

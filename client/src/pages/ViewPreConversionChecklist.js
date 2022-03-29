@@ -388,7 +388,7 @@ function ViewPreConversionChecklist() {
 
     const removeContributions = (conversionChecklistID) => {
         console.log("Removing contributions...");
-        Axios.post(`https://voyant-conversion-checklist.herokuapp.com/remove-contributions/${conversionChecklistID}`, {
+        Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-contributions/${conversionChecklistID}`, {
         }).then((response) => {
             if (contributors.length) {
                 addContributions(conversionChecklistID);
