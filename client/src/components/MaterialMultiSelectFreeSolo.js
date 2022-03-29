@@ -271,11 +271,15 @@ export default function MaterialMultiSelectFreeSolo(
 
     React.useEffect(() => {
         getObjectsForInvalidOptions();
-    });
+        console.log(values);
+    }, [values]);
 
     return (
         <React.Fragment>
             <Autocomplete
+                isOptionEqualToValue={(option, value) => {
+                    return value !== "" ? option.value === value.value : true;
+                }}
                 disablePortal
                 multiple
                 value={values}

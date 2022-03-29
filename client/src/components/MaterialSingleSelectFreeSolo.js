@@ -22,7 +22,7 @@ export default function MaterialSingleSelectFreeSolo(
         selectedValue = {},
         required = false
     }) {
-    const [value, setValue] = React.useState(defaultValue !== "" ? defaultValue : "");
+    const [value, setValue] = React.useState(defaultValue);
     // React.useState(singleSelectOptions.filter(element => element.value === defaultValue.value)[0]
     // ? singleSelectOptions.filter(element => element.value === defaultValue.value)[0] : "");
     // const [firstRender, setFirstRender] = React.useState(true); // TODO: is this the best way to handle things?
@@ -275,6 +275,9 @@ export default function MaterialSingleSelectFreeSolo(
     return (
         <React.Fragment>
             <Autocomplete
+                isOptionEqualToValue={(option, value) => {
+                    return value !== "" ? option.value === value.value : true;
+                }}
                 disablePortal
                 value={value}
                 // defaultValue={actualDefaultValue.value}

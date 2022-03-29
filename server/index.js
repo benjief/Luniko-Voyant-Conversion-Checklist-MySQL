@@ -340,13 +340,14 @@ app.post("/add-contribution", (req, res) => {
     );
 });
 
-app.post("/remove-contribution", (req, res) => {
-    const checklistID = req.body.conversionChecklistID;
+app.delete("/remove-contributions/:conversionChecklistID", (req, res) => {
+    const checklistID = req.params.conversionChecklistID;
 
     db.query(
-        `DELETE FROM contribution
+        `DELETE 
+         FROM contribution
          WHERE cc_id = ?`,
-        [checklistID], (err, result) => {
+        checklistID, (err, result) => {
             if (err) {
                 console.log(err);
             } else {
@@ -383,7 +384,7 @@ app.delete("/remove-additional-processing/:conversionChecklistID", (req, res) =>
     const checklistID = req.params.conversionChecklistID;
 
     db.query(
-        `DELETE 
+        `DELETE
          FROM additional_processing
          WHERE cc_id = ?`,
         checklistID, (err, result) => {
