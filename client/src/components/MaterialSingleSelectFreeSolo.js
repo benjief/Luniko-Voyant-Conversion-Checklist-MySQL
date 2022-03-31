@@ -16,13 +16,13 @@ export default function MaterialSingleSelectFreeSolo(
         className = "",
         label = "",
         placeholder = "",
-        defaultValue = "",
+        defaultValue = null,
         singleSelectOptions = [],
         invalidOptions = [],
         selectedValue = {},
         required = false
     }) {
-    const [value, setValue] = React.useState(defaultValue);
+    const [value, setValue] = React.useState(defaultValue !== "" ? defaultValue : null);
     // React.useState(singleSelectOptions.filter(element => element.value === defaultValue.value)[0]
     // ? singleSelectOptions.filter(element => element.value === defaultValue.value)[0] : "");
     // const [firstRender, setFirstRender] = React.useState(true); // TODO: is this the best way to handle things?
@@ -269,8 +269,9 @@ export default function MaterialSingleSelectFreeSolo(
     }
 
     React.useEffect(() => {
-        console.log(singleSelectOptions);
-    });
+        console.log(value);
+        console.log(defaultValue);
+    }, [value]);
 
     return (
         <React.Fragment>

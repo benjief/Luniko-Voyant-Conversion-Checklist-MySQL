@@ -287,7 +287,7 @@ function CreatePreConversionChecklist() {
     const handleAlertClosed = (alertClosed) => {
         if (alertClosed) {
             setAlert(false);
-            navigate("/");
+            // navigate("/");
         }
     }
 
