@@ -62,6 +62,7 @@ export default function CreatePreConversionChecklistCard({
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
+    const [fadingBallsDisplay, setFadingBallsDisplay] = React.useState("none");
 
     const handleOnChangeLoadSheetName = (updatedText) => {
         loadSheetName(updatedText);
@@ -132,12 +133,20 @@ export default function CreatePreConversionChecklistCard({
     }
 
     React.useEffect(() => {
+        console.log(fadingBallsDisplay);
+        console.log(displayFadingBalls);
         if (!submitButtonDisabled) {
             setSubmitButtonColor("var(--lunikoBlue)");
         } else {
             setSubmitButtonColor("#BFBFBF");
         }
-    }, [submitButtonDisabled]);
+
+        if (displayFadingBalls) {
+            setFadingBallsDisplay("visible");
+        } else {
+            setFadingBallsDisplay("none");
+        }
+    }, [submitButtonDisabled, displayFadingBalls, fadingBallsDisplay]);
 
     return (
         <Card
@@ -321,17 +330,17 @@ export default function CreatePreConversionChecklistCard({
                             onClick={handleSubmitChecklist}
                             disabled={submitButtonDisabled}
                             style={{ backgroundColor: submitButtonColor }}>
-                            <div className="fading-balls-container">
-                                <FadingBalls
-                                    className="spinner"
-                                    color="white"
-                                    width="7px"
-                                    height="7px"
-                                    duration="0.5s"
-                                    style={{ display: displayFadingBalls ? "visible" : "none" }}
-                                />
-                                <p style={{ display: displayFadingBalls ? "none" : "visible" }}>Submit</p>
-                            </div>
+                            {displayFadingBalls ?
+                                <div className="fading-balls-container">
+                                    <FadingBalls
+                                        className="spinner"
+                                        color="white"
+                                        width="7px"
+                                        height="7px"
+                                        duration="0.5s"
+                                    />
+                                </div> :
+                                <p>Submit</p>}
                         </button>
                     </CardContent>
                 </Collapse>

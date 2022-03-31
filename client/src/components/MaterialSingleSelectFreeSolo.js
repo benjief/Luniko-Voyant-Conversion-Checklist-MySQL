@@ -268,10 +268,10 @@ export default function MaterialSingleSelectFreeSolo(
         }
     }
 
-    React.useEffect(() => {
-        console.log(value);
-        console.log(defaultValue);
-    }, [value]);
+    // React.useEffect(() => {
+    //     console.log(value);
+    //     console.log(defaultValue);
+    // }, [value]);
 
     return (
         <React.Fragment>
