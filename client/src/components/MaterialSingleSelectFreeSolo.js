@@ -268,9 +268,9 @@ export default function MaterialSingleSelectFreeSolo(
         }
     }
 
-    // React.useEffect(() => {
-    //     console.log(singleSelectOptions);
-    // });
+    React.useEffect(() => {
+        console.log(singleSelectOptions);
+    });
 
     return (
         <React.Fragment>

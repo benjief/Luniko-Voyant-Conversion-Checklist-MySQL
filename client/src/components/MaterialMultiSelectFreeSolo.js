@@ -271,8 +271,8 @@ export default function MaterialMultiSelectFreeSolo(
 
     React.useEffect(() => {
         getObjectsForInvalidOptions();
-        console.log(values);
-    }, [values]);
+        console.log(multiSelectOptions);
+    });
 
     return (
         <React.Fragment>

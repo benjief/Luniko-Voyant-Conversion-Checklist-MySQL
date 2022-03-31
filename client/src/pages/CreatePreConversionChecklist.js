@@ -38,6 +38,7 @@ function CreatePreConversionChecklist() {
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [alert, setAlert] = useState(false);
+    const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
     const navigate = useNavigate();
 
     // Single select options
@@ -182,10 +183,13 @@ function CreatePreConversionChecklist() {
             if (decisionMaker.value === -1) {
                 // Don't want to try and add duplicate personnel to DB
                 if (!decisionMaker.label.toLowerCase() === loadSheetOwner.label.toLowerCase()) {
+                    console.log()
                     decisionMaker.value = uuidv4();
+                    newPersonnel.push(decisionMaker);
+                    setNewPersonnel(newPersonnel);
+                } else {
+                    decisionMaker.value = loadSheetOwner.value;
                 }
-                newPersonnel.push(decisionMaker);
-                setNewPersonnel(newPersonnel);
             }
             for (let i = 0; i < contributors.length; i++) {
                 if (contributors[i].value === -1) {
@@ -194,8 +198,7 @@ function CreatePreConversionChecklist() {
                 }
             }
             setNewPersonnel(newPersonnel);
-        });
-        console.log("UIDs assigned...")
+        }).then(console.log("UIDs assigned..."));
     }
 
     const addNewPersonnelToDB = () => {
@@ -232,6 +235,7 @@ function CreatePreConversionChecklist() {
         }).then((response) => {
             setSubmitted(true);
             setSubmitButtonDisabled(true);
+            setDisplaySubmitButtonWorkingIcon(true);
             console.log("Pre-conversion checklist successfully added!!");
             if (contributors.length !== 0) {
                 // console.log(response.data);
@@ -293,7 +297,6 @@ function CreatePreConversionChecklist() {
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
-            console.log(conversionType);
             if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
                 && conversionType !== "" && additionalProcessing !== [] && dataSources !== {}
                 && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
@@ -375,7 +378,8 @@ function CreatePreConversionChecklist() {
                                 // postConversionChanges={handlePostConversionChangesCallback}
                                 checked={handleCheckboxCallback}
                                 submitButtonDisabled={submitButtonDisabled}
-                                submitted={handleOnClickSubmit}>
+                                submitted={handleOnClickSubmit}
+                                displayFadingBalls={displaySubmitButtonWorkingIcon}>
                             </CreatePreConversionChecklistCard>
                         </div>
                     </div>

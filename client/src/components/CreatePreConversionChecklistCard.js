@@ -15,6 +15,7 @@ import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
+import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
 // import BootstrapPopover from "../components/BootstrapPopover";
 
 const ExpandMore = styled((props) => {
@@ -56,7 +57,8 @@ export default function CreatePreConversionChecklistCard({
     // postConversionChanges = "",
     checked = false,
     submitted = false,
-    submitButtonDisabled = true
+    submitButtonDisabled = true,
+    displayFadingBalls = false
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
@@ -319,7 +321,17 @@ export default function CreatePreConversionChecklistCard({
                             onClick={handleSubmitChecklist}
                             disabled={submitButtonDisabled}
                             style={{ backgroundColor: submitButtonColor }}>
-                            Submit
+                            <div className="fading-balls-container">
+                                <FadingBalls
+                                    className="spinner"
+                                    color="white"
+                                    width="7px"
+                                    height="7px"
+                                    duration="0.5s"
+                                    style={{ display: displayFadingBalls ? "visible" : "none" }}
+                                />
+                                <p style={{ display: displayFadingBalls ? "none" : "visible" }}>Submit</p>
+                            </div>
                         </button>
                     </CardContent>
                 </Collapse>
