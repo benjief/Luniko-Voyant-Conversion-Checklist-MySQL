@@ -3,12 +3,15 @@ import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { Alert } from 'reactstrap';
+import { green } from '@mui/material/colors';
 
 export default function PositionedSnackbar({
     vertical = "top",
     horizontal = "center",
     message = "",
-    closed = false
+    closed = false,
+    className = "success-alert"
 }) {
 
     // const [open, setOpen] = React.useState(true);
@@ -34,14 +37,16 @@ export default function PositionedSnackbar({
     return (
         <div>
             <Snackbar
+                className={className}
                 open
                 anchorOrigin={{ vertical, horizontal }}
                 onClose={handleClose}
                 message={message}
                 action={action}
                 key={vertical + horizontal}
-                autoHideDuration={2000}
-            />
+                autoHideDuration={3000}
+            >
+            </Snackbar>
         </div>
     );
 }

@@ -35,6 +35,10 @@ function CreatePostConversionChecklist() {
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [alert, setAlert] = useState(false);
+    const [alertType, setAlertType] = useState("success-alert");
+    const [alertMessage, setAlertMessage] = useState("Post-conversion checklist successfully created!");
+    const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
+
     const navigate = useNavigate();
 
     const getValidLoadSheetNames = async () => {
@@ -101,20 +105,33 @@ function CreatePostConversionChecklist() {
     }
 
     const handleOnClickSubmit = async (submitted) => {
-        if (submitted) {
-            if (!validLoadSheetNameEntered) {
-                if (checkLoadSheetNameEntered()) {
-                    setValidLoadSheetNameEntered(true)
-                    setRendering(true);
-                    setEnterLoadSheetNameDisplay("none");
-                    setSubmitButtonDisabled(true);
-                } else {
-                    setInvalidLoadSheetNameError("Invalid pre-conversion load sheet name");
-                }
+        if (submitted && !validLoadSheetNameEntered) {
+            if (checkLoadSheetNameEntered()) {
+                setValidLoadSheetNameEntered(true)
+                setRendering(true);
+                setEnterLoadSheetNameDisplay("none");
+                setSubmitButtonDisabled(true);
             } else {
-                updateConversionChecklist();
+                setInvalidLoadSheetNameError("Invalid pre-conversion load sheet name");
             }
+        } else {
+            setSubmitButtonDisabled(true);
+            setDisplaySubmitButtonWorkingIcon(true);
+            if (submitted) {
+                const handleError = () => {
+                    setAlertType("error-alert");
+                    setAlertMessage("Aplogies! We've encountered an error. Please attempt to re-submit your checklist.");
+                    setAlert(true);
+                }
+            }
+            updateConversionChecklist();
         }
+    }
+
+    const handleError = () => {
+        setAlertType("error-alert");
+        setAlertMessage("Aplogies! We've encountered an error. Please attempt to re-submit your checklist.");
+        setAlert(true);
     }
 
     const updateConversionChecklist = () => {
@@ -124,11 +141,12 @@ function CreatePostConversionChecklist() {
             postConversionValidationResults: postConversionValidationResults === null ? null : postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
             postConversionChanges: postConversionChanges === null ? null : postConversionChanges.trim() === "" ? null : postConversionChanges,
             approvedByITDirector: formApproved
+        }).catch((err) => {
+            handleError();
         }).then((response) => {
             setSubmitted(true);
             setSubmitButtonDisabled(true);
             console.log("Pre-conversion checklist successfully updated!");
-            // handleSuccessfulUpdate();
             setAlert(true);
         });
     };
@@ -197,8 +215,9 @@ function CreatePostConversionChecklist() {
                 {alert
                     ? <div className="alert-container">
                         <PositionedSnackbar
-                            message="Post-conversion checklist successfully created!"
-                            closed={handleAlertClosed}>
+                            message={alertMessage}
+                            closed={handleAlertClosed}
+                            className={alertType}>
                         </PositionedSnackbar>
                     </div>
                     : <div></div>}
@@ -233,7 +252,8 @@ function CreatePostConversionChecklist() {
                                 reviewed={handleReviewedCallback}
                                 approved={handleApprovedCallback}
                                 submitted={handleOnClickSubmit}
-                                submitButtonDisabled={submitButtonDisabled}>
+                                submitButtonDisabled={submitButtonDisabled}
+                                displayFadingBalls={displaySubmitButtonWorkingIcon}>
                             </CreatePostConversionChecklistCard>
                         </div>
                     </div>

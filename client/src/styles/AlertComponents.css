@@ -6,7 +6,15 @@
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
     font-weight: 500;
     letter-spacing: 0.05ch;
+    /* background-color: #009952; */
+}
+
+.success-alert .MuiPaper-root {
     background-color: #009952;
+}
+
+.error-alert .MuiPaper-root {
+    background-color: #d32f2f;
 }
 
 .alert-container button {

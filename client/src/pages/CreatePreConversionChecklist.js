@@ -38,7 +38,10 @@ function CreatePreConversionChecklist() {
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [alert, setAlert] = useState(false);
+    const [alertType, setAlertType] = useState("success-alert");
+    const [alertMessage, setAlertMessage] = useState("Pre-conversion checklist successfully created!");
     const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
+
     const navigate = useNavigate();
 
     // Single select options
@@ -164,7 +167,10 @@ function CreatePreConversionChecklist() {
     //     setPostConversionChanges(postConversionChangesFromInput);
     // }
 
+
     const handleOnClickSubmit = async (submitted) => {
+        setSubmitButtonDisabled(true);
+        setDisplaySubmitButtonWorkingIcon(true);
         if (submitted) {
             await assignUIDsToNewPersonnel();
             await addNewPersonnelToDB();
@@ -172,9 +178,15 @@ function CreatePreConversionChecklist() {
         }
     }
 
+    const handleError = () => {
+        setAlertType("error-alert");
+        setAlertMessage("Aplogies! We've encountered an error. Please attempt to re-submit your checklist.");
+        setAlert(true);
+    }
+
     const assignUIDsToNewPersonnel = () => {
         console.log("Assigning UIDs...");
-        new Promise(resolve => {
+        new Promise((resolve, reject) => {
             if (loadSheetOwner.value === -1) {
                 loadSheetOwner.value = uuidv4();
                 newPersonnel.push(loadSheetOwner);
@@ -198,13 +210,14 @@ function CreatePreConversionChecklist() {
                 }
             }
             setNewPersonnel(newPersonnel);
+        }).catch((err) => {
+            handleError();
         }).then(console.log("UIDs assigned..."));
     }
 
     const addNewPersonnelToDB = () => {
         console.log("Adding personnel to DB...");
-        new Promise(resolve => {
-            // console.log(newPersonnel);
+        new Promise((resolve, reject) => {
             for (let i = 0; i < newPersonnel.length; i++) {
                 let name = newPersonnel[i].label;
                 let firstName = name.split(" ")[0];
@@ -213,52 +226,63 @@ function CreatePreConversionChecklist() {
                     pers_id: newPersonnel[i].value,
                     pers_fname: firstName,
                     pers_lname: lastName
-                })
+                }).catch((err) => {
+                    handleError();
+                });
             }
-        });
-        console.log("Personnel added to DB...");
+        }).then(console.log("Personnel added to DB..."));
     }
 
     const addConversionChecklist = () => {
         console.log("Adding checklist...");
-        Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-checklist", {
-            loadSheetName: loadSheetName,
-            loadSheetOwner: loadSheetOwner.value,
-            decisionMaker: decisionMaker.value,
-            conversionType: conversionType,
-            dataSources: dataSources,
-            uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
-            uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-            recordsPreCleanupNotes: recordsPreCleanupNotes === null ? null : recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
-            recordsPostCleanupNotes: recordsPostCleanupNotes === null ? null : recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
-            preConversionManipulation: preConversionManipulation === null ? null : preConversionManipulation === "" ? null : preConversionManipulation
-        }).then((response) => {
-            setSubmitted(true);
-            setSubmitButtonDisabled(true);
-            setDisplaySubmitButtonWorkingIcon(true);
-            console.log("Pre-conversion checklist successfully added!!");
-            if (contributors.length !== 0) {
-                // console.log(response.data);
-                addAdditionalProcessing(response.data.insertId);
-            }
+        new Promise((resolve, reject) => {
+            throw "ERROR";
+            Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-checklist", {
+                loadSheetName: loadSheetName,
+                loadSheetOwner: loadSheetOwner.value,
+                decisionMaker: decisionMaker.value,
+                conversionType: conversionType,
+                dataSources: dataSources,
+                uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
+                uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
+                recordsPreCleanupNotes: recordsPreCleanupNotes === null ? null : recordsPreCleanupNotes === "" ? null : recordsPreCleanupNotes,
+                recordsPostCleanupNotes: recordsPostCleanupNotes === null ? null : recordsPostCleanupNotes === "" ? null : recordsPostCleanupNotes,
+                preConversionManipulation: preConversionManipulation === null ? null : preConversionManipulation === "" ? null : preConversionManipulation
+            }).catch((err) => {
+                handleError();
+            }).then((response) => {
+                if (response) {
+                    setSubmitted(true);
+                    console.log("Pre-conversion checklist successfully added!!");
+                    if (contributors.length !== 0) {
+                        addAdditionalProcessing(response.data.insertId);
+                    }
+                }
+            });
         });
     };
 
     const addAdditionalProcessing = (conversionChecklistID) => {
         console.log("Moving on to additional processing...");
-        for (let i = 0; i < additionalProcessing.length; i++) {
-            Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-additional-processing", {
-                checklistID: conversionChecklistID,
-                apType: additionalProcessing[i].value
-            }).then((response) => {
-                console.log("Additional processing successfully added!");
-                if (contributors.length) {
-                    addContributions(conversionChecklistID);
-                } else {
-                    setAlert(true);
-                }
-            });
-        };
+        new Promise((resolve, reject) => {
+            for (let i = 0; i < additionalProcessing.length; i++) {
+                Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-additional-processing", {
+                    checklistID: conversionChecklistID,
+                    apType: additionalProcessing[i].value
+                }).catch((err) => {
+                    handleError();
+                }).then((response) => {
+                    if (response) {
+                        console.log("Additional processing successfully added!");
+                        if (contributors.length) {
+                            addContributions(conversionChecklistID);
+                        } else {
+                            setAlert(true);
+                        }
+                    }
+                });
+            }
+        });
     };
 
     const addContributions = (conversionChecklistID) => {
@@ -268,11 +292,15 @@ function CreatePreConversionChecklist() {
                 Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-contribution", {
                     checklistID: conversionChecklistID,
                     contributorID: contributors[i].value
+                }).catch((err) => {
+                    handleError();
                 }).then((response) => {
-                    console.log("Contribution successfully added!");
+                    if (response) {
+                        console.log("Contribution successfully added!");
+                    }
                 });
             }
-        }).then(setSubmitButtonDisabled(true), setAlert(true));
+        });
     };
 
     // const handleSuccessfulSubmit = () => {
@@ -287,7 +315,7 @@ function CreatePreConversionChecklist() {
     const handleAlertClosed = (alertClosed) => {
         if (alertClosed) {
             setAlert(false);
-            // navigate("/");
+            navigate("/");
         }
     }
 
@@ -332,8 +360,9 @@ function CreatePreConversionChecklist() {
                 {alert
                     ? <div className="alert-container">
                         <PositionedSnackbar
-                            message="Pre-conversion checklist successfully created!"
-                            closed={handleAlertClosed}>
+                            message={alertMessage}
+                            closed={handleAlertClosed}
+                            className={alertType}>
                         </PositionedSnackbar>
                     </div>
                     : <div></div>}

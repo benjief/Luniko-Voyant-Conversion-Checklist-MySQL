@@ -40,6 +40,10 @@ function ViewPostConversionChecklist() {
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [alert, setAlert] = useState(false);
+    const [alertType, setAlertType] = useState("success-alert");
+    const [alertMessage, setAlertMessage] = useState("Post-conversion checklist successfully updated!");
+    const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
+
     const navigate = useNavigate();
 
     const getValidLoadSheetNames = async () => {
@@ -126,21 +130,28 @@ function ViewPostConversionChecklist() {
     }
 
     const handleOnClickSubmit = async (submitted) => {
-        if (submitted) {
-            if (!validLoadSheetNameEntered && submitted) {
-                if (checkLoadSheetNameEntered()) {
-                    setValidLoadSheetNameEntered(true)
-                    setRendering(true);
-                    setEnterLoadSheetNameDisplay("none");
-                    setSubmitButtonDisabled(true);
-                } else {
-                    setInvalidLoadSheetNameError("Invalid post-conversion load sheet name");
-                }
-            } else {
+        if (submitted && !validLoadSheetNameEntered) {
+            if (checkLoadSheetNameEntered()) {
+                setValidLoadSheetNameEntered(true)
+                setRendering(true);
+                setEnterLoadSheetNameDisplay("none");
                 setSubmitButtonDisabled(true);
+            } else {
+                setInvalidLoadSheetNameError("Invalid post-conversion load sheet name");
+            }
+        } else {
+            setSubmitButtonDisabled(true);
+            setDisplaySubmitButtonWorkingIcon(true);
+            if (submitted) {
                 updateConversionChecklist();
             }
         }
+    }
+
+    const handleError = () => {
+        setAlertType("error-alert");
+        setAlertMessage("Aplogies! We've encountered an error. Please attempt to re-submit your checklist.");
+        setAlert(true);
     }
 
     const updateConversionChecklist = () => {
@@ -150,11 +161,14 @@ function ViewPostConversionChecklist() {
             postConversionValidationResults: postConversionValidationResults === null ? null : postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
             postConversionChanges: postConversionChanges === null ? null : postConversionChanges.trim() === "" ? null : postConversionChanges,
             approvedByITDirector: formApproved
+        }).catch((err) => {
+            handleError();
         }).then((response) => {
-            setSubmitted(true);
-            console.log("Pre-conversion checklist successfully updated!");
-            // handleSuccessfulUpdate();
-            setAlert(true);
+            if (response) {
+                setSubmitted(true);
+                console.log("Pre-conversion checklist successfully updated!");
+                setAlert(true);
+            }
         });
     };
 
@@ -168,7 +182,7 @@ function ViewPostConversionChecklist() {
     // }
 
     const handleValueUpdated = (approvedUpdated) => {
-        console.log(approvedUpdated);
+        // console.log(approvedUpdated);
         if (!approvedUpdated) {
             setValueUpdated(true);
             setForceReviewedOff(true);
@@ -232,8 +246,9 @@ function ViewPostConversionChecklist() {
                 {alert
                     ? <div className="alert-container">
                         <PositionedSnackbar
-                            message="Post-conversion checklist successfully updated!"
-                            closed={handleAlertClosed}>
+                            message={alertMessage}
+                            closed={handleAlertClosed}
+                            className={alertType}>
                         </PositionedSnackbar>
                     </div>
                     : <div></div>}
@@ -278,7 +293,8 @@ function ViewPostConversionChecklist() {
                                 approveUnlockedByUser={handleApproveUnlockedByUser}
                                 valueUpdated={handleValueUpdated}
                                 updateButtonDisabled={submitButtonDisabled}
-                                updated={handleOnClickSubmit}>
+                                updated={handleOnClickSubmit}
+                                displayFadingBalls={displaySubmitButtonWorkingIcon}>
                             </ViewPostConversionChecklistCard>
                         </div>
                     </div>

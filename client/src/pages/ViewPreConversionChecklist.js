@@ -49,6 +49,9 @@ function ViewPreConversionChecklist() {
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [alert, setAlert] = useState(false);
+    const [alertType, setAlertType] = useState("success-alert");
+    const [alertMessage, setAlertMessage] = useState("Pre-conversion checklist successfully updated!");
+    const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
     const navigate = useNavigate();
 
     // Single select options
@@ -276,7 +279,7 @@ function ViewPreConversionChecklist() {
     // }
 
     const handleOnClickSubmit = async (submitted) => {
-        if (!validLoadSheetNameEntered && submitted) {
+        if (submitted && !validLoadSheetNameEntered) {
             if (checkLoadSheetNameEntered()) {
                 setValidLoadSheetNameEntered(true)
                 setRendering(true);
@@ -286,13 +289,20 @@ function ViewPreConversionChecklist() {
                 setInvalidLoadSheetNameError("Invalid pre-conversion load sheet name");
             }
         } else {
+            setSubmitButtonDisabled(true);
+            setDisplaySubmitButtonWorkingIcon(true);
             if (submitted) {
-                setSubmitButtonDisabled(true);
                 await assignUIDsToNewPersonnel();
                 await addNewPersonnelToDB();
                 updateConversionChecklist();
             }
         }
+    }
+
+    const handleError = () => {
+        setAlertType("error-alert");
+        setAlertMessage("Aplogies! We've encountered an error. Please attempt to re-submit your checklist.");
+        setAlert(true);
     }
 
     const assignUIDsToNewPersonnel = () => {
@@ -318,8 +328,9 @@ function ViewPreConversionChecklist() {
                 }
             }
             setNewPersonnel(newPersonnel);
-        });
-        console.log("UIDs assigned...")
+        }).catch((err) => {
+            handleError();
+        }).then(console.log("UIDs assigned..."));
     }
 
     const addNewPersonnelToDB = () => {
@@ -334,10 +345,11 @@ function ViewPreConversionChecklist() {
                     pers_id: newPersonnel[i].value,
                     pers_fname: firstName,
                     pers_lname: lastName
-                })
+                }).catch((err) => {
+                    handleError();
+                });
             }
-        });
-        console.log("Personnel added to DB...");
+        }).then(console.log("Personnel added to DB..."));
     }
 
     const updateConversionChecklist = () => {
@@ -353,20 +365,28 @@ function ViewPreConversionChecklist() {
             recordsPreCleanupNotes: recordsPreCleanupNotes === null ? null : recordsPreCleanupNotes.trim() === "" ? null : recordsPreCleanupNotes,
             recordsPostCleanupNotes: recordsPostCleanupNotes === null ? null : recordsPostCleanupNotes.trim() === "" ? null : recordsPostCleanupNotes,
             preConversionManipulation: preConversionManipulation === null ? null : preConversionManipulation.trim() === "" ? null : preConversionManipulation
+        }).catch((err) => {
+            handleError();
         }).then((response) => {
-            setSubmitted(true);
-            setSubmitButtonDisabled(true);
-            console.log("Pre-conversion checklist successfully updated!");
-            removeAdditionalProcessing(conversionChecklistID);
+            if (response) {
+                setSubmitted(true);
+                setSubmitButtonDisabled(true);
+                console.log("Pre-conversion checklist successfully updated!");
+                removeAdditionalProcessing(conversionChecklistID);
+            }
         });
     };
 
     const removeAdditionalProcessing = (conversionChecklistID) => {
         console.log("Removing old additional processing...");
         Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-additional-processing/${conversionChecklistID}`, {
+        }).catch((err) => {
+            handleError();
         }).then((response) => {
-            console.log("Old additional processing removed");
-            addAdditionalProcessing(conversionChecklistID);
+            if (response) {
+                console.log("Old additional processing removed");
+                addAdditionalProcessing(conversionChecklistID);
+            }
         });
     }
 
@@ -375,12 +395,16 @@ function ViewPreConversionChecklist() {
             Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-additional-processing", {
                 checklistID: conversionChecklistID,
                 apType: additionalProcessing[i].value
+            }).catch((err) => {
+                handleError();
             }).then((response) => {
-                console.log("Additional processing successfully added!");
-                if (contributors.length) {
-                    removeContributions(conversionChecklistID);
-                } else {
-                    setAlert(true);
+                if (response) {
+                    console.log("Additional processing successfully added!");
+                    if (contributors.length) {
+                        removeContributions(conversionChecklistID);
+                    } else {
+                        setAlert(true);
+                    }
                 }
             });
         }
@@ -389,13 +413,17 @@ function ViewPreConversionChecklist() {
     const removeContributions = (conversionChecklistID) => {
         console.log("Removing contributions...");
         Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-contributions/${conversionChecklistID}`, {
+        }).catch((err) => {
+            handleError();
         }).then((response) => {
-            if (contributors.length) {
-                addContributions(conversionChecklistID);
-            } else {
-                setAlert(true);
+            if (response) {
+                if (contributors.length) {
+                    addContributions(conversionChecklistID);
+                } else {
+                    setAlert(true);
+                }
             }
-        })
+        });
     }
 
     const addContributions = (conversionChecklistID) => {
@@ -405,8 +433,12 @@ function ViewPreConversionChecklist() {
                 Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-contribution", {
                     checklistID: conversionChecklistID,
                     contributorID: contributors[i].value
+                }).catch((err) => {
+                    handleError();
                 }).then((response) => {
-                    console.log("Contribution successfully added!");
+                    if (response) {
+                        console.log("Contribution successfully added!");
+                    }
                     // handleSuccessfulUpdate();
                 });
             }
@@ -484,8 +516,9 @@ function ViewPreConversionChecklist() {
                 {alert
                     ? <div className="alert-container">
                         <PositionedSnackbar
-                            message="Pre-conversion checklist successfully updated!"
-                            closed={handleAlertClosed}>
+                            message={alertMessage}
+                            closed={handleAlertClosed}
+                            className={alertType}>
                         </PositionedSnackbar>
                     </div>
                     : <div></div>}
@@ -564,7 +597,8 @@ function ViewPreConversionChecklist() {
                                 checked={handleCheckboxCallback}
                                 valueUpdated={handleValueUpdated}
                                 updateButtonDisabled={submitButtonDisabled}
-                                updated={handleOnClickSubmit}>
+                                updated={handleOnClickSubmit}
+                                displayFadingBalls={displaySubmitButtonWorkingIcon}>
                             </ViewPreConversionChecklistCard>
                         </div>
                     </div>

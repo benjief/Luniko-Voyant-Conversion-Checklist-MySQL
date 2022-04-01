@@ -15,7 +15,7 @@ import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
-// import BootstrapPopover from "../components/BootstrapPopover";
+import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -69,7 +69,8 @@ export default function ViewPreConversionChecklistCard({
     checked = true,
     valueUpdated = false,
     updated = false,
-    updateButtonDisabled = true
+    updateButtonDisabled = true,
+    displayFadingBalls = false
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [updateButtonColor, setUpdateButtonColor] = React.useState("#BFBFBF");
@@ -357,7 +358,17 @@ export default function ViewPreConversionChecklistCard({
                             onClick={handleUpdateChecklist}
                             disabled={updateButtonDisabled}
                             style={{ backgroundColor: updateButtonColor }}>
-                            Update
+                            {displayFadingBalls ?
+                                <div className="fading-balls-container">
+                                    <FadingBalls
+                                        className="spinner"
+                                        color="white"
+                                        width="7px"
+                                        height="7px"
+                                        duration="0.5s"
+                                    />
+                                </div> :
+                                <p>Update</p>}
                         </button>
                         {/* <div className="popover-container">
                             <BootstrapPopover

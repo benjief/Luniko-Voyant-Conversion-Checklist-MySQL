@@ -16,7 +16,6 @@ import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
-// import BootstrapPopover from "../components/BootstrapPopover";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -62,7 +61,6 @@ export default function CreatePreConversionChecklistCard({
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
-    const [fadingBallsDisplay, setFadingBallsDisplay] = React.useState("none");
 
     const handleOnChangeLoadSheetName = (updatedText) => {
         loadSheetName(updatedText);
@@ -133,20 +131,12 @@ export default function CreatePreConversionChecklistCard({
     }
 
     React.useEffect(() => {
-        console.log(fadingBallsDisplay);
-        console.log(displayFadingBalls);
         if (!submitButtonDisabled) {
             setSubmitButtonColor("var(--lunikoBlue)");
         } else {
             setSubmitButtonColor("#BFBFBF");
         }
-
-        if (displayFadingBalls) {
-            setFadingBallsDisplay("visible");
-        } else {
-            setFadingBallsDisplay("none");
-        }
-    }, [submitButtonDisabled, displayFadingBalls, fadingBallsDisplay]);
+    }, [submitButtonDisabled]);
 
     return (
         <Card

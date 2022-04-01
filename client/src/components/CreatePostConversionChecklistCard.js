@@ -17,7 +17,7 @@ import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 import PasswordFormDialog from './PasswordFormDialog';
 import DraggableDialog from './DraggableDialog';
-// import BootstrapPopover from "../components/BootstrapPopover";
+import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -37,7 +37,8 @@ export default function CreatePostConversionChecklistCard({
     reviewed = false,
     approved = false,
     submitted = false,
-    submitButtonDisabled = true
+    submitButtonDisabled = true,
+    displayFadingBalls = false
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
@@ -185,7 +186,17 @@ export default function CreatePostConversionChecklistCard({
                             onClick={handleSubmitChecklist}
                             disabled={submitButtonDisabled}
                             style={{ backgroundColor: submitButtonColor }}>
-                            Submit
+                            {displayFadingBalls ?
+                                <div className="fading-balls-container">
+                                    <FadingBalls
+                                        className="spinner"
+                                        color="white"
+                                        width="7px"
+                                        height="7px"
+                                        duration="0.5s"
+                                    />
+                                </div> :
+                                <p>Submit</p>}
                         </button>
                         <DraggableDialog
                             dialogText={["Checklists ", <strong>can no longer be updated </strong>, "once approved by ",
