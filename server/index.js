@@ -318,6 +318,24 @@ app.post("/add-checklist", (req, res) => {
     );
 });
 
+app.delete("/remove-checklist/:conversionChecklistID", (req, res) => {
+    const checklistID = req.params.conversionChecklistID;
+
+    db.query(
+        `DELETE 
+         FROM conversion_checklist
+         WHERE cc_id = ?`,
+        checklistID, (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Conversion checklist removed!");
+                res.send(result);
+            }
+        }
+    );
+});
+
 app.post("/add-contribution", (req, res) => {
     const checklistID = req.body.checklistID;
     const contributorID = req.body.contributorID;

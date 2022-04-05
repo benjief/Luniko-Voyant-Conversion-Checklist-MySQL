@@ -178,12 +178,6 @@ function CreatePreConversionChecklist() {
         }
     }
 
-    const handleError = () => {
-        setAlertType("error-alert");
-        setAlertMessage("Aplogies! We've encountered an error. Please attempt to re-submit your checklist.");
-        setAlert(true);
-    }
-
     const assignUIDsToNewPersonnel = () => {
         console.log("Assigning UIDs...");
         new Promise((resolve, reject) => {
@@ -236,7 +230,6 @@ function CreatePreConversionChecklist() {
     const addConversionChecklist = () => {
         console.log("Adding checklist...");
         new Promise((resolve, reject) => {
-            throw "ERROR";
             Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-checklist", {
                 loadSheetName: loadSheetName,
                 loadSheetOwner: loadSheetOwner.value,
@@ -270,7 +263,9 @@ function CreatePreConversionChecklist() {
                     checklistID: conversionChecklistID,
                     apType: additionalProcessing[i].value
                 }).catch((err) => {
-                    handleError();
+                    // Remove the newly-added checklist if additional processing can't be handled
+                    Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-checklist/${conversionChecklistID}`, {
+                    }).then(handleError());
                 }).then((response) => {
                     if (response) {
                         console.log("Additional processing successfully added!");
@@ -293,7 +288,9 @@ function CreatePreConversionChecklist() {
                     checklistID: conversionChecklistID,
                     contributorID: contributors[i].value
                 }).catch((err) => {
-                    handleError();
+                    // Remove the newly-added checklist if contributions can't be handled
+                    Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-checklist/${conversionChecklistID}`, {
+                    }).then(handleError());
                 }).then((response) => {
                     if (response) {
                         console.log("Contribution successfully added!");
@@ -311,6 +308,12 @@ function CreatePreConversionChecklist() {
     //         navigate("/");
     //     }, 1000);
     // }
+
+    const handleError = () => {
+        setAlertType("error-alert");
+        setAlertMessage("Apologies! We've encountered an error. Please attempt to re-submit your checklist.");
+        setAlert(true);
+    }
 
     const handleAlertClosed = (alertClosed) => {
         if (alertClosed) {
