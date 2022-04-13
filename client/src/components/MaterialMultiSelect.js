@@ -36,7 +36,7 @@ export default function MaterialMultiSelect({
   }
 
   const handleOnBlur = () => {
-    if (required && values === []) {
+    if (required && !values.length) {
       setErrorEnabled(true);
       setErrorMsg("Required Field");
     }
@@ -87,9 +87,11 @@ export default function MaterialMultiSelect({
         <TextField
           // color='warning'
           {...params}
-          required={required}
           label={label}
           placeholder={placeholder}
+          required={required}
+          error={errorEnabled}
+          helperText={errorMsg}
         />
       )}
     />

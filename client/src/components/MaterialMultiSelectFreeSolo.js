@@ -66,7 +66,10 @@ export default function MaterialMultiSelectFreeSolo(
             });
             setValues(tempArray);
             selectedValues(tempArray);
-        } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
+            // TODO: make these functions consistent (i.e. when they return true/false)
+            // This makes sure the entered value isn't illegal or already selected before adding it to the list of selected values
+        } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName) && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)) {
+            console.log("adding ", dialogValue.firstName + " " + dialogValue.lastName);
             let tempArray = values;
             tempArray.push(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
             setValues(tempArray);
@@ -332,8 +335,8 @@ export default function MaterialMultiSelectFreeSolo(
                         && checkInputValueAgainstSelectedValues(params.inputValue)
                         && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
-                            inputValue: params.inputValue.trimStart(),
-                            label: `Add "${params.inputValue.trimStart()}"`,
+                            inputValue: params.inputValue.trimStart().trimEnd(),
+                            label: `Add "${params.inputValue.trimStart().trimEnd()}"`,
                         });
                     }
                     return filtered;
@@ -396,7 +399,6 @@ export default function MaterialMultiSelectFreeSolo(
                             type="text"
                             variant="standard"
                             helperText={firstNameErrorEnabled ? firstNameDisplayedHelperText : null}
-                            error={firstNameErrorEnabled}
                         />
                         <TextField
                             margin="dense"
@@ -414,7 +416,6 @@ export default function MaterialMultiSelectFreeSolo(
                             type="text"
                             variant="standard"
                             helperText={lastNameErrorEnabled ? lastNameDisplayedHelperText : null}
-                            error={lastNameErrorEnabled}
                         />
                     </DialogContent>
                     <DialogActions>

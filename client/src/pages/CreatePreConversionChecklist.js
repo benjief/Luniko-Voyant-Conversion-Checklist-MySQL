@@ -329,7 +329,7 @@ function CreatePreConversionChecklist() {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
             if (loadSheetName.trim() !== "" && loadSheetOwner !== {} && decisionMaker !== {}
-                && conversionType !== "" && additionalProcessing !== [] && dataSources !== {}
+                && conversionType !== "" && additionalProcessing.length && dataSources !== {}
                 && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
                 && formReviewed) {
                 setSubmitButtonDisabled(false);

@@ -324,8 +324,8 @@ export default function MaterialSingleSelectFreeSolo(
                         && checkInputValueAgainstOptions(params.inputValue)
                         && checkInputValueAgainstInvalidOptions(params.inputValue)) {
                         filtered.push({
-                            inputValue: params.inputValue.trimStart(),
-                            label: `Add "${params.inputValue.trimStart()}"`,
+                            inputValue: params.inputValue.trimStart().trimEnd(),
+                            label: `Add "${params.inputValue.trimStart().trimEnd()}"`,
                         });
                     }
                     return filtered;
