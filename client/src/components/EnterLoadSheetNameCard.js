@@ -29,7 +29,8 @@ export default function EnterLoadSheetNameCard({
     submitted = false,
     submitButtonDisabled = true,
     textAuthenticationError = "",
-    input = ""
+    input = "",
+    disabled = false
 }) {
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
@@ -105,7 +106,8 @@ export default function EnterLoadSheetNameCard({
                             required={false}
                             type="text"
                             authenticationField={true}
-                            textAuthenticationError={textAuthenticationError}>
+                            textAuthenticationError={textAuthenticationError}
+                            disabled={disabled}>
                         </MaterialTextField>
                         <button
                             className="submit-load-sheet-name-button"

@@ -106,15 +106,21 @@ function ViewPreConversionChecklist() {
 
     const runSecondaryReadAsyncFunctions = async (loadSheetName) => {
         let conversionChecklistInfo = await getConversionChecklistInfo(loadSheetName);
-        let tempConversionChecklistID = conversionChecklistInfo[0].cc_id;
-        conversionChecklistID.current = tempConversionChecklistID;
-        let conversionChecklistPersonnel = [conversionChecklistInfo[0].cc_load_sheet_owner, conversionChecklistInfo[0].cc_decision_maker];
-        loadSheetOwner.current = await getPersonnelInfo(conversionChecklistPersonnel[0]);
-        decisionMaker.current = await getPersonnelInfo(conversionChecklistPersonnel[1]);
-        await populateSubmittedFields(conversionChecklistInfo[0]);
-        await getAdditionalProcessing();
-        await getAvailablePersonnel();
-        await getSubmittedContributors();
+        // This needs to be in a try-catch block, in case the first function errors out
+        try {
+            let tempConversionChecklistID = conversionChecklistInfo[0].cc_id
+            conversionChecklistID.current = tempConversionChecklistID;
+            let conversionChecklistPersonnel = [conversionChecklistInfo[0].cc_load_sheet_owner, conversionChecklistInfo[0].cc_decision_maker];
+            loadSheetOwner.current = await getPersonnelInfo(conversionChecklistPersonnel[0]);
+            decisionMaker.current = await getPersonnelInfo(conversionChecklistPersonnel[1]);
+            await populateSubmittedFields(conversionChecklistInfo[0]);
+            await getAdditionalProcessing();
+            await getAvailablePersonnel();
+            await getSubmittedContributors();
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError("r");
+        }
     }
 
     const getConversionChecklistInfo = async (loadSheetName) => {
@@ -203,7 +209,6 @@ function ViewPreConversionChecklist() {
     const populateAdditionalProcessingList = (additionalProcessingList) => {
         console.log("populating additional processing list");
         try {
-            async.current = true;
             let tempArray = [];
             for (let i = 0; i < additionalProcessingList.length; i++) {
                 let value = additionalProcessingList[i].ap_type;
@@ -554,7 +559,12 @@ function ViewPreConversionChecklist() {
 
     const handleError = (errorType) => {
         // Delay is set up just in case an error is generated before the is fully-displayed
-        let delay = transitionElementOpacity === "100%" ? 500 : 0;
+        let delay = transitionElementOpacity === "100%" ? 500 : rendering ? 500 : 0;
+
+        if (rendering) {
+            setRendering(false);
+        }
+
         setTimeout(() => {
             alertType.current = "error-alert";
             errorType === "r"
@@ -598,24 +608,120 @@ function ViewPreConversionChecklist() {
     }, [validLoadSheetNameEntered, loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
         dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, valueUpdated, rendering]);
 
-    return (
-        rendering ?
-            <div className="loading-spinner">
-                <Hypnosis
-                    className="spinner"
-                    color="var(--lunikoOrange)"
-                    width="100px"
-                    height="100px"
-                    duration="1.5s" />
-            </div> :
+    try {
+        return (
+            rendering ?
+                <div className="loading-spinner">
+                    <Hypnosis
+                        className="spinner"
+                        color="var(--lunikoOrange)"
+                        width="100px"
+                        height="100px"
+                        duration="1.5s" />
+                </div> :
+                <Fragment>
+                    <div
+                        className="transition-element"
+                        style={{
+                            opacity: transitionElementOpacity,
+                            visibility: transtitionElementVisibility
+                        }}>
+                    </div>
+                    <NavBar>
+                    </NavBar>
+                    {alert
+                        ? <div className="alert-container">
+                            <PositionedSnackbar
+                                message={alertMessage.current}
+                                closed={handleAlertClosed}
+                                className={alertType.current}>
+                            </PositionedSnackbar>
+                        </div>
+                        : <div></div>}
+                    <div
+                        className="enter-valid-load-sheet-name"
+                        style={{ display: enterLoadSheetNameDisplay.current }}>
+                        <div className="enter-valid-load-sheet-name-container">
+                            <div className="page-message">
+                                Retrieve Your Load Sheet Below:
+                            </div>
+                            <div className="enter-valid-load-sheet-name-card">
+                                <EnterLoadSheetNameCard
+                                    loadSheetName={handleLoadSheetNameCallback}
+                                    submitted={handleOnClickSubmit}
+                                    submitButtonDisabled={submitButtonDisabled}
+                                    textAuthenticationError={invalidLoadSheetNameError}
+                                    input={[<u>pre</u>, "-"]}>
+                                </EnterLoadSheetNameCard>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        className="view-pre-conversion-checklist"
+                        style={{ display: viewPreConversionChecklistDisplay.current }}>
+                        <div className="page-message">
+                            Please Review/Modify the Fields Below:
+                        </div>
+                        <div className="view-pre-conversion-checklist-container">
+                            <div className="view-pre-conversion-checklist-card">
+                                <ViewPreConversionChecklistCard
+                                    conversionTypeOptions={conversionTypeOptions}
+                                    additionalProcessingOptions={additionalProcessingOptions}
+                                    loadSheetName={handleLoadSheetNameCallback}
+                                    submittedLoadSheetName={loadSheetName}
+                                    personnelOptions={personnelOptions}
+                                    submittedContributors={contributors.current}
+                                    invalidPersonnel={contributors.current}
+                                    loadSheetOwner={handleLoadSheetOwnerCallback}
+                                    submittedLoadSheetOwner={loadSheetOwner.current}
+                                    decisionMaker={handleDecisionMakerCallback}
+                                    submittedDecisionMaker={decisionMaker.current}
+                                    contributors={handleContributorsCallback}
+                                    invalidContributors={
+                                        loadSheetOwner.current.label && decisionMaker.current.label
+                                            ? Array.from(new Set(contributors.current.concat([loadSheetOwner.current, decisionMaker.current]))) // TODO: fix this roundabout way of doing things
+                                            : loadSheetOwner.current.label ? contributors.current.concat(loadSheetOwner.current)
+                                                : decisionMaker.current.label ? contributors.current.concat(decisionMaker.current)
+                                                    : contributors.current
+                                    }
+                                    conversionType={handleConversionTypeCallback}
+                                    submittedConversionType={conversionType.current}
+                                    additionalProcessing={handleAdditionalProcessingCallback}
+                                    submittedAdditionalProcessing={additionalProcessing.current}
+                                    dataSources={handleDataSourcesCallback}
+                                    submittedDataSources={dataSources.current}
+                                    uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
+                                    submittedUniqueRecordsPreCleanup={uniqueRecordsPreCleanup.current}
+                                    uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup.current}
+                                    uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
+                                    submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup.current}
+                                    uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup.current}
+                                    recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
+                                    submittedRecordsPreCleanupNotes={recordsPreCleanupNotes.current ? recordsPreCleanupNotes.current : ""}
+                                    recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
+                                    submittedRecordsPostCleanupNotes={recordsPostCleanupNotes.current ? recordsPostCleanupNotes.current : ""}
+                                    preConversionManipulation={handlePreConversionManipulationCallback}
+                                    submittedPreConversionManipulation={preConversionManipulation.current ? preConversionManipulation.current : ""}
+                                    // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
+                                    // postConversionValidationResults={handlePostConversionValidationResultsCallback}
+                                    // postConversionChanges={handlePostConversionChangesCallback}
+                                    forceCheckboxOff={forceCheckboxOff}
+                                    checked={handleCheckboxCallback}
+                                    valueUpdated={handleValueUpdated}
+                                    updateButtonDisabled={submitButtonDisabled}
+                                    updated={handleOnClickSubmit}
+                                    displayFadingBalls={displaySubmitButtonWorkingIcon}>
+                                </ViewPreConversionChecklistCard>
+                            </div>
+                        </div>
+                    </div>
+                </Fragment >
+        )
+    } catch (err) {
+        console.log("error caught: ", err);
+        handleError("r");
+        return (
             <Fragment>
-                <div
-                    className="transition-element"
-                    style={{
-                        opacity: transitionElementOpacity,
-                        visibility: transtitionElementVisibility
-                    }}>
-                </div>
                 <NavBar>
                 </NavBar>
                 {alert
@@ -628,84 +734,12 @@ function ViewPreConversionChecklist() {
                     </div>
                     : <div></div>}
                 <div
-                    className="enter-valid-load-sheet-name"
-                    style={{ display: enterLoadSheetNameDisplay.current }}>
-                    <div className="enter-valid-load-sheet-name-container">
-                        <div className="page-message">
-                            Retrieve Your Load Sheet Below:
-                        </div>
-                        <div className="enter-valid-load-sheet-name-card">
-                            <EnterLoadSheetNameCard
-                                loadSheetName={handleLoadSheetNameCallback}
-                                submitted={handleOnClickSubmit}
-                                submitButtonDisabled={submitButtonDisabled}
-                                textAuthenticationError={invalidLoadSheetNameError}
-                                input={[<u>pre</u>, "-"]}>
-                            </EnterLoadSheetNameCard>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    className="view-pre-conversion-checklist"
-                    style={{ display: viewPreConversionChecklistDisplay.current }}>
-                    <div className="page-message">
-                        Please Review/Modify the Fields Below:
-                    </div>
-                    <div className="view-pre-conversion-checklist-container">
-                        <div className="view-pre-conversion-checklist-card">
-                            <ViewPreConversionChecklistCard
-                                conversionTypeOptions={conversionTypeOptions}
-                                additionalProcessingOptions={additionalProcessingOptions}
-                                loadSheetName={handleLoadSheetNameCallback}
-                                submittedLoadSheetName={loadSheetName}
-                                personnelOptions={personnelOptions}
-                                submittedContributors={contributors.current}
-                                invalidPersonnel={contributors.current}
-                                loadSheetOwner={handleLoadSheetOwnerCallback}
-                                submittedLoadSheetOwner={loadSheetOwner.current}
-                                decisionMaker={handleDecisionMakerCallback}
-                                submittedDecisionMaker={decisionMaker.current}
-                                contributors={handleContributorsCallback}
-                                invalidContributors={
-                                    loadSheetOwner.current.label && decisionMaker.current.label
-                                        ? Array.from(new Set(contributors.current.concat([loadSheetOwner.current, decisionMaker.current]))) // TODO: fix this roundabout way of doing things
-                                        : loadSheetOwner.current.label ? contributors.current.concat(loadSheetOwner.current)
-                                            : decisionMaker.current.label ? contributors.current.concat(decisionMaker.current)
-                                                : contributors.current
-                                }
-                                conversionType={handleConversionTypeCallback}
-                                submittedConversionType={conversionType.current}
-                                additionalProcessing={handleAdditionalProcessingCallback}
-                                submittedAdditionalProcessing={additionalProcessing.current}
-                                dataSources={handleDataSourcesCallback}
-                                submittedDataSources={dataSources.current}
-                                uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
-                                submittedUniqueRecordsPreCleanup={uniqueRecordsPreCleanup.current}
-                                uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup.current}
-                                uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
-                                submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup.current}
-                                uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup.current}
-                                recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
-                                submittedRecordsPreCleanupNotes={recordsPreCleanupNotes.current ? recordsPreCleanupNotes.current : ""}
-                                recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
-                                submittedRecordsPostCleanupNotes={recordsPostCleanupNotes.current ? recordsPostCleanupNotes.current : ""}
-                                preConversionManipulation={handlePreConversionManipulationCallback}
-                                submittedPreConversionManipulation={preConversionManipulation.current ? preConversionManipulation.current : ""}
-                                // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
-                                // postConversionValidationResults={handlePostConversionValidationResultsCallback}
-                                // postConversionChanges={handlePostConversionChangesCallback}
-                                forceCheckboxOff={forceCheckboxOff}
-                                checked={handleCheckboxCallback}
-                                valueUpdated={handleValueUpdated}
-                                updateButtonDisabled={submitButtonDisabled}
-                                updated={handleOnClickSubmit}
-                                displayFadingBalls={displaySubmitButtonWorkingIcon}>
-                            </ViewPreConversionChecklistCard>
-                        </div>
-                    </div>
-                </div>
-            </Fragment >
-    )
+                    className="error-div"
+                    style={{ height: "100vw", width: "100%" }}
+                ></div>
+            </Fragment>
+        )
+    }
 }
 
 export default ViewPreConversionChecklist;
