@@ -388,20 +388,24 @@ function ViewPreConversionChecklist() {
         console.log("starting promise chain...");
         console.log("assigning UIDs to new personnel");
         let newPersonnelToAdd = await assignUIDsToNewPersonnel();
-        setNewPersonnel(newPersonnelToAdd);
-        for (let i = 0; i < newPersonnelToAdd.length; i++) {
-            await addNewPersonnelToDB(newPersonnelToAdd[i]);
+        try {
+            setNewPersonnel(newPersonnelToAdd);
+            for (let i = 0; i < newPersonnelToAdd.length; i++) {
+                await addNewPersonnelToDB(newPersonnelToAdd[i]);
+            }
+            await removeAdditionalProcessing();
+            for (let i = 0; i < additionalProcessing.current.length; i++) {
+                await addAdditionalProcessing(additionalProcessing.current[i]);
+            }
+            await removeContributions();
+            for (let i = 0; i < contributors.current.length; i++) {
+                await addContributions(contributors.current[i]);
+            }
+            await updateConversionChecklist();
+            setAlert(true);
+        } catch (err) {
+            handleError("w");
         }
-        await removeAdditionalProcessing();
-        for (let i = 0; i < additionalProcessing.current.length; i++) {
-            await addAdditionalProcessing(additionalProcessing.current[i]);
-        }
-        await removeContributions();
-        for (let i = 0; i < contributors.current.length; i++) {
-            await addContributions(contributors.current[i]);
-        }
-        await updateConversionChecklist();
-        setAlert(true);
     }
 
     const assignUIDsToNewPersonnel = () => {
