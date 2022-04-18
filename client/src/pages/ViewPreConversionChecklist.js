@@ -26,14 +26,19 @@ function ViewPreConversionChecklist() {
     const conversionChecklistID = useRef("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
     const [newPersonnel, setNewPersonnel] = useState([]);
-    const loadSheetOwner = useRef([]);
-    const decisionMaker = useRef([]);
-    const contributors = useRef([]);
-    const conversionType = useRef("");
-    const additionalProcessing = useRef([]);
-    const dataSources = useRef("");
-    const uniqueRecordsPreCleanup = useRef(0);
-    const uniqueRecordsPostCleanup = useRef(0);
+    const [loadSheetOwner, setLoadSheetOwner] = useState([]);
+    const [decisionMaker, setDecisionMaker] = useState([]);
+    const [contributors, setContributors] = useState([]);
+    // const conversionType = useRef("");
+    const [conversionType, setConversionType] = useState("");
+    // const additionalProcessing = useRef([]);
+    const [additionalProcessing, setAdditionalProcessing] = useState([]);
+    // const dataSources = useRef("");
+    const [dataSources, setDataSources] = useState("");
+    // const uniqueRecordsPreCleanup = useRef(0);
+    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
+    // const uniqueRecordsPostCleanup = useRef(0);
+    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0);
     const recordsPreCleanupNotes = useRef("");
     const recordsPostCleanupNotes = useRef("");
     const preConversionManipulation = useRef("");
@@ -47,7 +52,10 @@ function ViewPreConversionChecklist() {
     const [alert, setAlert] = useState(false);
     const alertType = useRef("success-alert");
     const alertMessage = useRef("Pre-conversion checklist successfully updated!");
+    const loadErrorMessage = useRef("Apologies! We've encountered an error. Please attempt to re-load this page.");
+    const writeErrorMessage = useRef("Apologies! We've encountered an error. Please attempt to update your checklist again.");
     const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
+    const activeError = useRef(false);
     const async = useRef(false);
 
     var asyncFunctionAtWork = false;
@@ -68,17 +76,16 @@ function ViewPreConversionChecklist() {
 
     const runInitialReadAsyncFunctions = async () => {
         await getValidLoadSheetNames();
-        console.log("setting rendering to false");
         setRendering(false);
     }
 
     const getValidLoadSheetNames = async () => {
-        console.log("fetching valid load sheet names");
         try {
+            console.log("fetching valid load sheet names");
             async.current = true;
             await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-valid-pre-conversion-ls-names", {
-            }).then(async response => {
-                await populateValidLoadSheetNamesList(response.data);
+            }).then(response => {
+                populateValidLoadSheetNamesList(response.data);
             });
         } catch (err) {
             console.log("error caught: ", err);
@@ -87,14 +94,13 @@ function ViewPreConversionChecklist() {
     }
 
     const populateValidLoadSheetNamesList = (validLoadSheetNamesList) => {
-        console.log("populating load sheet name list");
         try {
-            async.current = true;
+            console.log("populating load sheet name list");
             let tempArray = [];
             for (let i = 0; i < validLoadSheetNamesList.length; i++) {
                 tempArray.push(validLoadSheetNamesList[i].cc_load_sheet_name.toLowerCase());
             }
-            console.log(tempArray);
+            // console.log(tempArray);
             validLoadSheetNames.current = tempArray;
             console.log("valid load sheet names set");
             async.current = false;
@@ -111,8 +117,8 @@ function ViewPreConversionChecklist() {
             let tempConversionChecklistID = conversionChecklistInfo[0].cc_id
             conversionChecklistID.current = tempConversionChecklistID;
             let conversionChecklistPersonnel = [conversionChecklistInfo[0].cc_load_sheet_owner, conversionChecklistInfo[0].cc_decision_maker];
-            loadSheetOwner.current = await getPersonnelInfo(conversionChecklistPersonnel[0]);
-            decisionMaker.current = await getPersonnelInfo(conversionChecklistPersonnel[1]);
+            setLoadSheetOwner(await getPersonnelInfo(conversionChecklistPersonnel[0]));
+            setDecisionMaker(await getPersonnelInfo(conversionChecklistPersonnel[1]));
             await populateSubmittedFields(conversionChecklistInfo[0]);
             await getAdditionalProcessing();
             await getAvailablePersonnel();
@@ -174,10 +180,10 @@ function ViewPreConversionChecklist() {
                     "value": value,
                     "label": label
                 };
-                conversionType.current = tempConversionType;
-                dataSources.current = conversionChecklistInfo.cc_data_sources;
-                uniqueRecordsPreCleanup.current = conversionChecklistInfo.uq_records_pre_cleanup;
-                uniqueRecordsPostCleanup.current = conversionChecklistInfo.uq_records_post_cleanup;
+                setConversionType(tempConversionType);
+                setDataSources(conversionChecklistInfo.cc_data_sources);
+                setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
+                setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
                 recordsPreCleanupNotes.current = conversionChecklistInfo.cc_records_pre_cleanup_notes;
                 recordsPostCleanupNotes.current = conversionChecklistInfo.cc_records_post_cleanup_notes;
                 preConversionManipulation.current = conversionChecklistInfo.cc_pre_conversion_manipulation;
@@ -195,9 +201,8 @@ function ViewPreConversionChecklist() {
             try {
                 async.current = true;
                 await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-additional-processing/${conversionChecklistID.current}`, {
-                }).then(async response => {
-                    await populateAdditionalProcessingList(response.data);
-                    async.current = false;
+                }).then(response => {
+                    populateAdditionalProcessingList(response.data);
                 });
             } catch (err) {
                 console.log("error caught: ", err);
@@ -219,7 +224,8 @@ function ViewPreConversionChecklist() {
                 }
                 tempArray.push(tempAdditionalProcessing);
             }
-            additionalProcessing.current = tempArray;
+            setAdditionalProcessing(tempArray);
+            async.current = false;
         } catch (err) {
             console.log("error caught: ", err);
             handleError("r");
@@ -232,9 +238,8 @@ function ViewPreConversionChecklist() {
             try {
                 async.current = true;
                 await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-all-personnel", {
-                }).then(async response => {
-                    await populatePersonnelList(response.data);
-                    async.current = false;
+                }).then(response => {
+                    populatePersonnelList(response.data);
                 });
             } catch (err) {
                 console.log("error caught: ", err);
@@ -257,6 +262,7 @@ function ViewPreConversionChecklist() {
                 tempArray.push(personnel);
             }
             setPersonnelOptions([...tempArray]);
+            async.current = false;
         } catch (err) {
             console.log("error caught: ", err);
             handleError("r");
@@ -269,10 +275,8 @@ function ViewPreConversionChecklist() {
             try {
                 async.current = true;
                 await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-submitted-contributors/${conversionChecklistID.current}`, {
-                }).then(async response => {
-                    await populateSubmittedContributorsList(response.data);
-                    async.current = false;
-                    setRendering(false, viewPreConversionChecklistDisplay.current = "visible");
+                }).then(response => {
+                    populateSubmittedContributorsList(response.data);
                 });
             } catch (err) {
                 console.log("error caught: ", err);
@@ -293,7 +297,9 @@ function ViewPreConversionChecklist() {
                 };
                 tempArray.push(personnel);
             }
-            contributors.current = tempArray;
+            setContributors(tempArray);
+            async.current = false;
+            setRendering(false, viewPreConversionChecklistDisplay.current = "visible");
         } catch (err) {
             console.log("error caught: ", err);
             handleError("r");
@@ -317,35 +323,35 @@ function ViewPreConversionChecklist() {
     }
 
     const handleLoadSheetOwnerCallback = (loadSheetOwnerFromSelector) => {
-        loadSheetOwner.current = loadSheetOwnerFromSelector;
+        setLoadSheetOwner(loadSheetOwnerFromSelector);
     }
 
     const handleDecisionMakerCallback = (decisionMakerFromSelector) => {
-        decisionMaker.current = decisionMakerFromSelector
+        setDecisionMaker(decisionMakerFromSelector);
     }
 
     const handleContributorsCallback = (contributorsFromSelector) => {
-        contributors.current = contributorsFromSelector;
+        setContributors(contributorsFromSelector);
     }
 
     const handleConversionTypeCallback = (conversionTypeFromSelector) => {
-        conversionType.current = conversionTypeFromSelector;
+        setConversionType(conversionTypeFromSelector);
     }
 
     const handleAdditionalProcessingCallback = (additionalProcessingFromSelector) => {
-        additionalProcessing.current = additionalProcessingFromSelector;
+        setAdditionalProcessing(additionalProcessingFromSelector);
     }
 
     const handleDataSourcesCallback = (dataSourcesFromInput) => {
-        dataSources.current = dataSourcesFromInput;
+        setDataSources(dataSourcesFromInput);
     }
 
     const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        uniqueRecordsPreCleanup.current = uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : 0;
+        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : 0);
     }
 
     const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        uniqueRecordsPostCleanup.current = uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 0;
+        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 0);
     }
 
     const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
@@ -394,12 +400,12 @@ function ViewPreConversionChecklist() {
                 await addNewPersonnelToDB(newPersonnelToAdd[i]);
             }
             await removeAdditionalProcessing();
-            for (let i = 0; i < additionalProcessing.current.length; i++) {
-                await addAdditionalProcessing(additionalProcessing.current[i]);
+            for (let i = 0; i < additionalProcessing.length; i++) {
+                await addAdditionalProcessing(additionalProcessing[i]);
             }
             await removeContributions();
-            for (let i = 0; i < contributors.current.length; i++) {
-                await addContributions(contributors.current[i]);
+            for (let i = 0; i < contributors.length; i++) {
+                await addContributions(contributors[i]);
             }
             await updateConversionChecklist();
             setAlert(true);
@@ -410,26 +416,27 @@ function ViewPreConversionChecklist() {
 
     const assignUIDsToNewPersonnel = () => {
         try {
+            // TODO: split these up into 3 helper functions?
             async.current = true;
             // throw new Error("error");
             let tempArray = [];
-            if (loadSheetOwner.current.value === -1) {
-                loadSheetOwner.current.value = uuidv4();
-                tempArray.push(loadSheetOwner.current);
+            if (loadSheetOwner.value === -1) {
+                loadSheetOwner.value = uuidv4();
+                tempArray.push(loadSheetOwner);
                 setNewPersonnel(tempArray);
             }
-            if (decisionMaker.current.value === -1) {
+            if (decisionMaker.value === -1) {
                 // Don't want to try and add duplicate personnel to DB
-                decisionMaker.current.value = (decisionMaker.current.label.toLowerCase() === loadSheetOwner.current.label.toLowerCase()) ?
-                    loadSheetOwner.current.value
+                decisionMaker.value = (decisionMaker.label.toLowerCase() === loadSheetOwner.label.toLowerCase()) ?
+                    loadSheetOwner.value
                     : uuidv4();
-                tempArray.push(decisionMaker.current);
+                tempArray.push(decisionMaker);
                 setNewPersonnel(tempArray);
             }
-            for (let i = 0; i < contributors.current.length; i++) {
-                if (contributors.current[i].value === -1) {
-                    contributors.current[i].value = uuidv4();
-                    tempArray.push(contributors.current[i]);
+            for (let i = 0; i < contributors.length; i++) {
+                if (contributors.value === -1) {
+                    contributors.value = uuidv4();
+                    tempArray.push(contributors[i]);
                 }
             }
             async.current = false;
@@ -537,12 +544,12 @@ function ViewPreConversionChecklist() {
                 async.current = true;
                 await Axios.put(`https://voyant-conversion-checklist.herokuapp.com/update-pre-conversion-checklist/${conversionChecklistID.current}`, {
                     loadSheetName: loadSheetName,
-                    loadSheetOwner: loadSheetOwner.current.value,
-                    decisionMaker: decisionMaker.current.value,
-                    conversionType: conversionType.current.value ? conversionType.current.value : conversionType.current,
-                    dataSources: dataSources.current,
-                    uniqueRecordsPreCleanup: uniqueRecordsPreCleanup.current,
-                    uniqueRecordsPostCleanup: uniqueRecordsPostCleanup.current,
+                    loadSheetOwner: loadSheetOwner.value,
+                    decisionMaker: decisionMaker.value,
+                    conversionType: conversionType.value ? conversionType.value : conversionType,
+                    dataSources: dataSources,
+                    uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
+                    uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
                     recordsPreCleanupNotes: recordsPreCleanupNotes.current === null ? null : recordsPreCleanupNotes.current.trim() === "" ? null : recordsPreCleanupNotes.current,
                     recordsPostCleanupNotes: recordsPostCleanupNotes.current === null ? null : recordsPostCleanupNotes.current.trim() === "" ? null : recordsPostCleanupNotes.current,
                     preConversionManipulation: preConversionManipulation.current === null ? null : preConversionManipulation.current.trim() === "" ? null : preConversionManipulation.current
@@ -562,6 +569,12 @@ function ViewPreConversionChecklist() {
     }
 
     const handleError = (errorType) => {
+        activeError.current = true;
+        alertType.current = "error-alert";
+        errorType === "r"
+            ? alertMessage.current = loadErrorMessage.current
+            : alertMessage.current = writeErrorMessage.current;
+
         // Delay is set up just in case an error is generated before the is fully-displayed
         let delay = transitionElementOpacity === "100%" ? 500 : rendering ? 500 : 0;
 
@@ -570,10 +583,6 @@ function ViewPreConversionChecklist() {
         }
 
         setTimeout(() => {
-            alertType.current = "error-alert";
-            errorType === "r"
-                ? alertMessage.current = "Apologies! We've encountered an error. Please attempt to re-load this page."
-                : alertMessage.current = "Apologies! We've encountered an error. Please attempt to update your checklist again.";
             setAlert(true);
         }, delay);
     }
@@ -599,9 +608,10 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered.current) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                if (loadSheetName.trim() !== "" && loadSheetOwner.current !== {} && decisionMaker.current !== {}
-                    && conversionType.current !== "" && additionalProcessing.current.length && dataSources.current !== {}
-                    && uniqueRecordsPreCleanup.current > 0 && uniqueRecordsPostCleanup.current > 0
+                if (loadSheetName.trim() !== "" && (loadSheetOwner.value && loadSheetOwner !== [])
+                    && (decisionMaker.value && decisionMaker !== [])
+                    && conversionType !== "" && additionalProcessing.length && dataSources.length
+                    && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
                     && formReviewed && valueUpdated.current) {
                     setSubmitButtonDisabled(false);
                 } else {
@@ -612,18 +622,36 @@ function ViewPreConversionChecklist() {
     }, [validLoadSheetNameEntered, loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
         dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, valueUpdated, rendering]);
 
-    try {
-        return (
-            rendering ?
-                <div className="loading-spinner">
-                    <Hypnosis
-                        className="spinner"
-                        color="var(--lunikoOrange)"
-                        width="100px"
-                        height="100px"
-                        duration="1.5s" />
-                </div> :
-                <Fragment>
+    /* try { */
+    return (
+        rendering ?
+            <div className="loading-spinner">
+                <Hypnosis
+                    className="spinner"
+                    color="var(--lunikoOrange)"
+                    width="100px"
+                    height="100px"
+                    duration="1.5s" />
+            </div>
+            : activeError.current
+                ? <Fragment>
+                    <NavBar>
+                    </NavBar>
+                    {alert
+                        ? <div className="alert-container">
+                            <PositionedSnackbar
+                                message={alertMessage.current}
+                                closed={handleAlertClosed}
+                                className={alertType.current}>
+                            </PositionedSnackbar>
+                        </div>
+                        : <div></div>}
+                    <div
+                        className="error-div"
+                        style={{ height: "100vw", width: "100%" }}
+                    ></div>
+                </Fragment>
+                : <Fragment>
                     <div
                         className="transition-element"
                         style={{
@@ -674,32 +702,32 @@ function ViewPreConversionChecklist() {
                                     loadSheetName={handleLoadSheetNameCallback}
                                     submittedLoadSheetName={loadSheetName}
                                     personnelOptions={personnelOptions}
-                                    submittedContributors={contributors.current}
-                                    invalidPersonnel={contributors.current}
+                                    submittedContributors={contributors}
+                                    invalidPersonnel={contributors}
                                     loadSheetOwner={handleLoadSheetOwnerCallback}
-                                    submittedLoadSheetOwner={loadSheetOwner.current}
+                                    submittedLoadSheetOwner={loadSheetOwner}
                                     decisionMaker={handleDecisionMakerCallback}
-                                    submittedDecisionMaker={decisionMaker.current}
+                                    submittedDecisionMaker={decisionMaker}
                                     contributors={handleContributorsCallback}
                                     invalidContributors={
-                                        loadSheetOwner.current.label && decisionMaker.current.label
-                                            ? Array.from(new Set(contributors.current.concat([loadSheetOwner.current, decisionMaker.current]))) // TODO: fix this roundabout way of doing things
-                                            : loadSheetOwner.current.label ? contributors.current.concat(loadSheetOwner.current)
-                                                : decisionMaker.current.label ? contributors.current.concat(decisionMaker.current)
-                                                    : contributors.current
+                                        loadSheetOwner.label && decisionMaker.label
+                                            ? Array.from(new Set(contributors.concat([loadSheetOwner, decisionMaker]))) // TODO: fix this roundabout way of doing things
+                                            : loadSheetOwner.label ? contributors.concat(loadSheetOwner)
+                                                : decisionMaker.label ? contributors.concat(decisionMaker)
+                                                    : contributors
                                     }
                                     conversionType={handleConversionTypeCallback}
-                                    submittedConversionType={conversionType.current}
+                                    submittedConversionType={conversionType}
                                     additionalProcessing={handleAdditionalProcessingCallback}
-                                    submittedAdditionalProcessing={additionalProcessing.current}
+                                    submittedAdditionalProcessing={additionalProcessing}
                                     dataSources={handleDataSourcesCallback}
-                                    submittedDataSources={dataSources.current}
+                                    submittedDataSources={dataSources}
                                     uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
-                                    submittedUniqueRecordsPreCleanup={uniqueRecordsPreCleanup.current}
-                                    uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup.current}
+                                    submittedUniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
+                                    uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup}
                                     uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
-                                    submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup.current}
-                                    uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup.current}
+                                    submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
+                                    uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup}
                                     recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
                                     submittedRecordsPreCleanupNotes={recordsPreCleanupNotes.current ? recordsPreCleanupNotes.current : ""}
                                     recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
@@ -720,8 +748,8 @@ function ViewPreConversionChecklist() {
                         </div>
                     </div>
                 </Fragment >
-        )
-    } catch (err) {
+    )
+    /* } catch (err) {
         console.log("error caught: ", err);
         handleError("r");
         return (
@@ -743,7 +771,7 @@ function ViewPreConversionChecklist() {
                 ></div>
             </Fragment>
         )
-    }
+    } */
 }
 
 export default ViewPreConversionChecklist;

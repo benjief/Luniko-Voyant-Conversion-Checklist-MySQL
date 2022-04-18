@@ -297,6 +297,7 @@ export default function ViewPreConversionChecklistCard({
                             type="number"
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}
+                            fractionsAllowed={false}
                             defaultValue={submittedUniqueRecordsPreCleanup}>
                         </MaterialTextField>
                         <MaterialTextField
@@ -309,6 +310,7 @@ export default function ViewPreConversionChecklistCard({
                             type="number"
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}
+                            fractionsAllowed={false}
                             defaultValue={submittedUniqueRecordsPostCleanup}>
                         </MaterialTextField>
                         <MaterialTextField

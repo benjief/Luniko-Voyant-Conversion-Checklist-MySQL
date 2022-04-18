@@ -265,7 +265,8 @@ export default function CreatePreConversionChecklistCard({
                             required={true}
                             type="number"
                             negativeNumbersAllowed={false}
-                            zerosAllowed={false}>
+                            zerosAllowed={false}
+                            fractionsAllowed={false}>
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
@@ -276,7 +277,8 @@ export default function CreatePreConversionChecklistCard({
                             required={true}
                             type="number"
                             negativeNumbersAllowed={false}
-                            zerosAllowed={false}>
+                            zerosAllowed={false}
+                            fractionsAllowed={false}>
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-cleanup-notes"

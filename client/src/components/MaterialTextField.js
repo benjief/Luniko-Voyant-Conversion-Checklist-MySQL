@@ -18,10 +18,11 @@ export default function MaterialTextField({
   requiresValidation = false,
   invalidInputs = [],
   invalidInputMsg = "",
-  // upperLimitValue = null,
-  // lowerLimitValue = null,
+  maxValue = Number.MAX_SAFE_INTEGER,
+  minValue = Number.MIN_SAFE_INTEGER,
   negativeNumbersAllowed = true,
   zerosAllowed = true,
+  fractionsAllowed = true,
   authenticationField = false,
   textAuthenticationError = "",
   disabled = false,
@@ -43,7 +44,7 @@ export default function MaterialTextField({
       } else if (type === "password" && requiresValidation) {
         checkPasswordValidity(value);
       } else if (type === "number") {
-        checkNumberValidity(parseInt(value));
+        checkNumberValidity(value);
       } else {
         handleValidValue(value);
       }
@@ -121,11 +122,14 @@ export default function MaterialTextField({
       handleInvalidNumber(number, "Negative numbers aren't allowed");
     } else if (number === 0 && !zerosAllowed) {
       handleInvalidNumber(number, "Number must be > 0");
+    } else if (number > maxValue) {
+      handleInvalidNumber(number, "Number too high");
+    } else if (number < minValue) {
+      handleInvalidNumber(number, "Number too low");
     } else {
       handleValidValue(number);
     }
   }
-
 
   const handleInvalidNumber = (number, helperText) => {
     // setValue(null);
@@ -173,7 +177,7 @@ export default function MaterialTextField({
         }
       }
     }
-  }, [authenticationField, textAuthenticationError, errorEnabled, firstRender, value]) //TODO: check need for firstRender
+  }, [authenticationField, textAuthenticationError, errorEnabled, firstRender, value]) // TODO: check need for firstRender
 
   return (
     <Box
@@ -187,6 +191,25 @@ export default function MaterialTextField({
       autoComplete="off">
       <div className="material-text-field">
         <TextField
+          onKeyDown={(evt) => { // TODO: make this a separate function
+            if (type === "number") {
+              if (["e", "E"].includes(evt.key)) {
+                evt.preventDefault();
+              }
+              if (!fractionsAllowed) {
+                if (["."].includes(evt.key)) {
+                  evt.preventDefault();
+                }
+              }
+            }
+          }}
+          // onKeyDown={(evt) => {
+          //   if (type === "number") {
+          //     ["e", "E"].includes(evt.key) && evt.preventDefault()
+          //   }
+          //   type === "number"
+          //     ? ["e", "E"].includes(evt.key) && evt.preventDefault() : "null";
+          // }}
           label={label}
           defaultValue={defaultValue}
           type={type}
