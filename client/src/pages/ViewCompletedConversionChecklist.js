@@ -1,4 +1,5 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../components/Navbar";
 import MaterialSingleSelect from "../components/MaterialSingleSelect";
 import MaterialMultiSelect from "../components/MaterialMultiSelect";
@@ -16,7 +17,6 @@ import "../styles/CardComponents.css";
 import "../styles/AlertComponents.css";
 
 function ViewCompletedConversionChecklist() {
-    // const navigate = useNavigate();
     const [rendering, setRendering] = useState(true);
     const [enterLoadSheetNameDisplay, setEnterLoadSheetNameDisplay] = useState("visible");
     const [viewCompletedConversionChecklistDisplay, setViewCompletedConversionChecklistDisplay] = useState("none");
@@ -43,24 +43,43 @@ function ViewCompletedConversionChecklist() {
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+    const [alert, setAlert] = useState(false);
+    const activeError = useRef(false);
+    const async = useRef(false);
 
-    const getValidLoadSheetNames = async () => {
-        await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-valid-completed-ls-names", {
-        }).then((response) => {
-            populateValidLoadSheetNamesList(response.data);
-        });
+    const navigate = useNavigate();
+
+    const runInitialReadAsyncFunctions = async () => {
+        await getValidLoadSheetNames();
+        setRendering(false);
     }
 
-    const populateValidLoadSheetNamesList = (validLSNamesList) => {
-        if (validLSNamesList.length) {
-            let tempArray = [];
-            for (let i = 0; i < validLSNamesList.length; i++) {
-                tempArray.push(validLSNamesList[i].cc_load_sheet_name.toLowerCase());
-            }
-            setValidLoadSheetNames([...tempArray]);
+    const getValidLoadSheetNames = async () => {
+        console.log("fetching valid load sheet names");
+        try {
+            await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-valid-post-conversion-ls-names", {
+            }).then(response => {
+                populateValidLoadSheetNamesList(response.data);
+            });
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError();
         }
-        setViewCompletedConversionChecklistDisplay("visible");
-        setRendering(false);
+    }
+    const populateValidLoadSheetNamesList = (validLoadSheetNamesList) => {
+        console.log("populating load sheet name list");
+        try {
+            let tempArray = [];
+            for (let i = 0; i < validLoadSheetNamesList.length; i++) {
+                tempArray.push(validLoadSheetNamesList[i].cc_load_sheet_name.toLowerCase());
+            }
+            validLoadSheetNames.current = tempArray;
+            console.log("valid load sheet names set");
+            async.current = false;
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError();
+        }
     }
 
     const handleLoadSheetNameCallback = (lsNameFromInput) => {
@@ -79,85 +98,164 @@ function ViewCompletedConversionChecklist() {
         return false;
     }
 
-    const getConversionChecklistInfo = async (loadSheetName) => {
-        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-all-conversion-checklist-info/${loadSheetName}`, {
-        }).then((response) => {
-            getPersonnelInfo(response.data[0]);
-        });
+    const runSecondaryReadAsyncFunctions = async (loadSheetName) => {
+        let conversionChecklistInfo = await getConversionChecklistInfo(loadSheetName);
+        try {
+            let tempConversionChecklistID = conversionChecklistInfo[0].cc_id
+            conversionChecklistID.current = tempConversionChecklistID;
+            let conversionChecklistPersonnel = [conversionChecklistInfo[0].cc_load_sheet_owner, conversionChecklistInfo[0].cc_decision_maker];
+            setLoadSheetOwner(await getPersonnelInfo(conversionChecklistPersonnel[0]));
+            setDecisionMaker(await getPersonnelInfo(conversionChecklistPersonnel[1]));
+            await getAdditionalProcessing();
+            await getSubmittedContributors();
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError();
+        }
     }
 
-    const getPersonnelInfo = async (conversionChecklistInfo) => {
-        let loadSheetOwner = conversionChecklistInfo.cc_load_sheet_owner;
-        let decisionMaker = conversionChecklistInfo.cc_decision_maker;
-        let conversionChecklistPersonnel = [loadSheetOwner, decisionMaker];
-
-        for (let i = 0; i < conversionChecklistPersonnel.length; i++) {
-            Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-personnel-info/${conversionChecklistPersonnel[i]}`, {
-            }).then((response) => {
-                let name = response.data[0].pers_name;
-                let personnel = {
-                    "value": conversionChecklistPersonnel[i],
-                    "label": name
-                };
-                i === 0 ? setLoadSheetOwner(personnel) : setDecisionMaker(personnel);
+    const getConversionChecklistInfo = async (loadSheetName) => {
+        console.log("fetching conversion checklist information");
+        try {
+            async.current = true;
+            let tempArray = [];
+            await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-post-conversion-checklist-info/${loadSheetName}`, {
+            }).then(response => {
+                tempArray.push(response.data[0]);
+                async.current = false;
             });
+            return tempArray;
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError();
         }
-        populateSubmittedFields(conversionChecklistInfo);
+    }
+
+    const getPersonnelInfo = async (personnelID) => {
+        if (!async.current) {
+            console.log("fetching personnel info");
+            try {
+                async.current = true;
+                let personnel = {};
+                await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-personnel-info/${personnelID}`, {
+                }).then(response => {
+                    let name = response.data[0].pers_name;
+                    personnel = {
+                        "value": personnelID,
+                        "label": name
+                    };
+                    async.current = false;
+                });
+                return personnel;
+            } catch (err) {
+                console.log("error caught: ", err);
+                handleError();
+            }
+        }
     }
 
     const populateSubmittedFields = (conversionChecklistInfo) => {
-        new Promise(resolve => {
-            // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
-            // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
-            setConversionChecklistID(conversionChecklistInfo.cc_id);
-            setConversionType(DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversionType));
-            // setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
-            setDataSources(conversionChecklistInfo.cc_data_sources);
-            setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
-            setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
-            setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
-            setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
-            setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
-            setConversionChecklistID(conversionChecklistInfo.cc_id);
-            setPostConversionLoadingErrors(conversionChecklistInfo.cc_post_conversion_loading_errors);
-            setPostConversionValidationResults(conversionChecklistInfo.cc_post_conversion_validation_results);
-            setPostConversionChanges(conversionChecklistInfo.cc_post_conversion_changes);
-        });
-        getAdditionalProcessing(conversionChecklistInfo.cc_id);
-        // getContributors(conversionChecklistInfo.cc_id);
+        if (!async.current) {
+            console.log("populating submitted fields");
+            try {
+                // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
+                // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
+                setConversionChecklistID(conversionChecklistInfo.cc_id);
+                setConversionType(DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversionType));
+                // setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
+                setDataSources(conversionChecklistInfo.cc_data_sources);
+                setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
+                setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
+                setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
+                setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
+                setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
+                setConversionChecklistID(conversionChecklistInfo.cc_id);
+                setPostConversionLoadingErrors(conversionChecklistInfo.cc_post_conversion_loading_errors);
+                setPostConversionValidationResults(conversionChecklistInfo.cc_post_conversion_validation_results);
+                setPostConversionChanges(conversionChecklistInfo.cc_post_conversion_changes);
+                getAdditionalProcessing(conversionChecklistInfo.cc_id);
+                // getContributors(conversionChecklistInfo.cc_id);
+                async.current = false;
+            } catch (err) {
+                console.log("error caught: ", err);
+                handleError();
+            }
+        }
     }
 
-    const getAdditionalProcessing = async (checklistID) => {
-        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-additional-processing/${checklistID}`, {
-        }).then((response) => {
+    const getAdditionalProcessing = async () => {
+        if (!async.current) {
+            console.log("fetching additional processing");
+            try {
+                async.current = true;
+                await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-additional-processing/${conversionChecklistID.current}`, {
+                }).then(response => {
+                    populateAdditionalProcessingList(response.data);
+                });
+            } catch (err) {
+                console.log("error caught: ", err);
+                handleError();
+            }
+        }
+    }
+
+    const populateAdditionalProcessingList = (additionalProcessingList) => {
+        console.log("populating additional processing list");
+        try {
             let tempArray = [];
-            for (let i = 0; i < response.data.length; i++) {
-                tempArray.push(DecoderFunctions.getAdditionalProcessingType(response.data[i].ap_type));
-            }
-            // console.log(tempArray);
-            setAdditionalProcessing([...tempArray]);
-        });
-        getContributors(checklistID);
-    }
-
-    const getContributors = async (conversionChecklistID) => {
-        await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-submitted-contributors/${conversionChecklistID}`, {
-        }).then((response) => {
-            populateContributorsList(response.data);
-        });
-    }
-
-    const populateContributorsList = (contributorsList) => {
-        new Promise(resolve => {
-            if (contributorsList.length) {
-                let tempArray = [];
-                for (let i = 0; i < contributorsList.length; i++) {
-                    tempArray.push(contributorsList[i].pers_name);
+            for (let i = 0; i < additionalProcessingList.length; i++) {
+                let value = additionalProcessingList[i].ap_type;
+                let label = DecoderFunctions.getAdditionalProcessingType(value);
+                let tempAdditionalProcessing = {
+                    "value": value,
+                    "label": label
                 }
-                setContributors([...tempArray]);
+                tempArray.push(tempAdditionalProcessing);
             }
-        });
-        setRendering(false);
+            setAdditionalProcessing(tempArray);
+            async.current = false;
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError();
+        }
+    }
+
+    const getSubmittedContributors = async () => {
+        if (!async.current) {
+            console.log("fetching submitted contributors");
+            try {
+                async.current = true;
+                await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-submitted-contributors/${conversionChecklistID.current}`, {
+                }).then(response => {
+                    populateSubmittedContributorsList(response.data);
+                });
+            } catch (err) {
+                console.log("error caught: ", err);
+                handleError("r");
+            }
+        }
+    }
+
+    const populateSubmittedContributorsList = (submittedContributorsList) => {
+        console.log("populating submitted contributor list");
+        try {
+            let tempArray = [];
+            for (let i = 0; i < submittedContributorsList.length; i++) {
+                let uid = submittedContributorsList[i].pers_id;
+                let name = submittedContributorsList[i].pers_name;
+                let personnel = {
+                    "value": uid,
+                    "label": name
+                };
+                tempArray.push(personnel);
+            }
+            setContributors(tempArray);
+            async.current = false;
+            setRendering(false, viewCompletedConversionChecklistDisplay.current = "visible");
+        } catch (err) {
+            console.log("error caught: ", err);
+            handleError("r");
+        }
     }
 
     const handleOnClickSubmit = async (submitted) => {
@@ -175,12 +273,34 @@ function ViewCompletedConversionChecklist() {
         }
     }
 
+    const handleError = () => { // TODO: abstract this (very commonly-used) function into a separate file?
+        activeError.current = true;
+
+        // Delay is set up just in case an error is generated before the is fully-displayed
+        let delay = transitionElementOpacity === "100%" ? 500 : rendering ? 500 : 0;
+
+        if (rendering) {
+            setRendering(false);
+        }
+
+        setTimeout(() => {
+            setAlert(true);
+        }, delay);
+    }
+
+    const handleAlertClosed = (alertClosed) => {
+        if (alertClosed) {
+            setAlert(false);
+            navigate("/");
+        }
+    }
+
     useEffect(() => {
         if (rendering) {
             if (!validLoadSheetNameEntered) {
-                getValidLoadSheetNames();
+                runInitialReadAsyncFunctions()
             } else {
-                getConversionChecklistInfo(loadSheetName);
+                runSecondaryReadAsyncFunctions(loadSheetName);
             }
         } else {
             if (!validLoadSheetNameEntered) {
@@ -193,68 +313,86 @@ function ViewCompletedConversionChecklist() {
 
 
     return (
-        rendering ?
-            <div className="loading-spinner">
+        rendering
+            ? <div className="loading-spinner">
                 <Hypnosis
                     className="spinner"
                     color="var(--lunikoOrange)"
                     width="100px"
                     height="100px"
                     duration="1.5s" />
-            </div> :
-            <Fragment>
-                <div
-                    className="transition-element"
-                    style={{
-                        opacity: transitionElementOpacity,
-                        visibility: transtitionElementVisibility
-                    }}>
-                </div>
-                <NavBar>
-                </NavBar>
-                <div
-                    className="enter-valid-load-sheet-name"
-                    style={{ display: enterLoadSheetNameDisplay }}>
-                    <div className="enter-valid-load-sheet-name-container">
-                        <div className="enter-valid-load-sheet-name-card">
-                            <EnterLoadSheetNameCard
-                                loadSheetName={handleLoadSheetNameCallback}
-                                submitted={handleOnClickSubmit}
-                                submitButtonDisabled={submitButtonDisabled}
-                                textAuthenticationError={invalidLoadSheetNameError}
-                                input={[<u>completed</u>, " "]}>
-                            </EnterLoadSheetNameCard>
+            </div>
+            : activeError.current
+                ? <Fragment>
+                    <NavBar>
+                    </NavBar>
+                    {alert
+                        ? <div className="alert-container">
+                            <PositionedSnackbar
+                                message={"Apologies! We've encountered an error. Please attempt to re-load this page."}
+                                closed={handleAlertClosed}
+                                className={"error-message"}>
+                            </PositionedSnackbar>
+                        </div>
+                        : <div></div>}
+                    <div
+                        className="error-div"
+                        style={{ height: "100vw", width: "100%" }}
+                    ></div>
+                </Fragment>
+                : <Fragment>
+                    <div
+                        className="transition-element"
+                        style={{
+                            opacity: transitionElementOpacity,
+                            visibility: transtitionElementVisibility
+                        }}>
+                    </div>
+                    <NavBar>
+                    </NavBar>
+                    <div
+                        className="enter-valid-load-sheet-name"
+                        style={{ display: enterLoadSheetNameDisplay }}>
+                        <div className="enter-valid-load-sheet-name-container">
+                            <div className="enter-valid-load-sheet-name-card">
+                                <EnterLoadSheetNameCard
+                                    loadSheetName={handleLoadSheetNameCallback}
+                                    submitted={handleOnClickSubmit}
+                                    submitButtonDisabled={submitButtonDisabled}
+                                    textAuthenticationError={invalidLoadSheetNameError}
+                                    input={[<u>completed</u>, " "]}>
+                                </EnterLoadSheetNameCard>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="view-completed-conversion-checklist"
-                    style={{ display: viewCompletedConversionChecklistDisplay }}>
-                    <div className="page-message">
-                        View Your Completed Checklist Below:
-                    </div>
-                    <div className="view-completed-conversion-checklist-container">
-                        <div className="view-completed-conversion-checklist-card">
-                            <ViewCompletedConversionChecklistCard
-                                loadSheetName={loadSheetName}
-                                loadSheetOwner={loadSheetOwner}
-                                decisionMaker={decisionMaker}
-                                contributors={contributors}
-                                conversionType={conversionType}
-                                additionalProcessing={additionalProcessing}
-                                dataSources={dataSources}
-                                uniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
-                                uniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
-                                recordsPreCleanupNotes={recordsPreCleanupNotes}
-                                recordsPostCleanupNotes={recordsPostCleanupNotes}
-                                preConversionManipulation={preConversionManipulation}
-                                postConversionLoadingErrors={postConversionLoadingErrors}
-                                postConversionValidationResults={postConversionValidationResults}
-                                postConversionChanges={postConversionChanges}>
-                            </ViewCompletedConversionChecklistCard>
+                    <div className="view-completed-conversion-checklist"
+                        style={{ display: viewCompletedConversionChecklistDisplay }}>
+                        <div className="page-message">
+                            View Your Completed Checklist Below:
+                        </div>
+                        <div className="view-completed-conversion-checklist-container">
+                            <div className="view-completed-conversion-checklist-card">
+                                <ViewCompletedConversionChecklistCard
+                                    loadSheetName={loadSheetName}
+                                    loadSheetOwner={loadSheetOwner}
+                                    decisionMaker={decisionMaker}
+                                    contributors={contributors}
+                                    conversionType={conversionType}
+                                    additionalProcessing={additionalProcessing}
+                                    dataSources={dataSources}
+                                    uniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
+                                    uniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
+                                    recordsPreCleanupNotes={recordsPreCleanupNotes}
+                                    recordsPostCleanupNotes={recordsPostCleanupNotes}
+                                    preConversionManipulation={preConversionManipulation}
+                                    postConversionLoadingErrors={postConversionLoadingErrors}
+                                    postConversionValidationResults={postConversionValidationResults}
+                                    postConversionChanges={postConversionChanges}>
+                                </ViewCompletedConversionChecklistCard>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </Fragment >
+                </Fragment >
     )
 }
 

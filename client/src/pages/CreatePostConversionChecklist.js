@@ -31,10 +31,13 @@ function CreatePostConversionChecklist() {
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
     const [postConversionChanges, setPostConversionChanges] = useState("");
+    const [forceCheckboxOff, setForceCheckboxOff] = useState(false);
     const [formReviewed, setFormReviewed] = useState(false);
     const [formApproved, setFormApproved] = useState(false);
     const [submitted, setSubmitted] = useState(false); // TODO: is this needed?
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+    // const [valueUpdated, setValueUpdated] = useState(false);
+    const valueUpdated = useRef(false);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const [alert, setAlert] = useState(false);
@@ -132,6 +135,7 @@ function CreatePostConversionChecklist() {
 
     const handleReviewedCallback = (checkedFromCheckbox) => {
         setFormReviewed(checkedFromCheckbox);
+        setForceCheckboxOff(false);
     }
 
     const handleApprovedCallback = (checkedFromCheckbox) => {
@@ -176,6 +180,11 @@ function CreatePostConversionChecklist() {
         } catch (err) {
             handleError("w");
         }
+    }
+
+    const handleValueUpdated = () => {
+        valueUpdated.current = true;
+        setForceCheckboxOff(true);
     }
 
     const handleError = (errorType) => {
@@ -302,8 +311,10 @@ function CreatePostConversionChecklist() {
                                     postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
                                     postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                     postConversionChanges={handlePostConversionChangesCallback}
+                                    forceReviewedOff={forceCheckboxOff}
                                     reviewed={handleReviewedCallback}
                                     approved={handleApprovedCallback}
+                                    valueUpdated={handleValueUpdated}
                                     submitted={handleOnClickSubmit}
                                     submitButtonDisabled={submitButtonDisabled}
                                     displayFadingBalls={displaySubmitButtonWorkingIcon}>

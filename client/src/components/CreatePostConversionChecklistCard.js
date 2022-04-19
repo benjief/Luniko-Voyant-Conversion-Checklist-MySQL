@@ -34,8 +34,10 @@ export default function CreatePostConversionChecklistCard({
     postConversionLoadingErrors = "",
     postConversionValidationResults = "",
     postConversionChanges = "",
+    forceReviewedOff = false,
     reviewed = false,
     approved = false,
+    valueUpdated = false,
     submitted = false,
     submitButtonDisabled = true,
     displayFadingBalls = false
@@ -46,14 +48,17 @@ export default function CreatePostConversionChecklistCard({
 
     const handleOnChangePostConversionLoadingErrors = (updatedText) => {
         postConversionLoadingErrors(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangePostConversionValidationResults = (updatedText) => {
         postConversionValidationResults(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangePostConversionChanges = (updatedText) => {
         postConversionChanges(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangeReviewed = (checkedFromCheckbox) => {
@@ -161,7 +166,8 @@ export default function CreatePostConversionChecklistCard({
                         </MaterialTextField>
                         <MaterialCheckBox
                             label="Reviewed by Load Sheet Owner and Decision Maker"
-                            userChecked={handleOnChangeReviewed}>
+                            userChecked={handleOnChangeReviewed}
+                            forceOff={forceReviewedOff}>
                         </MaterialCheckBox>
                         <div className="form-approval-container">
                             {approveUnlocked
