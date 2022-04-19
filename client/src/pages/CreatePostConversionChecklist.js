@@ -15,7 +15,6 @@ import "../styles/InputComponents.css";
 import "../styles/CardComponents.css";
 
 function CreatePostConversionChecklist() {
-    // const navigate = useNavigate();
     const [rendering, setRendering] = useState(true);
     // const [enterLoadSheetNameDisplay, setEnterLoadSheetNameDisplay] = useState("visible");
     const enterLoadSheetNameDisplay = useRef("visible");
