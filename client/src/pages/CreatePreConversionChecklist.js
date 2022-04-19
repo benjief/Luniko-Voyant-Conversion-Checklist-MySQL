@@ -421,8 +421,8 @@ function CreatePreConversionChecklist() {
 
     /* try { */
     return (
-        rendering ?
-            <div className="loading-spinner">
+        rendering
+            ? <div className="loading-spinner">
                 <Hypnosis
                     className="spinner"
                     color="var(--lunikoOrange)"

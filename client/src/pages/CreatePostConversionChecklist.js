@@ -170,14 +170,14 @@ function CreatePostConversionChecklist() {
                 postConversionValidationResults: postConversionValidationResults === null ? null : postConversionValidationResults.trim() === "" ? null : postConversionValidationResults,
                 postConversionChanges: postConversionChanges === null ? null : postConversionChanges.trim() === "" ? null : postConversionChanges,
                 approvedByITDirector: formApproved
-            }).then((response) => {
+            }).then(response => {
                 async.current = false;
                 console.log("pre-conversion checklist successfully updated");
             });
         } catch (err) {
             handleError("w");
         }
-    };
+    }
 
     const handleError = (errorType) => {
         activeError.current = true;
@@ -229,8 +229,8 @@ function CreatePostConversionChecklist() {
     }, [validLoadSheetNames, loadSheetName, postConversionLoadingErrors, postConversionValidationResults, postConversionChanges, formReviewed, rendering]);
 
     return (
-        rendering ?
-            <div className="loading-spinner">
+        rendering
+            ? <div className="loading-spinner">
                 <Hypnosis
                     className="spinner"
                     color="var(--lunikoOrange)"
