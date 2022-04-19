@@ -25,7 +25,7 @@ function ViewPreConversionChecklist() {
     const [loadSheetName, setLoadSheetName] = useState("");
     const conversionChecklistID = useRef("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
-    const [newPersonnel, setNewPersonnel] = useState([]);
+    // const [newPersonnel, setNewPersonnel] = useState([]);
     const [loadSheetOwner, setLoadSheetOwner] = useState([]);
     const [decisionMaker, setDecisionMaker] = useState([]);
     const [contributors, setContributors] = useState([]);
@@ -57,8 +57,6 @@ function ViewPreConversionChecklist() {
     const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
     const activeError = useRef(false);
     const async = useRef(false);
-
-    var asyncFunctionAtWork = false;
 
     const navigate = useNavigate();
 
@@ -286,6 +284,7 @@ function ViewPreConversionChecklist() {
     }
 
     const populateSubmittedContributorsList = (submittedContributorsList) => {
+        console.log("populating submitted contributor list");
         try {
             let tempArray = [];
             for (let i = 0; i < submittedContributorsList.length; i++) {
@@ -394,8 +393,9 @@ function ViewPreConversionChecklist() {
         console.log("starting promise chain...");
         console.log("assigning UIDs to new personnel");
         let newPersonnelToAdd = await assignUIDsToNewPersonnel();
+        console.log(newPersonnelToAdd);
         try {
-            setNewPersonnel(newPersonnelToAdd);
+            // setNewPersonnel(newPersonnelToAdd);
             for (let i = 0; i < newPersonnelToAdd.length; i++) {
                 await addNewPersonnelToDB(newPersonnelToAdd[i]);
             }
@@ -415,15 +415,14 @@ function ViewPreConversionChecklist() {
     }
 
     const assignUIDsToNewPersonnel = () => {
+        console.log("assigning UIDs to new personnel");
         try {
             // TODO: split these up into 3 helper functions?
             async.current = true;
-            // throw new Error("error");
             let tempArray = [];
             if (loadSheetOwner.value === -1) {
                 loadSheetOwner.value = uuidv4();
                 tempArray.push(loadSheetOwner);
-                setNewPersonnel(tempArray);
             }
             if (decisionMaker.value === -1) {
                 // Don't want to try and add duplicate personnel to DB
@@ -431,14 +430,14 @@ function ViewPreConversionChecklist() {
                     loadSheetOwner.value
                     : uuidv4();
                 tempArray.push(decisionMaker);
-                setNewPersonnel(tempArray);
             }
             for (let i = 0; i < contributors.length; i++) {
-                if (contributors.value === -1) {
-                    contributors.value = uuidv4();
+                if (contributors[i].value === -1) {
+                    contributors[i].value = uuidv4();
                     tempArray.push(contributors[i]);
                 }
             }
+            console.log("temp array: ", tempArray);
             async.current = false;
             return tempArray;
         } catch (err) {
@@ -501,7 +500,6 @@ function ViewPreConversionChecklist() {
             }
         }
     }
-
 
     const removeContributions = async () => {
         if (!async.current) {
@@ -589,7 +587,6 @@ function ViewPreConversionChecklist() {
 
     const handleAlertClosed = (alertClosed) => {
         if (alertClosed) {
-            console.log("navigating back");
             setAlert(false);
             navigate("/");
         }
@@ -608,8 +605,8 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered.current) {
                 loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                if (loadSheetName.trim() !== "" && (loadSheetOwner.value && loadSheetOwner !== [])
-                    && (decisionMaker.value && decisionMaker !== [])
+                if (loadSheetName.trim() !== "" && (loadSheetOwner && loadSheetOwner.value && loadSheetOwner !== [])
+                    && (decisionMaker && decisionMaker.value && decisionMaker !== [])
                     && conversionType !== "" && additionalProcessing.length && dataSources.length
                     && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
                     && formReviewed && valueUpdated.current) {
