@@ -39,9 +39,11 @@ function CreatePreConversionChecklist() {
     const recordsPostCleanupNotes = useRef("");
     // const [preConversionManipulation, setPreConversionManipulation] = useState("");
     const preConversionManipulation = useRef("");
+    const [forceCheckboxOff, setForceCheckboxOff] = useState(false);
     const [formReviewed, setFormReviewed] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
+    const valueUpdated = useRef(false);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
     const activeError = useRef(false);
@@ -196,6 +198,7 @@ function CreatePreConversionChecklist() {
 
     const handleCheckboxCallback = (checkedFromCheckbox) => {
         setFormReviewed(checkedFromCheckbox);
+        setForceCheckboxOff(false);
     }
 
     const handleOnClickSubmit = async (submitted) => {
@@ -366,6 +369,11 @@ function CreatePreConversionChecklist() {
     //     }, 1000);
     // }
 
+    const handleValueUpdated = () => {
+        valueUpdated.current = true;
+        setForceCheckboxOff(true);
+    }
+
     const handleError = (errorType) => {
         activeError.current = true;
         alertType.current = "error-alert";
@@ -498,7 +506,9 @@ function CreatePreConversionChecklist() {
                                     // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
                                     // postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                     // postConversionChanges={handlePostConversionChangesCallback}
+                                    forceCheckboxOff={forceCheckboxOff}
                                     checked={handleCheckboxCallback}
+                                    valueUpdated={handleValueUpdated}
                                     submitButtonDisabled={submitButtonDisabled}
                                     submitted={handleOnClickSubmit}
                                     displayFadingBalls={displaySubmitButtonWorkingIcon}>

@@ -54,7 +54,9 @@ export default function CreatePreConversionChecklistCard({
     // postConversionLoadingErrors = "",
     // postConversionValidationResults = "",
     // postConversionChanges = "",
+    forceCheckboxOff = false,
     checked = false,
+    valueUpdated = false,
     submitted = false,
     submitButtonDisabled = true,
     displayFadingBalls = false
@@ -64,50 +66,62 @@ export default function CreatePreConversionChecklistCard({
 
     const handleOnChangeLoadSheetName = (updatedText) => {
         loadSheetName(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnSelectLoadSheetOwner = (valueFromSelector) => {
         loadSheetOwner(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectDecisionMaker = (valueFromSelector) => {
         decisionMaker(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectContributors = (valuesFromSelector) => {
         contributors(valuesFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectConversionType = (valueFromSelector) => {
         conversionType(valueFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnSelectAdditionalProcessing = (valuesFromSelector) => {
         additionalProcessing(valuesFromSelector);
+        valueUpdated(true);
     }
 
     const handleOnChangeDataSources = (updatedText) => {
         dataSources(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangeUniqueRecordsPreCleanup = (updatedValue) => {
         uniqueRecordsPreCleanup(updatedValue);
+        valueUpdated(true);
     }
 
     const handleOnChangeUniqueRecordsPostCleanup = (updatedValue) => {
         uniqueRecordsPostCleanup(updatedValue);
+        valueUpdated(true);
     }
 
     const handleOnChangeRecordsPreCleanupNotes = (updatedText) => {
         recordsPreCleanupNotes(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangeRecordsPostCleanupNotes = (updatedText) => {
         recordsPostCleanupNotes(updatedText);
+        valueUpdated(true);
     }
 
     const handleOnChangePreConversionManipulation = (updatedText) => {
         preConversionManipulation(updatedText);
+        valueUpdated(true);
     }
 
     // const handleOnChangePostConversionLoadingErrors = (updatedText) => {
@@ -315,6 +329,7 @@ export default function CreatePreConversionChecklistCard({
                         </MaterialTextField>
                         <MaterialCheckBox
                             label="Reviewed by Load Sheet Owner and Decision Maker"
+                            forceOff={forceCheckboxOff}
                             userChecked={handleOnChangeCheck}>
                         </MaterialCheckBox>
                         <button
