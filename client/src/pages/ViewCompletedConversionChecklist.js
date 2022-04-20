@@ -18,32 +18,27 @@ import "../styles/AlertComponents.css";
 
 function ViewCompletedConversionChecklist() {
     const [rendering, setRendering] = useState(true);
-    // const [enterLoadSheetNameDisplay, setEnterLoadSheetNameDisplay] = useState("visible");
     const enterLoadSheetNameDisplay = useRef("visible");
-    // const [viewCompletedConversionChecklistDisplay, setViewCompletedConversionChecklistDisplay] = useState("none");
     const viewCompletedConversionChecklistDisplay = useRef("none");
-    // const [validLoadSheetNames, setValidLoadSheetNames] = useState([]);
     const validLoadSheetNames = useRef([]);
-    // const [validLoadSheetNameEntered, setValidLoadSheetNameEntered] = useState(false);
     const validLoadSheetNameEntered = useRef(false);
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
     const [loadSheetName, setLoadSheetName] = useState("");
-    const [loadSheetOwner, setLoadSheetOwner] = useState([]);
-    const [decisionMaker, setDecisionMaker] = useState([]);
-    const [contributors, setContributors] = useState([]);
-    const [conversionType, setConversionType] = useState("");
-    const [additionalProcessing, setAdditionalProcessing] = useState([]);
-    const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
-    const [postConversionValidationResults, setPostConversionValidationResults] = useState("");
-    const [postConversionChanges, setPostConversionChanges] = useState("");
-    // const [conversionChecklistID, setConversionChecklistID] = useState("");
+    const loadSheetOwner = useRef([]);
+    const decisionMaker = useRef([]);
+    const contributors = useRef([]);
+    const conversionType = useRef("");
+    const additionalProcessing = useRef([]);
+    const postConversionLoadingErrors = useRef("");
+    const postConversionValidationResults = useRef("");
+    const postConversionChanges = useRef("");
     const conversionChecklistID = useRef("");
-    const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0); // Needs to be <= pre #
-    const [recordsPreCleanupNotes, setRecordsPreCleanupNotes] = useState("");
-    const [recordsPostCleanupNotes, setRecordsPostCleanupNotes] = useState("");
-    const [preConversionManipulation, setPreConversionManipulation] = useState("");
+    const dataSources = useRef("");
+    const uniqueRecordsPreCleanup = useRef(0);
+    const uniqueRecordsPostCleanup = useRef(0);
+    const recordsPreCleanupNotes = useRef("");
+    const recordsPostCleanupNotes = useRef("");
+    const preConversionManipulation = useRef("");
     const [existingLoadSheetNames, setExistingLoadSheetNames] = useState([]);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
@@ -104,14 +99,14 @@ function ViewCompletedConversionChecklist() {
     }
 
     const runSecondaryReadAsyncFunctions = async (loadSheetName) => {
-        let conversionChecklistInfo = await getPostConversionChecklistInfo(loadSheetName);
+        let conversionChecklistInfo = await getConversionChecklistInfo(loadSheetName);
         try {
             let tempConversionChecklistID = conversionChecklistInfo[0].cc_id
             conversionChecklistID.current = tempConversionChecklistID;
             let conversionChecklistPersonnel = [conversionChecklistInfo[0].cc_load_sheet_owner, conversionChecklistInfo[0].cc_decision_maker];
             await populateSubmittedFields(conversionChecklistInfo[0]);
-            setLoadSheetOwner(await getPersonnelInfo(conversionChecklistPersonnel[0]));
-            setDecisionMaker(await getPersonnelInfo(conversionChecklistPersonnel[1]));
+            loadSheetOwner.current = await getPersonnelInfo(conversionChecklistPersonnel[0])
+            decisionMaker.current = await getPersonnelInfo(conversionChecklistPersonnel[1]);
             await getAdditionalProcessing();
             await getSubmittedContributors();
         } catch (err) {
@@ -120,7 +115,7 @@ function ViewCompletedConversionChecklist() {
         }
     }
 
-    const getPostConversionChecklistInfo = async (loadSheetName) => {
+    const getConversionChecklistInfo = async (loadSheetName) => {
         console.log("fetching conversion checklist information");
         try {
             async.current = true;
@@ -164,25 +159,16 @@ function ViewCompletedConversionChecklist() {
         if (!async.current) {
             console.log("populating submitted fields");
             try {
-                // throw new Error("error");
-                // setLoadSheetOwner(conversionChecklistInfo.cc_load_sheet_owner);
-                // setDecisionMaker(conversionChecklistInfo.cc_decision_maker);
-                // setConversionChecklistID(conversionChecklistInfo.cc_id);
-                // conversionChecklistID.current = conversionChecklistInfo.cc_id;
-                console.log(conversionChecklistInfo);
-                setConversionType(DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversionType));
-                // setAdditionalProcessing(conversionChecklistInfo.cc_additional_processing);
-                setDataSources(conversionChecklistInfo.cc_data_sources);
-                setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
-                setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
-                setRecordsPreCleanupNotes(conversionChecklistInfo.cc_records_pre_cleanup_notes);
-                setRecordsPostCleanupNotes(conversionChecklistInfo.cc_records_post_cleanup_notes);
-                setPreConversionManipulation(conversionChecklistInfo.cc_pre_conversion_manipulation);
-                setPostConversionLoadingErrors(conversionChecklistInfo.cc_post_conversion_loading_errors);
-                setPostConversionValidationResults(conversionChecklistInfo.cc_post_conversion_validation_results);
-                setPostConversionChanges(conversionChecklistInfo.cc_post_conversion_changes);
-                getAdditionalProcessing(conversionChecklistInfo.cc_id);
-                // getSubmittedContributors(conversionChecklistInfo.cc_id);
+                conversionType.current = DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversionType);
+                dataSources.current = conversionChecklistInfo.cc_data_sources;
+                uniqueRecordsPreCleanup.current = conversionChecklistInfo.uq_records_pre_cleanup;
+                uniqueRecordsPostCleanup.current = conversionChecklistInfo.uq_records_post_cleanup;
+                recordsPreCleanupNotes.current = conversionChecklistInfo.cc_records_pre_cleanup_notes;
+                recordsPostCleanupNotes.current = conversionChecklistInfo.cc_records_post_cleanup_notes;
+                preConversionManipulation.current = conversionChecklistInfo.cc_pre_conversion_manipulation;
+                postConversionLoadingErrors.current = conversionChecklistInfo.cc_post_conversion_loading_errors;
+                postConversionValidationResults.current = conversionChecklistInfo.cc_post_conversion_validation_results;
+                postConversionChanges.current = conversionChecklistInfo.cc_post_conversion_changes;
                 async.current = false;
             } catch (err) {
                 console.log("error caught: ", err);
@@ -193,12 +179,11 @@ function ViewCompletedConversionChecklist() {
 
     const getAdditionalProcessing = async () => {
         if (!async.current) {
-            console.log("fetching additional processing with", conversionChecklistID.current);
+            console.log("fetching additional processing");
             try {
                 async.current = true;
                 await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-additional-processing/${conversionChecklistID.current}`, {
                 }).then(response => {
-                    console.log(response);
                     populateAdditionalProcessingList(response.data);
                 });
             } catch (err) {
@@ -217,7 +202,7 @@ function ViewCompletedConversionChecklist() {
                 let label = DecoderFunctions.getAdditionalProcessingType(value);
                 tempArray.push(label);
             }
-            setAdditionalProcessing(tempArray);
+            additionalProcessing.current = tempArray;
             async.current = false;
         } catch (err) {
             console.log("error caught: ", err);
@@ -249,7 +234,7 @@ function ViewCompletedConversionChecklist() {
                 let name = submittedContributorsList[i].pers_name;
                 tempArray.push(name);
             }
-            setContributors(tempArray);
+            contributors.current = tempArray;
             async.current = false;
             setRendering(false, viewCompletedConversionChecklistDisplay.current = "visible");
         } catch (err) {
@@ -262,10 +247,8 @@ function ViewCompletedConversionChecklist() {
         if (submitted) {
             if (!validLoadSheetNameEntered.current && submitted) {
                 if (checkLoadSheetNameEntered()) {
-                    // setValidLoadSheetNameEntered(true)
                     validLoadSheetNameEntered.current = true;
                     setRendering(true);
-                    // setEnterLoadSheetNameDisplay("none");
                     enterLoadSheetNameDisplay.current = "none";
                     setSubmitButtonDisabled(true);
                 } else {
@@ -277,7 +260,6 @@ function ViewCompletedConversionChecklist() {
 
     const handleError = () => { // TODO: abstract this (very commonly-used) function into a separate file?
         activeError.current = true;
-
         // Delay is set up just in case an error is generated before the is fully-displayed
         let delay = transitionElementOpacity === "100%" ? 500 : rendering ? 500 : 0;
 
@@ -376,20 +358,20 @@ function ViewCompletedConversionChecklist() {
                             <div className="view-completed-conversion-checklist-card">
                                 <ViewCompletedConversionChecklistCard
                                     loadSheetName={loadSheetName}
-                                    loadSheetOwner={loadSheetOwner}
-                                    decisionMaker={decisionMaker}
-                                    contributors={contributors}
-                                    conversionType={conversionType}
-                                    additionalProcessing={additionalProcessing}
-                                    dataSources={dataSources}
-                                    uniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
-                                    uniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
-                                    recordsPreCleanupNotes={recordsPreCleanupNotes}
-                                    recordsPostCleanupNotes={recordsPostCleanupNotes}
-                                    preConversionManipulation={preConversionManipulation}
-                                    postConversionLoadingErrors={postConversionLoadingErrors}
-                                    postConversionValidationResults={postConversionValidationResults}
-                                    postConversionChanges={postConversionChanges}
+                                    loadSheetOwner={loadSheetOwner.current}
+                                    decisionMaker={decisionMaker.current}
+                                    contributors={contributors.current}
+                                    conversionType={conversionType.current}
+                                    additionalProcessing={additionalProcessing.current}
+                                    dataSources={dataSources.current}
+                                    uniqueRecordsPreCleanup={uniqueRecordsPreCleanup.current}
+                                    uniqueRecordsPostCleanup={uniqueRecordsPostCleanup.current}
+                                    recordsPreCleanupNotes={recordsPreCleanupNotes.current}
+                                    recordsPostCleanupNotes={recordsPostCleanupNotes.current}
+                                    preConversionManipulation={preConversionManipulation.current}
+                                    postConversionLoadingErrors={postConversionLoadingErrors.current}
+                                    postConversionValidationResults={postConversionValidationResults.current}
+                                    postConversionChanges={postConversionChanges.current}
                                 >
                                 </ViewCompletedConversionChecklistCard>
                             </div>
