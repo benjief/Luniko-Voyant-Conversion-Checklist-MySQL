@@ -121,7 +121,7 @@ function ViewPostConversionChecklist() {
         try {
             async.current = true;
             let tempArray = [];
-            await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-post-conversion-checklist-info/${loadSheetName}`, {
+            await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-conversion-checklist-info/${loadSheetName}`, {
             }).then(response => {
                 tempArray.push(response.data[0]);
                 async.current = false;

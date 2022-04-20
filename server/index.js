@@ -152,7 +152,7 @@ app.get('/get-all-conversion-checklist-info/:loadSheetName', (req, res) => {
         });
 });
 
-app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
+app.get('/get-conversion-checklist-info/:loadSheetName', (req, res) => {
     const loadSheetName = req.params.loadSheetName;
     db.query(
         `SELECT
@@ -165,7 +165,11 @@ app.get('/get-pre-conversion-checklist-info/:loadSheetName', (req, res) => {
             uq_records_post_cleanup, 
             cc_records_pre_cleanup_notes, 
             cc_records_post_cleanup_notes, 
-            cc_pre_conversion_manipulation
+            cc_pre_conversion_manipulation,
+            cc_post_conversion_loading_errors,
+            cc_post_conversion_validation_results,
+            cc_post_conversion_changes,
+            is_approved
         FROM
             conversion_checklist
         WHERE
@@ -197,27 +201,27 @@ app.get('/get-additional-processing/:checklistID', (req, res) => {
         });
 });
 
-app.get('/get-post-conversion-checklist-info/:loadSheetName', (req, res) => {
-    const loadSheetName = req.params.loadSheetName;
-    db.query(
-        `SELECT
-             cc_id,
-             cc_post_conversion_loading_errors,
-             cc_post_conversion_validation_results,
-             cc_post_conversion_changes,
-             is_approved
-         FROM
-             conversion_checklist
-         WHERE
-            cc_load_sheet_name = ?`,
-        loadSheetName, (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send(result);
-            }
-        });
-});
+// app.get('/get-post-conversion-checklist-info/:loadSheetName', (req, res) => {
+//     const loadSheetName = req.params.loadSheetName;
+//     db.query(
+//         `SELECT
+//              cc_id,
+//              cc_post_conversion_loading_errors,
+//              cc_post_conversion_validation_results,
+//              cc_post_conversion_changes,
+//              is_approved
+//          FROM
+//              conversion_checklist
+//          WHERE
+//             cc_load_sheet_name = ?`,
+//         loadSheetName, (err, result) => {
+//             if (err) {
+//                 console.log(err);
+//             } else {
+//                 res.send(result);
+//             }
+//         });
+// });
 
 app.get('/get-load-sheet-id/:loadSheetName', (req, res) => {
     const loadSheetName = req.params.loadSheetName;
