@@ -13,6 +13,7 @@ const filter = createFilterOptions();
 
 export default function MaterialMultiSelectFreeSolo(
     {
+        field = "",
         className = "",
         label = "",
         placeholder = "",
@@ -65,7 +66,7 @@ export default function MaterialMultiSelectFreeSolo(
                 value: -1,
             });
             setValues(tempArray);
-            selectedValues(tempArray);
+            selectedValues({ field: field, value: tempArray });
             // TODO: make these functions consistent (i.e. when they return true/false)
             // This makes sure the entered value isn't illegal or already selected before adding it to the list of selected values
         } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName) && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)) {
@@ -73,7 +74,7 @@ export default function MaterialMultiSelectFreeSolo(
             let tempArray = values;
             tempArray.push(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
             setValues(tempArray);
-            selectedValues(tempArray);
+            selectedValues({ field: field, value: tempArray });
         }
         handleClose();
     };
@@ -89,7 +90,7 @@ export default function MaterialMultiSelectFreeSolo(
             }
         }
         if (!object) {
-            selectedValues([]);
+            selectedValues({ field: field, value: [] });
         }
     }
 
@@ -323,7 +324,7 @@ export default function MaterialMultiSelectFreeSolo(
                         });
                     } else {
                         setValues(valuesArray);
-                        selectedValues(valuesArray);
+                        selectedValues({ field: field, value: valuesArray });
                     }
                     handleOnChange(valuesArray);
                 }}

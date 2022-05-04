@@ -31,7 +31,6 @@ const ExpandMore = styled((props) => {
 export default function ViewPreConversionChecklistCard({
     conversionTypeOptions = [],
     additionalProcessingOptions = [],
-    loadSheetName = "",
     submittedLoadSheetName = "",
     personnelOptions = [],
     contributorOptions = [],
@@ -52,10 +51,10 @@ export default function ViewPreConversionChecklistCard({
     submittedDataSources = "",
     uniqueRecordsPreCleanup = 0,
     submittedUniqueRecordsPreCleanup = 0,
-    uniqueRecordsPreCleanupLowerLimit = null,
+    // uniqueRecordsPreCleanupLowerLimit = null,
     uniqueRecordsPostCleanup = 0,
     submittedUniqueRecordsPostCleanup = 0,
-    uniqueRecordsPostCleanupUpperLimit = null,
+    // uniqueRecordsPostCleanupUpperLimit = null,
     recordsPreCleanupNotes = "",
     submittedRecordsPreCleanupNotes = "",
     recordsPostCleanupNotes = "",
@@ -75,15 +74,17 @@ export default function ViewPreConversionChecklistCard({
     const [expanded, setExpanded] = React.useState(true);
     const [updateButtonColor, setUpdateButtonColor] = React.useState("#BFBFBF");
 
-    const handleOnChangeLoadSheetName = (updatedText) => {
-        loadSheetName(updatedText);
-        valueUpdated(true);
+    const handleOnChange = (returnedObject) => {
+        const objectToReturn = { value: returnedObject.value, field: returnedObject.field };
+        const stringFunction = returnedObject.field + "(objectToReturn)";
+        console.log(returnedObject);
+        eval(stringFunction);
     }
 
-    const handleOnSelectLoadSheetOwner = (valueFromSelector) => {
-        loadSheetOwner(valueFromSelector);
-        valueUpdated(true);
-    }
+    // const handleOnSelectLoadSheetOwner = (valueFromSelector) => {
+    //     loadSheetOwner(valueFromSelector);
+    //     valueUpdated(true);
+    // }
 
     const handleOnSelectDecisionMaker = (valueFromSelector) => {
         decisionMaker(valueFromSelector);
@@ -96,7 +97,7 @@ export default function ViewPreConversionChecklistCard({
     }
 
     const handleOnSelectConversionType = (valueFromSelector) => {
-        conversionType(valueFromSelector);
+        conversionType({ value: valueFromSelector, label: "conversionType" });
         valueUpdated(true);
     }
 
@@ -106,7 +107,7 @@ export default function ViewPreConversionChecklistCard({
     }
 
     const handleOnChangeDataSources = (updatedText) => {
-        dataSources(updatedText);
+        dataSources({ value: updatedText, label: "dataSources" });
         valueUpdated(true);
     }
 
@@ -209,26 +210,17 @@ export default function ViewPreConversionChecklistCard({
                         paragraph>
                         <strong>Updatable Fields</strong>
                     </Typography> */}
-                        <MaterialTextField
-                            label="Load Sheet Name"
-                            characterLimit={45}
-                            placeholder="Load Sheet Name"
-                            inputValue={handleOnChangeLoadSheetName}
-                            multiline={false}
-                            required={true}
-                            showCharCounter={true}
-                            defaultValue={submittedLoadSheetName}
-                            disabled={true}>
-                        </MaterialTextField>
                         <MaterialSingleSelectFreeSolo
                             className="add-personnel-dialog"
                             label="Load Sheet Owner"
                             placeholder="Who is this load sheet's owner?"
                             singleSelectOptions={personnelOptions.filter(element => element.value !== submittedLoadSheetOwner.value)}
                             invalidOptions={invalidPersonnel}
-                            selectedValue={handleOnSelectLoadSheetOwner}
+                            // selectedValue={handleOnSelectLoadSheetOwner}
+                            selectedValue={handleOnChange}
                             required={true}
-                            defaultValue={submittedLoadSheetOwner}>
+                            defaultValue={submittedLoadSheetOwner}
+                            field="loadSheetOwner">
                         </MaterialSingleSelectFreeSolo>
                         <MaterialSingleSelectFreeSolo
                             className="add-personnel-dialog"
@@ -236,118 +228,122 @@ export default function ViewPreConversionChecklistCard({
                             placeholder="Who is the decision maker?"
                             singleSelectOptions={personnelOptions.filter(element => element.value !== submittedDecisionMaker.value)}
                             invalidOptions={invalidPersonnel}
-                            selectedValue={handleOnSelectDecisionMaker}
+                            selectedValue={handleOnChange}
                             required={true}
-                            defaultValue={submittedDecisionMaker}>
+                            defaultValue={submittedDecisionMaker}
+                            field="decisionMaker">
                         </MaterialSingleSelectFreeSolo>
-                        {/* <MaterialMultiSelect
-                            label="Other Contributors"
-                            placeholder="Who else was involved?"
-                            singleSelectOptions={personnelOptions}
-                            selectedValues={handleOnSelectContributors}
-                            required={false}>
-                        </MaterialMultiSelect> */}
                         <MaterialMultiSelectFreeSolo
                             className="add-contributors-dialog"
                             label="Add Other Contributors"
                             placeholder="Who else was involved?"
                             defaultValue={submittedContributors}
                             multiSelectOptions={personnelOptions}
-                            selectedValues={handleOnSelectContributors}
+                            selectedValues={handleOnChange}
                             invalidOptions={invalidContributors}
-                            required={false}>
+                            required={false}
+                            field="contributors">
                         </MaterialMultiSelectFreeSolo>
                         <MaterialSingleSelect
                             label="Conversion Type"
                             placeholder="Conversion Type"
                             defaultValue={submittedConversionType}
                             singleSelectOptions={conversionTypeOptions}
-                            selectedValue={handleOnSelectConversionType}
+                            // selectedValue={handleOnSelectConversionType}
+                            selectedValue={handleOnChange}
                             required={true}
-                            defaultValue={submittedConversionType}>
+                            defaultValue={submittedConversionType}
+                            field="conversionType">
                         </MaterialSingleSelect>
                         <MaterialMultiSelect
                             label="Additional Processing"
                             placeholder="Additional Processing"
                             defaultValue={submittedAdditionalProcessing}
                             multiSelectOptions={additionalProcessingOptions}
-                            selectedValues={handleOnSelectAdditionalProcessing}
+                            selectedValues={handleOnChange}
                             required={true}
                             id="additional-processing"
-                            defaultValue={submittedAdditionalProcessing}>
+                            defaultValue={submittedAdditionalProcessing}
+                            field="additionalProcessing">
                         </MaterialMultiSelect>
                         <MaterialTextField
                             className="data-sources"
                             label="Data Sources"
                             characterLimit={1000}
                             placeholder="What are the sources of data?"
-                            inputValue={handleOnChangeDataSources}
+                            inputValue={handleOnChange}
                             multiline={true}
                             required={true}
                             showCharCounter={true}
-                            defaultValue={submittedDataSources}>
+                            defaultValue={submittedDataSources}
+                            field="dataSources">
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Pre-Cleanup"
                             // characterLimit={10}
                             placeholder="Approximate number of unique records pre-cleanup"
-                            inputValue={handleOnChangeUniqueRecordsPreCleanup}
+                            inputValue={handleOnChange}
                             multiline={false}
                             required={true}
                             type="number"
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}
                             fractionsAllowed={false}
-                            defaultValue={submittedUniqueRecordsPreCleanup}>
+                            defaultValue={submittedUniqueRecordsPreCleanup}
+                            field="uniqueRecordsPreCleanup">
                         </MaterialTextField>
                         <MaterialTextField
                             label="Unique Records Post-Cleanup"
                             // characterLimit={10}
                             placeholder="Enter the approximate number of unique records post-cleanup."
-                            inputValue={handleOnChangeUniqueRecordsPostCleanup}
+                            inputValue={handleOnChange}
                             multiline={false}
                             required={true}
                             type="number"
                             negativeNumbersAllowed={false}
                             zerosAllowed={false}
                             fractionsAllowed={false}
-                            defaultValue={submittedUniqueRecordsPostCleanup}>
+                            defaultValue={submittedUniqueRecordsPostCleanup}
+                            field="uniqueRecordsPostCleanup">
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-cleanup-notes"
                             label="Pre-Cleanup Notes"
                             characterLimit={1000}
                             placeholder="Is there anything worth noting about the pre-cleanup state of the data?"
-                            inputValue={handleOnChangeRecordsPreCleanupNotes}
+                            inputValue={handleOnChange}
                             multiline={true}
                             required={false}
                             type="text"
                             showCharCounter={true}
-                            defaultValue={submittedRecordsPreCleanupNotes}>
+                            defaultValue={submittedRecordsPreCleanupNotes}
+                            field="recordsPreCleanupNotes">
                         </MaterialTextField>
                         <MaterialTextField
                             className="post-cleanup-notes"
                             label="Post-Cleanup Notes"
                             // characterLimit={10}
                             placeholder="Is there anything worth noting about the post-cleanup state of the data?"
-                            inputValue={handleOnChangeRecordsPostCleanupNotes}
+                            inputValue={handleOnChange}
                             multiline={true}
                             required={false}
                             type="text"
                             showCharCounter={true}
-                            defaultValue={submittedRecordsPostCleanupNotes}>
+                            defaultValue={submittedRecordsPostCleanupNotes}
+                            field="recordsPostCleanupNotes">
                         </MaterialTextField>
                         <MaterialTextField
                             className="pre-conversion-manipulation"
                             label="Pre-Conversion Manipulation"
                             characterLimit={1000}
                             placeholder="Describe your pre-conversion processing methodology. How was the addition of new data/processing carried out?"
-                            inputValue={handleOnChangePreConversionManipulation}
+                            inputValue={handleOnChange}
                             multiline={true}
                             required={false}
                             type="text"
                             showCharCounter={true}
-                            defaultValue={submittedPreConversionManipulation}>
+                            defaultValue={submittedPreConversionManipulation}
+                            field="preConversionManipulation">
                         </MaterialTextField>
                         <MaterialCheckBox
                             label="Reviewed by Load Sheet Owner and Decision Maker"

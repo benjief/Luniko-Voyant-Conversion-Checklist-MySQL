@@ -35,6 +35,13 @@ export default function EnterLoadSheetNameCard({
     const [expanded, setExpanded] = React.useState(true);
     const [submitButtonColor, setSubmitButtonColor] = React.useState("#BFBFBF");
 
+    const handleOnChange = (returnedObject) => {
+        const objectToReturn = { value: returnedObject.value, field: returnedObject.field };
+        const stringFunction = returnedObject.field + "(objectToReturn)";
+        // console.log(returnedObject);
+        eval(stringFunction);
+    }
+
     const handleOnChangeLoadSheetName = (updatedText) => {
         loadSheetName(updatedText);
     }
@@ -101,13 +108,15 @@ export default function EnterLoadSheetNameCard({
                             label="Load Sheet Name"
                             // characterLimit={10}
                             // placeholder="Approximate number of unique records pre-cleanup"
-                            inputValue={handleOnChangeLoadSheetName}
+                            // inputValue={handleOnChangeLoadSheetName}
+                            inputValue={handleOnChange}
                             multiline={false}
                             required={false}
                             type="text"
                             authenticationField={true}
                             textAuthenticationError={textAuthenticationError}
-                            disabled={disabled}>
+                            disabled={disabled}
+                            field={"loadSheetName"}>
                         </MaterialTextField>
                         <button
                             className="submit-load-sheet-name-button"

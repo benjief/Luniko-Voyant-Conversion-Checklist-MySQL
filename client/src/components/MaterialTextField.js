@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 export default function MaterialTextField({
+  field = "",
   className = "",
   label = "",
   helperText = "",
@@ -134,14 +135,14 @@ export default function MaterialTextField({
   const handleInvalidNumber = (number, helperText) => {
     // setValue(null);
     setValue(number);
-    inputValue(number);
+    inputValue({ field: field, value: number });
     setDisplayedHelperText(helperText);
     setErrorEnabled(true);
   }
 
   const handleEmptyValue = (value) => {
     setValue("");
-    inputValue("");
+    inputValue({ field: field, value: "" });
     if (showCharCounter && value) {
       setInputLength(value.length);
     }
@@ -152,7 +153,7 @@ export default function MaterialTextField({
 
   const handleValidValue = (value) => {
     setValue(value);
-    inputValue(value);
+    inputValue({ field: field, value: value });
     if (showCharCounter) {
       setInputLength(value.length);
     }

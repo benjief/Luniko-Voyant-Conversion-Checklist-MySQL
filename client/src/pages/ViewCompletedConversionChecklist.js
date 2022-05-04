@@ -62,7 +62,7 @@ function ViewCompletedConversionChecklist() {
                 populateValidLoadSheetNamesList(response.data);
             });
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError();
         }
     }
@@ -77,7 +77,7 @@ function ViewCompletedConversionChecklist() {
             console.log("valid load sheet names set");
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError();
         }
     }
@@ -110,7 +110,7 @@ function ViewCompletedConversionChecklist() {
             await getAdditionalProcessing();
             await getSubmittedContributors();
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError();
         }
     }
@@ -127,7 +127,7 @@ function ViewCompletedConversionChecklist() {
             });
             return tempArray;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError();
         }
     }
@@ -149,7 +149,7 @@ function ViewCompletedConversionChecklist() {
                 });
                 return personnel;
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError();
             }
         }
@@ -171,7 +171,7 @@ function ViewCompletedConversionChecklist() {
                 postConversionChanges.current = conversionChecklistInfo.cc_post_conversion_changes;
                 async.current = false;
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError();
             }
         }
@@ -187,7 +187,7 @@ function ViewCompletedConversionChecklist() {
                     populateAdditionalProcessingList(response.data);
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError();
             }
         }
@@ -205,7 +205,7 @@ function ViewCompletedConversionChecklist() {
             additionalProcessing.current = tempArray;
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError();
         }
     }
@@ -220,7 +220,7 @@ function ViewCompletedConversionChecklist() {
                     populateSubmittedContributorsList(response.data);
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
@@ -238,7 +238,7 @@ function ViewCompletedConversionChecklist() {
             async.current = false;
             setRendering(false, viewCompletedConversionChecklistDisplay.current = "visible");
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }

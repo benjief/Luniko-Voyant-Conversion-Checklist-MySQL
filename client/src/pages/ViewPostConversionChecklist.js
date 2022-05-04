@@ -69,7 +69,7 @@ function ViewPostConversionChecklist() {
                 populateValidLoadSheetNamesList(response.data);
             });
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -84,7 +84,7 @@ function ViewPostConversionChecklist() {
             console.log("valid load sheet names set");
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -111,7 +111,7 @@ function ViewPostConversionChecklist() {
             await populateSubmittedFields(conversionChecklistInfo[0]);
             setRendering(false, viewPostConversionChecklistDisplay.current = "visible");
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -128,7 +128,7 @@ function ViewPostConversionChecklist() {
             });
             return tempArray;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -145,7 +145,7 @@ function ViewPostConversionChecklist() {
                 setFormDisabled(conversionChecklistInfo.is_approved.data[0] ? true : false);
                 async.current = false;
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }

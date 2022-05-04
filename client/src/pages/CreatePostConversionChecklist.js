@@ -66,7 +66,7 @@ function CreatePostConversionChecklist() {
                 populateValidLoadSheetNamesList(response.data);
             });
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -83,7 +83,7 @@ function CreatePostConversionChecklist() {
             console.log("valid load sheet names set");
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -116,7 +116,7 @@ function CreatePostConversionChecklist() {
                 setRendering(false, createPostConversionChecklistDisplay.current = "visible");
             });
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }

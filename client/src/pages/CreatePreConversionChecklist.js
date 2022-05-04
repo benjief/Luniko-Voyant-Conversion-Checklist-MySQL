@@ -78,22 +78,22 @@ function CreatePreConversionChecklist() {
     }
 
     const getExistingLoadSheetNames = async () => {
+        console.log("fetching existing load sheet names");
         try {
-            console.log("fetching existing load sheet names");
             async.current = true;
             await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-all-ls-names", {
             }).then(response => {
                 populateExistingLoadSheetNamesList(response.data);
             });
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
 
     const populateExistingLoadSheetNamesList = (existingLoadSheetNamesList) => {
+        console.log("populating existing load sheet names list");
         try {
-            console.log("populating existing load sheet names list");
             let tempArray = [];
             for (let i = 0; i < existingLoadSheetNamesList.length; i++) {
                 tempArray.push(existingLoadSheetNamesList[i].cc_load_sheet_name.toLowerCase());
@@ -102,30 +102,30 @@ function CreatePreConversionChecklist() {
             console.log("existing load sheet names set");
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
 
     const getPersonnel = async () => {
         if (!async.current) {
+            console.log("fetching personnel!");
             try {
-                console.log("fetching personnel!");
                 async.current = true;
                 await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-all-personnel", {
                 }).then(response => {
                     populatePersonnelList(response.data);
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
     }
 
     const populatePersonnelList = (personnelList) => {
+        console.log("populating personnel list");
         try {
-            console.log("populating personnel list");
             let tempArray = [];
             for (let i = 0; i < personnelList.length; i++) {
                 let uid = personnelList[i].pers_id;
@@ -139,7 +139,7 @@ function CreatePreConversionChecklist() {
             setPersonnelOptions([...tempArray]);
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
         setRendering(false);
@@ -262,7 +262,7 @@ function CreatePreConversionChecklist() {
             async.current = false;
             return tempArray;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("w");
         }
     }
@@ -283,7 +283,7 @@ function CreatePreConversionChecklist() {
                     async.current = false;
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("w");
             }
         }
@@ -310,7 +310,7 @@ function CreatePreConversionChecklist() {
                     conversionChecklistID.current = response.data.insertId;
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("w");
             }
         }
@@ -331,7 +331,7 @@ function CreatePreConversionChecklist() {
                 // Remove checklist from the DB if additional processing can't be written
                 await Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-checklist/${conversionChecklistID.current}`, {
                 }).then(response => {
-                    console.log("error caught: ", err);
+                    console.log("error caught:", err);
                     handleError("w");
                 });
             }
@@ -353,7 +353,7 @@ function CreatePreConversionChecklist() {
                 // Remove checklist from the DB if contributions can't be written
                 await Axios.delete(`https://voyant-conversion-checklist.herokuapp.com/remove-checklist/${conversionChecklistID.current}`, {
                 }).then(response => {
-                    console.log("error caught: ", err);
+                    console.log("error caught:", err);
                     handleError("w");
                 });
             }
@@ -429,8 +429,8 @@ function CreatePreConversionChecklist() {
                     width="100px"
                     height="100px"
                     duration="1.5s" />
-            </div> :
-            activeError.current
+            </div>
+            : activeError.current
                 ? <Fragment>
                     <NavBar>
                     </NavBar>
@@ -519,7 +519,7 @@ function CreatePreConversionChecklist() {
                 </Fragment >
     )
     /* } catch (err) {
-        console.log("error caught: ", err);
+        console.log("error caught:", err);
         handleError("r");
         return (
             <Fragment>

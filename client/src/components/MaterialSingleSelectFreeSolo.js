@@ -13,6 +13,7 @@ const filter = createFilterOptions();
 
 export default function MaterialSingleSelectFreeSolo(
     {
+        field = "",
         className = "",
         label = "",
         placeholder = "",
@@ -62,11 +63,12 @@ export default function MaterialSingleSelectFreeSolo(
         if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
             && checkInputValueAgainstInvalidOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
             let tempObject = { label: dialogValue.firstName + " " + dialogValue.lastName, value: -1 }
+            let returnedObject = { field: field, value: tempObject }
             setValue(tempObject);
-            selectedValue(tempObject);
+            selectedValue(returnedObject);
         } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
             setValue(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
-            selectedValue(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
+            selectedValue({ field: field, value: getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName) });
         }
         handleClose();
     };
@@ -87,7 +89,7 @@ export default function MaterialSingleSelectFreeSolo(
             }
         }
         if (!value) {
-            selectedValue({});
+            selectedValue({ field: field, value: {} });
         }
     }
 
@@ -313,7 +315,7 @@ export default function MaterialSingleSelectFreeSolo(
                         });
                     } else {
                         setValue(value);
-                        selectedValue(value);
+                        selectedValue({ field: field, value: value });
                     }
                     handleOnChange(value);
                 }}

@@ -25,23 +25,32 @@ function ViewPreConversionChecklist() {
     const [loadSheetName, setLoadSheetName] = useState("");
     const conversionChecklistID = useRef("");
     const [personnelOptions, setPersonnelOptions] = useState([]);
-    // const [newPersonnel, setNewPersonnel] = useState([]);
     const [loadSheetOwner, setLoadSheetOwner] = useState([]);
     const [decisionMaker, setDecisionMaker] = useState([]);
     const [contributors, setContributors] = useState([]);
-    // const conversionType = useRef("");
     const [conversionType, setConversionType] = useState("");
-    // const additionalProcessing = useRef([]);
     const [additionalProcessing, setAdditionalProcessing] = useState([]);
-    // const dataSources = useRef("");
     const [dataSources, setDataSources] = useState("");
-    // const uniqueRecordsPreCleanup = useRef(0);
     const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
-    // const uniqueRecordsPostCleanup = useRef(0);
     const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0);
     const recordsPreCleanupNotes = useRef("");
     const recordsPostCleanupNotes = useRef("");
     const preConversionManipulation = useRef("");
+    const [formProps, setFormProps] = useState({
+        loadSheetName: "",
+        personnelOptions: [],
+        loadSheetOwner: [],
+        decisionMaker: [],
+        contributors: [],
+        conversionType: "",
+        additionalProcessing: [],
+        dataSources: "",
+        uniqueRecordsPreCleanup: 0,
+        uniqueRecordsPostCleanup: 0,
+        recordsPreCleanupNotes: "",
+        recordsPostCleanupNotes: "",
+        preConversionManipulation: ""
+    });
     const [forceCheckboxOff, setForceCheckboxOff] = useState(false);
     const [formReviewed, setFormReviewed] = useState(true);
     const [submitted, setSubmitted] = useState(false);
@@ -86,7 +95,7 @@ function ViewPreConversionChecklist() {
                 populateValidLoadSheetNamesList(response.data);
             });
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -103,7 +112,7 @@ function ViewPreConversionChecklist() {
             console.log("valid load sheet names set");
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -115,14 +124,14 @@ function ViewPreConversionChecklist() {
             let tempConversionChecklistID = conversionChecklistInfo[0].cc_id
             conversionChecklistID.current = tempConversionChecklistID;
             let conversionChecklistPersonnel = [conversionChecklistInfo[0].cc_load_sheet_owner, conversionChecklistInfo[0].cc_decision_maker];
-            setLoadSheetOwner(await getPersonnelInfo(conversionChecklistPersonnel[0]));
-            setDecisionMaker(await getPersonnelInfo(conversionChecklistPersonnel[1]));
+            setFormPropsForFieldAndValue("loadSheetOwner", await getPersonnelInfo(conversionChecklistPersonnel[0]));
+            setFormPropsForFieldAndValue("decisionMaker", await getPersonnelInfo(conversionChecklistPersonnel[1]));
             await populateSubmittedFields(conversionChecklistInfo[0]);
             await getAdditionalProcessing();
             await getAvailablePersonnel();
             await getSubmittedContributors();
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -139,7 +148,7 @@ function ViewPreConversionChecklist() {
             });
             return tempArray;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -161,7 +170,7 @@ function ViewPreConversionChecklist() {
                 });
                 return personnel;
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
@@ -178,16 +187,24 @@ function ViewPreConversionChecklist() {
                     "value": value,
                     "label": label
                 };
-                setConversionType(tempConversionType);
-                setDataSources(conversionChecklistInfo.cc_data_sources);
-                setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
-                setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
-                recordsPreCleanupNotes.current = conversionChecklistInfo.cc_records_pre_cleanup_notes;
-                recordsPostCleanupNotes.current = conversionChecklistInfo.cc_records_post_cleanup_notes;
-                preConversionManipulation.current = conversionChecklistInfo.cc_pre_conversion_manipulation;
+                setFormPropsForFieldAndValue("conversionType", tempConversionType);
+                // setConversionType(tempConversionType);
+                setFormPropsForFieldAndValue("dataSources", conversionChecklistInfo.cc_data_sources);
+                // setDataSources(conversionChecklistInfo.cc_data_sources);
+                setFormPropsForFieldAndValue("uniqueRecordsPreCleanup", conversionChecklistInfo.uq_records_pre_cleanup);
+                // setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
+                setFormPropsForFieldAndValue("uniqueRecordsPostCleanup", conversionChecklistInfo.uq_records_post_cleanup);
+                console.log(conversionChecklistInfo.uq_records_post_cleanup);
+                // setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
+                setFormPropsForFieldAndValue("recordsPreCleanupNotes", conversionChecklistInfo.cc_records_pre_cleanup_notes);
+                // recordsPreCleanupNotes.current = conversionChecklistInfo.cc_records_pre_cleanup_notes;
+                setFormPropsForFieldAndValue("recordsPostCleanupNotes", conversionChecklistInfo.cc_records_post_cleanup_notes);
+                // recordsPostCleanupNotes.current = conversionChecklistInfo.cc_records_post_cleanup_notes;
+                setFormPropsForFieldAndValue("preConversionManipulation", conversionChecklistInfo.cc_pre_conversion_manipulation);
+                // preConversionManipulation.current = conversionChecklistInfo.cc_pre_conversion_manipulation;
                 async.current = false;
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
@@ -203,7 +220,7 @@ function ViewPreConversionChecklist() {
                     populateAdditionalProcessingList(response.data);
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
@@ -222,10 +239,11 @@ function ViewPreConversionChecklist() {
                 }
                 tempArray.push(tempAdditionalProcessing);
             }
-            setAdditionalProcessing(tempArray);
+            setFormPropsForFieldAndValue("additionalProcessing", tempArray);
+            // setAdditionalProcessing(tempArray);
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -240,7 +258,7 @@ function ViewPreConversionChecklist() {
                     populatePersonnelList(response.data);
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
@@ -259,10 +277,11 @@ function ViewPreConversionChecklist() {
                 };
                 tempArray.push(personnel);
             }
-            setPersonnelOptions([...tempArray]);
+            setFormPropsForFieldAndValue("personnelOptions", tempArray);
+            // setPersonnelOptions([...tempArray]);
             async.current = false;
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
@@ -277,7 +296,7 @@ function ViewPreConversionChecklist() {
                     populateSubmittedContributorsList(response.data);
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("r");
             }
         }
@@ -296,29 +315,55 @@ function ViewPreConversionChecklist() {
                 };
                 tempArray.push(personnel);
             }
-            setContributors(tempArray);
+            setFormPropsForFieldAndValue("contributors", tempArray);
+            // setContributors(tempArray);
             async.current = false;
             setRendering(false, viewPreConversionChecklistDisplay.current = "visible");
         } catch (err) {
-            console.log("error caught: ", err);
+            console.log("error caught:", err);
             handleError("r");
         }
     }
 
-    const handleLoadSheetNameCallback = (lsNameFromInput) => {
-        setLoadSheetName(lsNameFromInput);
-        setInvalidLoadSheetNameError("");
-    }
+    // const handleLoadSheetNameCallback = (lsNameFromInput) => {
+    //     setLoadSheetName(lsNameFromInput);
+    //     setInvalidLoadSheetNameError("");
+    // }
 
     // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
     const checkLoadSheetNameEntered = () => {
         for (let i = 0; i < validLoadSheetNames.current.length; i++) {
-            let escapeRegExpMatch = loadSheetName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            let escapeRegExpMatch = formProps["loadSheetName"].replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             if (new RegExp(`\\b${escapeRegExpMatch}\\b`).test(validLoadSheetNames.current[i])) {
                 return true;
             }
         }
         return false;
+    }
+
+    const handleFormCallback = (returnedObject) => {
+        // console.log(returnedObject);
+        const field = returnedObject.field;
+        const value = returnedObject.value;
+        // console.log(value);
+        if (field === "loadSheetName") {
+            // console.log("this is a load sheet name");
+            setInvalidLoadSheetNameError("");
+        }
+        // console.log(formProps[field]);
+        setFormPropsForFieldAndValue(field, value);
+        // setFormProps((prevState) => ({
+        //     ...prevState,
+        //     [field]: value,
+        // }));
+    }
+
+    const setFormPropsForFieldAndValue = (field, value) => {
+        // console.log("running setFormProps");
+        setFormProps((prevState) => ({
+            ...prevState,
+            [field]: value,
+        }));
     }
 
     const handleLoadSheetOwnerCallback = (loadSheetOwnerFromSelector) => {
@@ -461,7 +506,7 @@ function ViewPreConversionChecklist() {
                     async.current = false;
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("w");
             }
         }
@@ -477,7 +522,7 @@ function ViewPreConversionChecklist() {
                     async.current = false;
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("w");
             }
         }
@@ -495,7 +540,7 @@ function ViewPreConversionChecklist() {
                     async.current = false;
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("w");
             }
         }
@@ -555,7 +600,7 @@ function ViewPreConversionChecklist() {
                     async.current = false;
                 });
             } catch (err) {
-                console.log("error caught: ", err);
+                console.log("error caught:", err);
                 handleError("w");
             }
         }
@@ -597,27 +642,27 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered.current) {
                 runInitialReadAsyncFunctions();
             } else {
-                runSecondaryReadAsyncFunctions(loadSheetName);
+                runSecondaryReadAsyncFunctions(formProps["loadSheetName"]);
             }
         } else {
+            console.log(formProps);
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
             if (!validLoadSheetNameEntered.current) {
-                loadSheetName.trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
+                formProps["loadSheetName"].trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                if (loadSheetName.trim() !== "" && (loadSheetOwner && loadSheetOwner.value && loadSheetOwner !== [])
-                    && (decisionMaker && decisionMaker.value && decisionMaker !== [])
-                    && conversionType !== "" && additionalProcessing.length && dataSources.length
-                    && uniqueRecordsPreCleanup > 0 && uniqueRecordsPostCleanup > 0
-                    && formReviewed && valueUpdated.current) {
+                if (formProps["loadSheetName"].trim() !== "" && (formProps["loadSheetOwner"] && formProps["loadSheetOwner"].value && formProps["loadSheetOwner"] !== [])
+                    && (formProps["decisionMaker"] && formProps["decisionMaker"].value && formProps["decisionMaker"] !== [])
+                    && formProps["conversionType"] !== "" && formProps["additionalProcessing"].length && formProps["dataSources"].length
+                    && formProps["uniqueRecordsPreCleanup"] > 0 && formProps["uniqueRecordsPostCleanup"] > 0
+                    && formReviewed && valueUpdated.current) { // TODO: make formReviewed a part of formProps?
                     setSubmitButtonDisabled(false);
                 } else {
                     setSubmitButtonDisabled(true);
                 }
             }
         }
-    }, [validLoadSheetNameEntered, loadSheetName, loadSheetOwner, decisionMaker, conversionType, additionalProcessing,
-        dataSources, uniqueRecordsPreCleanup, uniqueRecordsPostCleanup, formReviewed, valueUpdated, rendering]);
+    }, [validLoadSheetNameEntered, formProps, formReviewed, valueUpdated, rendering]);
 
     /* try { */
     return (
@@ -676,7 +721,7 @@ function ViewPreConversionChecklist() {
                             </div>
                             <div className="enter-valid-load-sheet-name-card">
                                 <EnterLoadSheetNameCard
-                                    loadSheetName={handleLoadSheetNameCallback}
+                                    loadSheetName={handleFormCallback}
                                     submitted={handleOnClickSubmit}
                                     submitButtonDisabled={submitButtonDisabled}
                                     textAuthenticationError={invalidLoadSheetNameError}
@@ -696,41 +741,42 @@ function ViewPreConversionChecklist() {
                                 <ViewPreConversionChecklistCard
                                     conversionTypeOptions={conversionTypeOptions}
                                     additionalProcessingOptions={additionalProcessingOptions}
-                                    loadSheetName={handleLoadSheetNameCallback}
-                                    submittedLoadSheetName={loadSheetName}
-                                    personnelOptions={personnelOptions}
-                                    submittedContributors={contributors}
-                                    invalidPersonnel={contributors}
-                                    loadSheetOwner={handleLoadSheetOwnerCallback}
-                                    submittedLoadSheetOwner={loadSheetOwner}
-                                    decisionMaker={handleDecisionMakerCallback}
-                                    submittedDecisionMaker={decisionMaker}
-                                    contributors={handleContributorsCallback}
+                                    // loadSheetName={handleLoadSheetNameCallback}
+                                    submittedLoadSheetName={formProps["loadSheetName"]}
+                                    personnelOptions={formProps["personnelOptions"]}
+                                    invalidPersonnel={formProps["contributors"]}
+                                    loadSheetOwner={handleFormCallback}
+                                    submittedLoadSheetOwner={formProps["loadSheetOwner"]}
+                                    decisionMaker={handleFormCallback}
+                                    submittedDecisionMaker={formProps["decisionMaker"]}
+                                    contributors={handleFormCallback}
+                                    submittedContributors={formProps["contributors"]}
                                     invalidContributors={
-                                        loadSheetOwner.label && decisionMaker.label
-                                            ? Array.from(new Set(contributors.concat([loadSheetOwner, decisionMaker]))) // TODO: fix this roundabout way of doing things
-                                            : loadSheetOwner.label ? contributors.concat(loadSheetOwner)
-                                                : decisionMaker.label ? contributors.concat(decisionMaker)
-                                                    : contributors
+                                        formProps["loadSheetOwner"].label && formProps["decisionMaker"].label
+                                            ? Array.from(new Set(formProps["contributors"].concat([formProps["loadSheetOwner"], formProps["decisionMaker"]]))) // TODO: fix this roundabout way of doing things
+                                            : formProps["loadSheetOwner"].label ? formProps["contributors"].concat(formProps["loadSheetOwner"])
+                                                : formProps["decisionMaker"].label ? formProps["contributors"].concat(formProps["decisionMaker"])
+                                                    : formProps["contributors"]
                                     }
-                                    conversionType={handleConversionTypeCallback}
-                                    submittedConversionType={conversionType}
+                                    conversionType={handleFormCallback}
+                                    // conversionType={handleConversionTypeCallback}
+                                    submittedConversionType={formProps["conversionType"]}
                                     additionalProcessing={handleAdditionalProcessingCallback}
-                                    submittedAdditionalProcessing={additionalProcessing}
-                                    dataSources={handleDataSourcesCallback}
-                                    submittedDataSources={dataSources}
+                                    submittedAdditionalProcessing={formProps["additionalProcessing"]}
+                                    dataSources={handleFormCallback}
+                                    submittedDataSources={formProps["dataSources"]}
                                     uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
-                                    submittedUniqueRecordsPreCleanup={uniqueRecordsPreCleanup}
-                                    uniqueRecordsPreCleanupLowerLimit={uniqueRecordsPostCleanup}
+                                    submittedUniqueRecordsPreCleanup={formProps["uniqueRecordsPreCleanup"]}
+                                    // uniqueRecordsPreCleanupLowerLimit={formProps["uniqueRecordsPostCleanup"]}
                                     uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
-                                    submittedUniqueRecordsPostCleanup={uniqueRecordsPostCleanup}
-                                    uniqueRecordsPostCleanupUpperLimit={uniqueRecordsPreCleanup}
+                                    submittedUniqueRecordsPostCleanup={formProps["uniqueRecordsPostCleanup"]}
+                                    // uniqueRecordsPostCleanupUpperLimit={formProps["uniqueRecordsPreCleanup"]}
                                     recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
-                                    submittedRecordsPreCleanupNotes={recordsPreCleanupNotes.current ? recordsPreCleanupNotes.current : ""}
+                                    submittedRecordsPreCleanupNotes={formProps["recordsPreCleanupNotes"] ? formProps["recordsPreCleanupNotes"] : ""}
                                     recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
-                                    submittedRecordsPostCleanupNotes={recordsPostCleanupNotes.current ? recordsPostCleanupNotes.current : ""}
+                                    submittedRecordsPostCleanupNotes={formProps["recordsPostCleanupNotes"] ? formProps["recordsPostCleanupNotes"] : ""}
                                     preConversionManipulation={handlePreConversionManipulationCallback}
-                                    submittedPreConversionManipulation={preConversionManipulation.current ? preConversionManipulation.current : ""}
+                                    submittedPreConversionManipulation={formProps["preConversionManipulation"] ? formProps["preConversionManipulation"] : ""}
                                     // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
                                     // postConversionValidationResults={handlePostConversionValidationResultsCallback}
                                     // postConversionChanges={handlePostConversionChangesCallback}
@@ -747,7 +793,7 @@ function ViewPreConversionChecklist() {
                 </Fragment >
     )
     /* } catch (err) {
-        console.log("error caught: ", err);
+        console.log("error caught:", err);
         handleError("r");
         return (
             <Fragment>

@@ -4,6 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 export default function MaterialSingleSelect(
     {
+        field = "",
         label = "",
         placeholder = "",
         defaultValue = "",
@@ -21,12 +22,12 @@ export default function MaterialSingleSelect(
     const handleOnChange = (object) => {
         if (object) {
             setValue(object);
-            selectedValue(object.value);
+            selectedValue({ field: field, value: object.value });
             setErrorEnabled(false);
             setErrorMsg("");
         } else {
             setValue("");
-            selectedValue("");
+            selectedValue({ field: field, value: "" });
             if (required) {
                 setErrorEnabled(true);
                 setErrorMsg("Required Field");
