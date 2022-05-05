@@ -16,17 +16,12 @@ import "../styles/CardComponents.css";
 
 function CreatePostConversionChecklist() {
     const [rendering, setRendering] = useState(true);
-    // const [enterLoadSheetNameDisplay, setEnterLoadSheetNameDisplay] = useState("visible");
     const enterLoadSheetNameDisplay = useRef("visible");
-    // const [createPostConversionChecklistDisplay, setCreatePostConversionChecklistDisplay] = useState("none");
     const createPostConversionChecklistDisplay = useRef("none");
-    // const [validLoadSheetNames, setValidLoadSheetNames] = useState([]);
     const validLoadSheetNames = useRef([]);
-    // const [validLoadSheetNameEntered, setValidLoadSheetNameEntered] = useState(false);
     const validLoadSheetNameEntered = useRef(false);
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
     const [loadSheetName, setLoadSheetName] = useState("");
-    // const [conversionChecklistID, setConversionChecklistID] = useState("");
     const conversionChecklistID = useRef("");
     const [postConversionLoadingErrors, setPostConversionLoadingErrors] = useState("");
     const [postConversionValidationResults, setPostConversionValidationResults] = useState("");

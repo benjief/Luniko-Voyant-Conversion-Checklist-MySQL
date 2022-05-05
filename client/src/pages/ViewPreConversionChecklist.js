@@ -22,20 +22,8 @@ function ViewPreConversionChecklist() {
     const validLoadSheetNames = useRef([]);
     const validLoadSheetNameEntered = useRef(false);
     const [invalidLoadSheetNameError, setInvalidLoadSheetNameError] = useState("");
-    const [loadSheetName, setLoadSheetName] = useState("");
+    // const [loadSheetName, setLoadSheetName] = useState("");
     const conversionChecklistID = useRef("");
-    const [personnelOptions, setPersonnelOptions] = useState([]);
-    const [loadSheetOwner, setLoadSheetOwner] = useState([]);
-    const [decisionMaker, setDecisionMaker] = useState([]);
-    const [contributors, setContributors] = useState([]);
-    const [conversionType, setConversionType] = useState("");
-    const [additionalProcessing, setAdditionalProcessing] = useState([]);
-    const [dataSources, setDataSources] = useState("");
-    const [uniqueRecordsPreCleanup, setUniqueRecordsPreCleanup] = useState(0);
-    const [uniqueRecordsPostCleanup, setUniqueRecordsPostCleanup] = useState(0);
-    const recordsPreCleanupNotes = useRef("");
-    const recordsPostCleanupNotes = useRef("");
-    const preConversionManipulation = useRef("");
     const [formProps, setFormProps] = useState({
         loadSheetName: "",
         personnelOptions: [],
@@ -190,19 +178,12 @@ function ViewPreConversionChecklist() {
                     "label": label
                 };
                 setFormPropsForFieldAndValue("conversionType", tempConversionType);
-                // setConversionType(tempConversionType);
                 setFormPropsForFieldAndValue("dataSources", conversionChecklistInfo.cc_data_sources);
-                // setDataSources(conversionChecklistInfo.cc_data_sources);
                 setFormPropsForFieldAndValue("uniqueRecordsPreCleanup", conversionChecklistInfo.uq_records_pre_cleanup);
-                // setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
                 setFormPropsForFieldAndValue("uniqueRecordsPostCleanup", conversionChecklistInfo.uq_records_post_cleanup);
-                // setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
                 setFormPropsForFieldAndValue("recordsPreCleanupNotes", conversionChecklistInfo.cc_records_pre_cleanup_notes);
-                // recordsPreCleanupNotes.current = conversionChecklistInfo.cc_records_pre_cleanup_notes;
                 setFormPropsForFieldAndValue("recordsPostCleanupNotes", conversionChecklistInfo.cc_records_post_cleanup_notes);
-                // recordsPostCleanupNotes.current = conversionChecklistInfo.cc_records_post_cleanup_notes;
                 setFormPropsForFieldAndValue("preConversionManipulation", conversionChecklistInfo.cc_pre_conversion_manipulation);
-                // preConversionManipulation.current = conversionChecklistInfo.cc_pre_conversion_manipulation;
                 async.current = false;
             } catch (err) {
                 console.log("error caught:", err);
@@ -327,11 +308,6 @@ function ViewPreConversionChecklist() {
         }
     }
 
-    // const handleLoadSheetNameCallback = (lsNameFromInput) => {
-    //     setLoadSheetName(lsNameFromInput);
-    //     setInvalidLoadSheetNameError("");
-    // }
-
     // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
     const checkLoadSheetNameEntered = () => {
         for (let i = 0; i < validLoadSheetNames.current.length; i++) {
@@ -369,50 +345,6 @@ function ViewPreConversionChecklist() {
             ...prevState,
             [field]: value,
         }));
-    }
-
-    const handleLoadSheetOwnerCallback = (loadSheetOwnerFromSelector) => {
-        setLoadSheetOwner(loadSheetOwnerFromSelector);
-    }
-
-    const handleDecisionMakerCallback = (decisionMakerFromSelector) => {
-        setDecisionMaker(decisionMakerFromSelector);
-    }
-
-    const handleContributorsCallback = (contributorsFromSelector) => {
-        setContributors(contributorsFromSelector);
-    }
-
-    const handleConversionTypeCallback = (conversionTypeFromSelector) => {
-        setConversionType(conversionTypeFromSelector);
-    }
-
-    const handleAdditionalProcessingCallback = (additionalProcessingFromSelector) => {
-        setAdditionalProcessing(additionalProcessingFromSelector);
-    }
-
-    const handleDataSourcesCallback = (dataSourcesFromInput) => {
-        setDataSources(dataSourcesFromInput);
-    }
-
-    const handleUqRecordsPreCleanupCallback = (uqRecordsPreCleanupFromInput) => {
-        setUniqueRecordsPreCleanup(uqRecordsPreCleanupFromInput ? uqRecordsPreCleanupFromInput : 0);
-    }
-
-    const handleUqRecordsPostCleanupCallback = (uqRecordsPostCleanupFromInput) => {
-        setUniqueRecordsPostCleanup(uqRecordsPostCleanupFromInput ? uqRecordsPostCleanupFromInput : 0);
-    }
-
-    const handleRecordsPreCleanupNotesCallback = (recordsPreCleanupNotesFromInput) => {
-        recordsPreCleanupNotes.current = recordsPreCleanupNotesFromInput;
-    }
-
-    const handleRecordsPostCleanupNotesCallback = (recordsPostCleanupNotesFromInput) => {
-        recordsPostCleanupNotes.current = recordsPostCleanupNotesFromInput;
-    }
-
-    const handlePreConversionManipulationCallback = (preConversionManipulationFromInput) => {
-        preConversionManipulation.current = preConversionManipulationFromInput;
     }
 
     const handleCheckboxCallback = (checkedFromCheckbox) => {
@@ -657,7 +589,6 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered.current) {
                 formProps["loadSheetName"].trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
-                console.log(formProps);
                 if (formProps["loadSheetName"].trim() !== "" && (formProps["loadSheetOwner"] && formProps["loadSheetOwner"].value && formProps["loadSheetOwner"] !== [])
                     && (formProps["decisionMaker"] && formProps["decisionMaker"].value && formProps["decisionMaker"] !== [])
                     && formProps["conversionType"] !== "" && formProps["additionalProcessing"].length && formProps["dataSources"].length
