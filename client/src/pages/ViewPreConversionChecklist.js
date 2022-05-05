@@ -65,6 +65,7 @@ function ViewPreConversionChecklist() {
     const writeErrorMessage = useRef("Apologies! We've encountered an error. Please attempt to update your checklist again.");
     const [displaySubmitButtonWorkingIcon, setDisplaySubmitButtonWorkingIcon] = useState(false);
     const activeError = useRef(false);
+    const checklistInfoLoaded = useRef(false);
     const async = useRef(false);
 
     const navigate = useNavigate();
@@ -118,6 +119,7 @@ function ViewPreConversionChecklist() {
     }
 
     const runSecondaryReadAsyncFunctions = async (loadSheetName) => {
+        checklistInfoLoaded.current = true;
         let conversionChecklistInfo = await getConversionChecklistInfo(loadSheetName);
         // This needs to be in a try-catch block, in case the first function errors out
         try {
@@ -194,7 +196,6 @@ function ViewPreConversionChecklist() {
                 setFormPropsForFieldAndValue("uniqueRecordsPreCleanup", conversionChecklistInfo.uq_records_pre_cleanup);
                 // setUniqueRecordsPreCleanup(conversionChecklistInfo.uq_records_pre_cleanup);
                 setFormPropsForFieldAndValue("uniqueRecordsPostCleanup", conversionChecklistInfo.uq_records_post_cleanup);
-                console.log(conversionChecklistInfo.uq_records_post_cleanup);
                 // setUniqueRecordsPostCleanup(conversionChecklistInfo.uq_records_post_cleanup);
                 setFormPropsForFieldAndValue("recordsPreCleanupNotes", conversionChecklistInfo.cc_records_pre_cleanup_notes);
                 // recordsPreCleanupNotes.current = conversionChecklistInfo.cc_records_pre_cleanup_notes;
@@ -319,6 +320,7 @@ function ViewPreConversionChecklist() {
             // setContributors(tempArray);
             async.current = false;
             setRendering(false, viewPreConversionChecklistDisplay.current = "visible");
+
         } catch (err) {
             console.log("error caught:", err);
             handleError("r");
@@ -351,6 +353,9 @@ function ViewPreConversionChecklist() {
             setInvalidLoadSheetNameError("");
         }
         // console.log(formProps[field]);
+        if (field !== "loadSheetName") {
+            console.log("running setFormProps");
+        }
         setFormPropsForFieldAndValue(field, value);
         // setFormProps((prevState) => ({
         //     ...prevState,
@@ -359,7 +364,6 @@ function ViewPreConversionChecklist() {
     }
 
     const setFormPropsForFieldAndValue = (field, value) => {
-        // console.log("running setFormProps");
         setFormProps((prevState) => ({
             ...prevState,
             [field]: value,
@@ -641,11 +645,12 @@ function ViewPreConversionChecklist() {
         if (rendering) {
             if (!validLoadSheetNameEntered.current) {
                 runInitialReadAsyncFunctions();
-            } else {
+            } else if (!checklistInfoLoaded.current) {
+                console.log(checklistInfoLoaded.current);
+                console.log("running secondary read functions");
                 runSecondaryReadAsyncFunctions(formProps["loadSheetName"]);
             }
         } else {
-            console.log(formProps);
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
             if (!validLoadSheetNameEntered.current) {
@@ -662,7 +667,7 @@ function ViewPreConversionChecklist() {
                 }
             }
         }
-    }, [validLoadSheetNameEntered, formProps, formReviewed, valueUpdated, rendering]);
+    }, [checklistInfoLoaded.current, validLoadSheetNameEntered, formProps, formReviewed, valueUpdated, rendering]);
 
     /* try { */
     return (
