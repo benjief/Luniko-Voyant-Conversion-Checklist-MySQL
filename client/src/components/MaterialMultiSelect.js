@@ -4,16 +4,19 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 
-export default function MaterialMultiSelect({
-  label = "",
-  placeholder = "",
-  defaultValue = [],
-  multiSelectOptions = [],
-  selectedValues = [],
-  limitTags = 1,
-  required = false,
-  invalidOptions = []
-}) {
+export default function MaterialMultiSelect(
+  {
+    field = "",
+    label = "",
+    placeholder = "",
+    defaultValue = [],
+    multiSelectOptions = [],
+    selectedValues = [],
+    limitTags = 1,
+    required = false,
+    invalidOptions = []
+  }
+) {
 
   const [values, setValues] = React.useState(defaultValue);
   const [errorEnabled, setErrorEnabled] = React.useState(false);
@@ -22,12 +25,12 @@ export default function MaterialMultiSelect({
   const handleOnChange = (object) => {
     if (object.length) {
       setValues(object);
-      selectedValues(object);
+      selectedValues({ field: field, value: object });
       setErrorEnabled(false);
       setErrorMsg("");
     } else {
       setValues([]);
-      selectedValues([]);
+      selectedValues({ field: field, value: [] });
       if (required) {
         setErrorEnabled(true);
         setErrorMsg("Required Field");

@@ -45,7 +45,7 @@ export default function MaterialTextField({
       } else if (type === "password" && requiresValidation) {
         checkPasswordValidity(value);
       } else if (type === "number") {
-        checkNumberValidity(value);
+        checkNumberValidity(parseInt(value));
       } else {
         handleValidValue(value);
       }
@@ -118,7 +118,6 @@ export default function MaterialTextField({
     //       handleInvalidNumber(number, "Number outside of valid range");
     //     }
     //   }
-    // console.log(number);
     if (!negativeNumbersAllowed && number < 0) {
       handleInvalidNumber(number, "Negative numbers aren't allowed");
     } else if (number === 0 && !zerosAllowed) {

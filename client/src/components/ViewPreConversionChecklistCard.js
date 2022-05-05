@@ -78,6 +78,7 @@ export default function ViewPreConversionChecklistCard({
         const objectToReturn = { value: returnedObject.value, field: returnedObject.field };
         const stringFunction = returnedObject.field + "(objectToReturn)";
         console.log(returnedObject);
+        valueUpdated(true);
         eval(stringFunction);
     }
 

@@ -346,16 +346,17 @@ function ViewPreConversionChecklist() {
     const handleFormCallback = (returnedObject) => {
         // console.log(returnedObject);
         const field = returnedObject.field;
-        const value = returnedObject.value;
+        let value = returnedObject.value;
         // console.log(value);
         if (field === "loadSheetName") {
             // console.log("this is a load sheet name");
             setInvalidLoadSheetNameError("");
+        } else if (field === "uniqueRecordsPreCleanup" || field === "uniqueRecordsPostCleanup") {
+            if (!value) {
+                value = 0;
+            }
         }
         // console.log(formProps[field]);
-        if (field !== "loadSheetName") {
-            console.log("running setFormProps");
-        }
         setFormPropsForFieldAndValue(field, value);
         // setFormProps((prevState) => ({
         //     ...prevState,
@@ -449,12 +450,12 @@ function ViewPreConversionChecklist() {
                 await addNewPersonnelToDB(newPersonnelToAdd[i]);
             }
             await removeAdditionalProcessing();
-            for (let i = 0; i < additionalProcessing.length; i++) {
-                await addAdditionalProcessing(additionalProcessing[i]);
+            for (let i = 0; i < formProps["additionalProcessing"].length; i++) {
+                await addAdditionalProcessing(formProps["additionalProcessing"][i]);
             }
             await removeContributions();
-            for (let i = 0; i < contributors.length; i++) {
-                await addContributions(contributors[i]);
+            for (let i = 0; i < formProps["contributors"].length; i++) {
+                await addContributions(formProps["contributors"][i]);
             }
             await updateConversionChecklist();
             setAlert(true);
@@ -469,21 +470,21 @@ function ViewPreConversionChecklist() {
             // TODO: split these up into 3 helper functions?
             async.current = true;
             let tempArray = [];
-            if (loadSheetOwner.value === -1) {
-                loadSheetOwner.value = uuidv4();
-                tempArray.push(loadSheetOwner);
+            if (formProps["loadSheetOwner"].value === -1) {
+                formProps["loadSheetOwner"].value = uuidv4();
+                tempArray.push(formProps["loadSheetOwner"]);
             }
-            if (decisionMaker.value === -1) {
+            if (formProps["decisionMaker"].value === -1) {
                 // Don't want to try and add duplicate personnel to DB
-                decisionMaker.value = (decisionMaker.label.toLowerCase() === loadSheetOwner.label.toLowerCase()) ?
-                    loadSheetOwner.value
+                formProps["decisionMaker"].value = (formProps["decisionMaker"].label.toLowerCase() === formProps["loadSheetOwner"].label.toLowerCase())
+                    ? formProps["loadSheetOwner"].value
                     : uuidv4();
-                tempArray.push(decisionMaker);
+                tempArray.push(formProps["decisionMaker"]);
             }
-            for (let i = 0; i < contributors.length; i++) {
-                if (contributors[i].value === -1) {
-                    contributors[i].value = uuidv4();
-                    tempArray.push(contributors[i]);
+            for (let i = 0; i < formProps["contributors"].length; i++) {
+                if (formProps["contributors"][i].value === -1) {
+                    formProps["contributors"][i].value = uuidv4();
+                    tempArray.push(formProps["contributors"][i]);
                 }
             }
             console.log("temp array: ", tempArray);
@@ -590,16 +591,16 @@ function ViewPreConversionChecklist() {
                 console.log("updating conversion checklist");
                 async.current = true;
                 await Axios.put(`https://voyant-conversion-checklist.herokuapp.com/update-pre-conversion-checklist/${conversionChecklistID.current}`, {
-                    loadSheetName: loadSheetName,
-                    loadSheetOwner: loadSheetOwner.value,
-                    decisionMaker: decisionMaker.value,
-                    conversionType: conversionType.value ? conversionType.value : conversionType,
-                    dataSources: dataSources,
-                    uniqueRecordsPreCleanup: uniqueRecordsPreCleanup,
-                    uniqueRecordsPostCleanup: uniqueRecordsPostCleanup,
-                    recordsPreCleanupNotes: recordsPreCleanupNotes.current === null ? null : recordsPreCleanupNotes.current.trim() === "" ? null : recordsPreCleanupNotes.current,
-                    recordsPostCleanupNotes: recordsPostCleanupNotes.current === null ? null : recordsPostCleanupNotes.current.trim() === "" ? null : recordsPostCleanupNotes.current,
-                    preConversionManipulation: preConversionManipulation.current === null ? null : preConversionManipulation.current.trim() === "" ? null : preConversionManipulation.current
+                    loadSheetName: formProps["loadSheetName"],
+                    loadSheetOwner: formProps["loadSheetOwner"].value,
+                    decisionMaker: formProps["decisionMaker"].value,
+                    conversionType: formProps["conversionType"].value ? formProps["conversionType"].value : formProps["conversionType"],
+                    dataSources: formProps["dataSources"],
+                    uniqueRecordsPreCleanup: formProps["uniqueRecordsPreCleanup"],
+                    uniqueRecordsPostCleanup: formProps["uniqueRecordsPostCleanup"],
+                    recordsPreCleanupNotes: formProps["recordsPreCleanupNotes"] === null ? null : formProps["recordsPreCleanupNotes"].trim() === "" ? null : formProps["recordsPreCleanupNotes"],
+                    recordsPostCleanupNotes: formProps["recordsPostCleanupNotes"] === null ? null : formProps["recordsPostCleanupNotes"].trim() === "" ? null : formProps["recordsPostCleanupNotes"],
+                    preConversionManipulation: formProps["preConversionManipulation"] === null ? null : formProps["preConversionManipulation"].trim() === "" ? null : formProps["preConversionManipulation"]
                 }).then(response => {
                     async.current = false;
                 });
@@ -656,10 +657,11 @@ function ViewPreConversionChecklist() {
             if (!validLoadSheetNameEntered.current) {
                 formProps["loadSheetName"].trim() !== "" ? setSubmitButtonDisabled(false) : setSubmitButtonDisabled(true);
             } else {
+                console.log(formProps);
                 if (formProps["loadSheetName"].trim() !== "" && (formProps["loadSheetOwner"] && formProps["loadSheetOwner"].value && formProps["loadSheetOwner"] !== [])
                     && (formProps["decisionMaker"] && formProps["decisionMaker"].value && formProps["decisionMaker"] !== [])
                     && formProps["conversionType"] !== "" && formProps["additionalProcessing"].length && formProps["dataSources"].length
-                    && formProps["uniqueRecordsPreCleanup"] > 0 && formProps["uniqueRecordsPostCleanup"] > 0
+                    // && formProps["uniqueRecordsPreCleanup"] > 0 && formProps["uniqueRecordsPostCleanup"] > 0
                     && formReviewed && valueUpdated.current) { // TODO: make formReviewed a part of formProps?
                     setSubmitButtonDisabled(false);
                 } else {
@@ -766,21 +768,21 @@ function ViewPreConversionChecklist() {
                                     conversionType={handleFormCallback}
                                     // conversionType={handleConversionTypeCallback}
                                     submittedConversionType={formProps["conversionType"]}
-                                    additionalProcessing={handleAdditionalProcessingCallback}
+                                    additionalProcessing={handleFormCallback}
                                     submittedAdditionalProcessing={formProps["additionalProcessing"]}
                                     dataSources={handleFormCallback}
                                     submittedDataSources={formProps["dataSources"]}
-                                    uniqueRecordsPreCleanup={handleUqRecordsPreCleanupCallback}
+                                    uniqueRecordsPreCleanup={handleFormCallback}
                                     submittedUniqueRecordsPreCleanup={formProps["uniqueRecordsPreCleanup"]}
                                     // uniqueRecordsPreCleanupLowerLimit={formProps["uniqueRecordsPostCleanup"]}
-                                    uniqueRecordsPostCleanup={handleUqRecordsPostCleanupCallback}
+                                    uniqueRecordsPostCleanup={handleFormCallback}
                                     submittedUniqueRecordsPostCleanup={formProps["uniqueRecordsPostCleanup"]}
                                     // uniqueRecordsPostCleanupUpperLimit={formProps["uniqueRecordsPreCleanup"]}
-                                    recordsPreCleanupNotes={handleRecordsPreCleanupNotesCallback}
+                                    recordsPreCleanupNotes={handleFormCallback}
                                     submittedRecordsPreCleanupNotes={formProps["recordsPreCleanupNotes"] ? formProps["recordsPreCleanupNotes"] : ""}
-                                    recordsPostCleanupNotes={handleRecordsPostCleanupNotesCallback}
+                                    recordsPostCleanupNotes={handleFormCallback}
                                     submittedRecordsPostCleanupNotes={formProps["recordsPostCleanupNotes"] ? formProps["recordsPostCleanupNotes"] : ""}
-                                    preConversionManipulation={handlePreConversionManipulationCallback}
+                                    preConversionManipulation={handleFormCallback}
                                     submittedPreConversionManipulation={formProps["preConversionManipulation"] ? formProps["preConversionManipulation"] : ""}
                                     // postConversionLoadingErrors={handlePostConversionLoadingErrorsCallback}
                                     // postConversionValidationResults={handlePostConversionValidationResultsCallback}
