@@ -67,85 +67,6 @@ function CreateOrModifyPreConversionChecklistCard({
         );
     }, [setFormProps]);
 
-    // const handleOnSelectLoadSheetOwner = (valueFromSelector) => {
-    //     loadSheetOwner(valueFromSelector);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnSelectDecisionMaker = (valueFromSelector) => {
-    //     decisionMaker(valueFromSelector);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnSelectContributors = (valuesFromSelector) => {
-    //     contributors(valuesFromSelector);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnSelectConversionType = (valueFromSelector) => {
-    //     conversionType({ value: valueFromSelector, label: "conversionType" });
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnSelectAdditionalProcessing = (valuesFromSelector) => {
-    //     additionalProcessing(valuesFromSelector);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangeDataSources = (updatedText) => {
-    //     dataSources({ value: updatedText, label: "dataSources" });
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangeUniqueRecordsPreCleanup = (updatedValue) => {
-    //     uniqueRecordsPreCleanup(updatedValue);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangeUniqueRecordsPostCleanup = (updatedValue) => {
-    //     uniqueRecordsPostCleanup(updatedValue);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangeRecordsPreCleanupNotes = (updatedText) => {
-    //     recordsPreCleanupNotes(updatedText);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangeRecordsPostCleanupNotes = (updatedText) => {
-    //     recordsPostCleanupNotes(updatedText);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangePreConversionManipulation = (updatedText) => {
-    //     preConversionManipulation(updatedText);
-    //     valueUpdated(true);
-    // }
-
-    // const handleOnChangePostConversionLoadingErrors = (updatedText) => {
-    //     postConversionLoadingErrors(updatedText);
-    // }
-
-    // const handleOnChangePostConversionValidationResults = (updatedText) => {
-    //     postConversionValidationResults(updatedText);
-    // }
-
-    // const handleOnChangePostConversionChanges = (updatedText) => {
-    //     postConversionChanges(updatedText);
-    // }
-
-    // const handleUpdateChecklist = () => {
-    //     updated(true);
-    // }
-
-    // React.useEffect(() => {
-    //     if (!updateButtonDisabled) {
-    //         setUpdateButtonColor("var(--lunikoBlue)");
-    //     } else {
-    //         setUpdateButtonColor("#BFBFBF");
-    //     }
-    // }, [updateButtonDisabled]);
-
     return (
         <div>
             <Card
@@ -167,10 +88,6 @@ function CreateOrModifyPreConversionChecklistCard({
                     />
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <CardContent>
-                            {/* <Typography
-                        paragraph>
-                        <strong>Updatable Fields</strong>
-                    </Typography> */}
                             <MaterialTextField
                                 label="Load Sheet Name"
                                 disabled={isModificationCard}

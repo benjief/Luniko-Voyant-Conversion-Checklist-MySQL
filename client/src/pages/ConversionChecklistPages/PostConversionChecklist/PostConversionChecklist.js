@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
-import PreConversionChecklistOptionsCard from "../../../components/PreConversionChecklistOptionsCard";
+import PostConversionChecklistOptionsCard from "../../../components/PostConversionChecklistOptionsCard";
 import LoadingWrapper from "../../wrappers/LoadingWrapper/LoadingWrapper";
-import "../../../styles/PreConversionChecklist.css";
+import "../../../styles/PostConversionChecklist.css";
 
-function PreConversionChecklist() {
+function PostConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transtitionElementVisibility, setTransitionElementVisibility] = useState("visible");
@@ -26,13 +26,13 @@ function PreConversionChecklist() {
                 transitionElementOpacity={transitionElementOpacity}
                 transitionElementVisibility={transtitionElementVisibility}>
             </LoadingWrapper>
-            <div className="pre-conversion-checklist-options">
+            <div className="post-conversion-checklist-options">
                 <div className="page-message">
-                    Pre-Conversion Checklist
+                    Post-Conversion Checklist
                 </div>
-                <div className="pre-conversion-checklist-options-container">
-                    <div className="pre-conversion-checklist-options-card">
-                        <PreConversionChecklistOptionsCard></PreConversionChecklistOptionsCard>
+                <div className="post-conversion-checklist-options-container">
+                    <div className="post-conversion-checklist-options-card">
+                        <PostConversionChecklistOptionsCard></PostConversionChecklistOptionsCard>
                     </div>
                 </div>
             </div>
@@ -40,4 +40,4 @@ function PreConversionChecklist() {
     )
 };
 
-export default PreConversionChecklist;
+export default PostConversionChecklist;

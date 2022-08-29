@@ -18,7 +18,7 @@ function MaterialMultiSelect(
 ) {
 
   const [values, setValues] = React.useState(defaultValue);
-  const [errorEnabled, setErrorEnabled] = React.useState(false);
+  const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
   const [displayedHelperText, setDisplayedHelperText] = React.useState("");
 
   const checkForLabelInValues = React.useCallback((label) => {
@@ -45,10 +45,10 @@ function MaterialMultiSelect(
   const handleOnChange = React.useCallback((value) => {
     if (required) {
       if (value) {
-        setErrorEnabled(false);
+        setIsErrorEnabled(false);
         setDisplayedHelperText("");
       } else {
-        setErrorEnabled(true);
+        setIsErrorEnabled(true);
         setDisplayedHelperText("Required Field");
       }
     }
@@ -59,7 +59,7 @@ function MaterialMultiSelect(
 
   const handleOnBlur = React.useCallback(() => {
     if (required && !values.length) {
-      setErrorEnabled(true);
+      setIsErrorEnabled(true);
       setDisplayedHelperText("Required Field");
     }
   }, [required, values.length])
@@ -92,7 +92,7 @@ function MaterialMultiSelect(
           label={label}
           placeholder={placeholder}
           required={required}
-          error={errorEnabled}
+          error={isErrorEnabled}
           helperText={displayedHelperText} />
       )} />
   );

@@ -1,16 +1,18 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import CircleOutlined from '@mui/icons-material/CircleOutlined';
 import CheckCircle from '@mui/icons-material/CheckCircle';
 
-export default function MaterialCheckBox({
-    label = "",
-    forceOff = false,
-    userChecked = false,
-    defaultChecked = false,
-    disabled = false
+function MaterialCheckBox({
+    className,
+    label,
+    forceOff,
+    userChecked,
+    defaultChecked,
+    disabled,
 }) {
     const [checked, setChecked] = React.useState(defaultChecked);
 
@@ -30,6 +32,7 @@ export default function MaterialCheckBox({
         <FormGroup>
             <FormControlLabel control={
                 <Checkbox
+                    className={className}
                     disabled={disabled}
                     disableRipple
                     color="primary"
@@ -42,3 +45,23 @@ export default function MaterialCheckBox({
         </FormGroup>
     );
 }
+
+MaterialCheckBox.propTypes = {
+    className: PropTypes.string,
+    label: PropTypes.string,
+    forceOff: PropTypes.bool,
+    userChecked: PropTypes.bool,
+    defaultChecked: PropTypes.bool,
+    disabled: PropTypes.bool,
+}
+
+MaterialCheckBox.defaultProps = {
+    className: "",
+    label: "",
+    forceOff: false,
+    userChecked: false,
+    defaultChecked: false,
+    disabled: false,
+}
+
+export default MaterialCheckBox;

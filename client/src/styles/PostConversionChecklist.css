@@ -9,17 +9,13 @@
     scrollbar-width: none;
 }
 
-.post-conversion-checklist-options::-webkit-scrollbar {
-    display: none;
-}
-
 .post-conversion-checklist-options-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
     width: 95%;
-    max-width: 600px;
+    max-width: 900px;
     padding-bottom: 20px;
 }
 
@@ -31,28 +27,25 @@
     width: 100%;
 }
 
-.create-post-conversion-checklist-button, .modify-post-conversion-checklist-button {
+.create-post-conversion-checklist-button,
+.modify-post-conversion-checklist-button {
     padding: 10px;
     /* margin-top: 5px !important; */
-    /* margin-bottom: 10px; */
+    margin-bottom: 10px;
     border: none;
     color: white;
     background-color: var(--lunikoBlue);
     border-radius: 5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 600;
-    font-size: 13pt;
+    font-size: 14pt;
     height: 50px;
     width: 100%;
     transition: 0.1s;
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
-.modify-post-conversion-checklist-button {
-    margin-top: 10px !important;
-}
-
 .post-conversion-checklist-options-container button:hover {
-    cursor: pointer;
+    /* cursor: pointer; */
     background-color: var(--lunikoOrange) !important;
 }

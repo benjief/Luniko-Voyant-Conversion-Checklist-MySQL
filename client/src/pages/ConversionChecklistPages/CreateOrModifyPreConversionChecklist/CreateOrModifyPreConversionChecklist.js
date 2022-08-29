@@ -248,9 +248,9 @@ function CreateOrModifyPreConversionChecklist() {
             if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
                 formProps["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
             } else if (!isChecklistSubmitted.current) {
-                if (formProps["loadSheetName"].trim() !== "" && formProps["loadSheetOwner"]?.value !== ""
-                    && formProps["decisionMaker"]?.value !== "" && formProps["conversionType"]?.value !== ""
-                    && formProps["additionalProcessing"].length && formProps["dataSources"].length) {
+                if (formProps["loadSheetName"].trim().length && formProps["loadSheetOwner"]?.value.length
+                    && formProps["decisionMaker"]?.value.length && formProps["conversionType"]?.value.length
+                    && formProps["additionalProcessing"].length && formProps["dataSources"]?.trim().length) {
                     setIsReviewChecklistCheckboxDisabled(false);
                 } else {
                     setIsReviewChecklistCheckboxDisabled(true);

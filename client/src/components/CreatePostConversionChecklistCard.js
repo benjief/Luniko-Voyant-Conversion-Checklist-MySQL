@@ -15,8 +15,8 @@ import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
-import PasswordFormDialog from './PasswordFormDialog';
-import DraggableDialog from './DraggableDialog';
+import MaterialPasswordDialog from './MaterialPasswordDialog';
+import DraggableDialog from './MaterialDialog';
 import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
 
 const ExpandMore = styled((props) => {
@@ -177,12 +177,12 @@ export default function CreatePostConversionChecklistCard({
                                     </MaterialCheckBox>
                                 </div>
                                 : <div className="no-valid-credential-approval-container">
-                                    <PasswordFormDialog
+                                    <MaterialPasswordDialog
                                         content="Please enter your IT Director password."
                                         label="password"
                                         password="test"
                                         unlocked={handleUnlocked}>
-                                    </PasswordFormDialog>
+                                    </MaterialPasswordDialog>
                                 </div>
                             }
                             <p>Approved by IT Director</p>

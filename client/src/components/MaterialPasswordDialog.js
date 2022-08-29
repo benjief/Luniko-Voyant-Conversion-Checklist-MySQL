@@ -1,86 +1,101 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-// import DialogTitle from '@mui/material/DialogTitle';
-// import CircleOutlined from '@mui/icons-material/CircleOutlined';
 import LockOpenTwoTone from '@mui/icons-material/LockOpenTwoTone';
 import "../styles/DialogComponents.css";
 
-export default function PasswordFormDialog({
-    content = "",
-    label = "",
-    password = "",
-    unlocked = false
+function MaterialPasswordDialog({
+    content,
+    label,
+    password,
+    setIsCheckboxUnlocked,
+    isDisabled,
 }) {
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState("");
-    const [submitDisabled, setSubmitDisabled] = React.useState(true);
-    const [errorEnabled, setErrorEnabled] = React.useState(false);
+    const [isSubmitPasswordButtonDisabled, setIsSubmitPasswordButtonDisabled] = React.useState(true);
+    const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
     const errorMsg = "Invalid password"
 
     const handleClickOpen = () => {
-        setOpen(true);
+        if (!isDisabled) {
+            setOpen(true);
+        }
     };
 
     const handleOnChange = (value) => {
         setValue(value);
-        setErrorEnabled(false);
+        setIsErrorEnabled(false);
     }
 
     const handleSubmit = () => {
         if (value === password) {
-            unlocked(true);
+            setIsCheckboxUnlocked(true);
             handleClose();
         } else {
-            setErrorEnabled(true);
+            setIsErrorEnabled(true);
         }
     }
 
     const handleClose = () => {
         setOpen(false);
-        setErrorEnabled(false);
+        setIsErrorEnabled(false);
     };
 
     React.useEffect(() => {
         value.trim() !== ""
-            ? setSubmitDisabled(false)
-            : setSubmitDisabled(true);
-    })
+            ? setIsSubmitPasswordButtonDisabled(false)
+            : setIsSubmitPasswordButtonDisabled(true);
+    }, [value])
 
     return (
         <div className="password-form-dialog-container">
-            <LockOpenTwoTone onClick={handleClickOpen} />
-            {/* <Button variant="outlined" onClick={handleClickOpen}>
-                Open form dialog
-            </Button> */}
+            <button disabled={isDisabled}>
+                <LockOpenTwoTone onClick={handleClickOpen} />
+            </button>
             <Dialog className="dialog-component" open={open} onClose={handleClose}>
-                {/* <DialogTitle>Subscribe</DialogTitle> */}
                 <DialogContent>
                     <DialogContentText style={{ marginBottom: "10px" }}>
                         {content}
                     </DialogContentText>
                     <TextField
                         onChange={(event) => handleOnChange(event.target.value)}
-                        error={errorEnabled}
-                        helperText={errorEnabled ? errorMsg : ""}
-                        // autoFocus
+                        error={isErrorEnabled}
+                        helperText={isErrorEnabled ? errorMsg : ""}
                         margin="dense"
-                        // id="name"
                         label={label}
                         type="password"
                         fullWidth
-                        variant="standard"
-                    />
+                        variant="standard" />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button disabled={submitDisabled} onClick={handleSubmit}>Submit</Button>
+                    <Button disabled={isSubmitPasswordButtonDisabled} onClick={handleSubmit}>Submit</Button>
                 </DialogActions>
             </Dialog>
         </div>
     );
 }
+
+MaterialPasswordDialog.propTypes = {
+    content: PropTypes.string,
+    label: PropTypes.string,
+    password: PropTypes.string,
+    setIsCheckboxUnlocked: PropTypes.func,
+    isDisabled: PropTypes.bool,
+}
+
+MaterialPasswordDialog.defaultProps = {
+    content: "",
+    label: "",
+    password: "",
+    setIsCheckboxUnlocked: () => { },
+    isDisabled: true,
+}
+
+export default MaterialPasswordDialog;

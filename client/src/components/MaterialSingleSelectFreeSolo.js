@@ -27,13 +27,13 @@ function MaterialSingleSelectFreeSolo(
     }) {
     const [value, setValue] = React.useState(defaultValue.value !== null ? defaultValue : null);
     const [open, toggleOpen] = React.useState(false);
-    const [errorEnabled, setErrorEnabled] = React.useState(false);
+    const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
     const [displayedHelperText, setDisplayedHelperText] = React.useState("");
-    const [firstNameErrorEnabled, setFirstNameErrorEnabled] = React.useState(false);
-    const [lastNameErrorEnabled, setLastNameErrorEnabled] = React.useState(false);
+    const [isFirstNameErrorEnabled, setIsFirstNameErrorEnabled] = React.useState(false);
+    const [isLastNameErrorEnabled, setIsLastNameErrorEnabled] = React.useState(false);
     const [firstNameDisplayedHelperText, setFirstNameDisplayedHelperText] = React.useState("");
     const [lastNameDisplayedHelperText, setLastNameDisplayedHelperText] = React.useState("");
-    const [addButtonDisabled, setAddButtonDisabled] = React.useState(true);
+    const [isAddButtonDisabled, setIsAddButtonDisabled] = React.useState(true);
 
     const handleClose = () => {
         setDialogValue({
@@ -42,11 +42,11 @@ function MaterialSingleSelectFreeSolo(
         });
 
         toggleOpen(false);
-        setFirstNameErrorEnabled(false);
+        setIsFirstNameErrorEnabled(false);
         setFirstNameDisplayedHelperText("");
-        setLastNameErrorEnabled(false);
+        setIsLastNameErrorEnabled(false);
         setLastNameDisplayedHelperText("");
-        setAddButtonDisabled(true);
+        setIsAddButtonDisabled(true);
     };
 
     const [dialogValue, setDialogValue] = React.useState({
@@ -115,10 +115,10 @@ function MaterialSingleSelectFreeSolo(
     const handleOnChange = React.useCallback((value) => {
         if (required) {
             if (value) {
-                setErrorEnabled(false);
+                setIsErrorEnabled(false);
                 setDisplayedHelperText("");
             } else {
-                setErrorEnabled(true);
+                setIsErrorEnabled(true);
                 setDisplayedHelperText("Required Field");
             }
         }
@@ -129,7 +129,7 @@ function MaterialSingleSelectFreeSolo(
 
     const handleOnBlur = React.useCallback(() => {
         if (required && !value && !open) {
-            setErrorEnabled(true);
+            setIsErrorEnabled(true);
             setDisplayedHelperText("Required Field");
         }
     }, [open, required, value])
@@ -145,14 +145,14 @@ function MaterialSingleSelectFreeSolo(
             property === "firstName"
                 ? setNameDialogError(property, true)
                 : setNameDialogError(property, true);
-            setAddButtonDisabled(true);
+            setIsAddButtonDisabled(true);
         } else {
             property === 'firstName'
                 ? setNameDialogError(property, false)
                 : setNameDialogError(property, false);
 
             if (dialogValue[complementProperty].trim().length) {
-                setAddButtonDisabled(false);
+                setIsAddButtonDisabled(false);
             }
         }
     }
@@ -164,21 +164,21 @@ function MaterialSingleSelectFreeSolo(
             property === "firstName"
                 ? setNameDialogError(property, true)
                 : setNameDialogError(property, true);
-            setAddButtonDisabled(true);
+            setIsAddButtonDisabled(true);
         } else {
             property === "firstName"
                 ? setNameDialogError(property, false)
                 : setNameDialogError(property, false);
             if (dialogValue[complementProperty].trim().length) {
-                setAddButtonDisabled(false);
+                setIsAddButtonDisabled(false);
             }
         }
     }
 
     const setNameDialogError = (property, booleanValue) => {
         property === "firstName"
-            ? setFirstNameErrorEnabled(booleanValue)
-            : setLastNameErrorEnabled(booleanValue);
+            ? setIsFirstNameErrorEnabled(booleanValue)
+            : setIsLastNameErrorEnabled(booleanValue);
         if (booleanValue) {
             property === "firstName"
                 ? setFirstNameDisplayedHelperText("Required Field")
@@ -193,7 +193,7 @@ function MaterialSingleSelectFreeSolo(
     const handleDialogErrors = (firstName, lastName) => {
         !firstName.trim().length ? setNameDialogError("firstName", true) : setNameDialogError("firstName", false);
         !lastName.trim().length ? setNameDialogError("lastName", true) : setNameDialogError("lastName", false);
-        !firstName.trim().length || !lastName.trim().length ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
+        !firstName.trim().length || !lastName.trim().length ? setIsAddButtonDisabled(true) : setIsAddButtonDisabled(false);
         toggleOpen(true);
         setDialogValue({
             firstName: firstName,
@@ -261,8 +261,8 @@ function MaterialSingleSelectFreeSolo(
                         label={label}
                         placeholder={placeholder}
                         required={required}
-                        helperText={errorEnabled ? displayedHelperText : null}
-                        error={errorEnabled}
+                        helperText={isErrorEnabled ? displayedHelperText : null}
+                        error={isErrorEnabled}
                     />}
             />
             <Dialog
@@ -280,7 +280,7 @@ function MaterialSingleSelectFreeSolo(
                             margin="dense"
                             id="first-name"
                             value={dialogValue.firstName}
-                            error={firstNameErrorEnabled}
+                            error={isFirstNameErrorEnabled}
                             required={true}
                             onBlur={() => handleOnBlurNameDialog("firstName")}
                             onChange={(event) =>
@@ -291,13 +291,13 @@ function MaterialSingleSelectFreeSolo(
                             label="first name"
                             type="text"
                             variant="standard"
-                            helperText={firstNameErrorEnabled ? firstNameDisplayedHelperText : null}
+                            helperText={isFirstNameErrorEnabled ? firstNameDisplayedHelperText : null}
                         />
                         <TextField
                             margin="dense"
                             id="last-name"
                             value={dialogValue.lastName}
-                            error={lastNameErrorEnabled}
+                            error={isLastNameErrorEnabled}
                             required={true}
                             onBlur={() => handleOnBlurNameDialog("lastName")}
                             onChange={(event) =>
@@ -308,12 +308,12 @@ function MaterialSingleSelectFreeSolo(
                             label="last name"
                             type="text"
                             variant="standard"
-                            helperText={lastNameErrorEnabled ? lastNameDisplayedHelperText : null}
+                            helperText={isLastNameErrorEnabled ? lastNameDisplayedHelperText : null}
                         />
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button type="submit" disabled={addButtonDisabled}>Add</Button>
+                        <Button type="submit" disabled={isAddButtonDisabled}>Add</Button>
                     </DialogActions>
                 </form>
             </Dialog>

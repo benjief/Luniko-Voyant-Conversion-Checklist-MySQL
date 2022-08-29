@@ -17,16 +17,16 @@ function MaterialSingleSelect(
 
 ) {
     const [value, setValue] = React.useState(defaultValue.value !== null ? defaultValue : null);
-    const [errorEnabled, setErrorEnabled] = React.useState(false);
+    const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
     const [displayedHelperText, setDisplayedHelperText] = React.useState("");
 
     const handleOnChange = React.useCallback((value) => {
         if (required) {
             if (value) {
-                setErrorEnabled(false);
+                setIsErrorEnabled(false);
                 setDisplayedHelperText("");
             } else {
-                setErrorEnabled(true);
+                setIsErrorEnabled(true);
                 setDisplayedHelperText("Required Field");
             }
         }
@@ -34,7 +34,7 @@ function MaterialSingleSelect(
 
     const handleOnBlur = React.useCallback(() => {
         if (required && (value === "")) {
-            setErrorEnabled(true);
+            setIsErrorEnabled(true);
             setDisplayedHelperText("Required Field");
         }
     }, [required, value])
@@ -62,7 +62,7 @@ function MaterialSingleSelect(
                     label={label}
                     placeholder={placeholder}
                     required={required}
-                    error={errorEnabled}
+                    error={isErrorEnabled}
                     helperText={displayedHelperText} />
             } />
     );

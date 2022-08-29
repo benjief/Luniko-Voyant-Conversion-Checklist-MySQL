@@ -13,7 +13,7 @@
 }
 
 #root {
-  height: 100%;
+  height: 100vh;
   background-image: url("img/background_pattern.png");
   font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
   font-size: 11pt;
