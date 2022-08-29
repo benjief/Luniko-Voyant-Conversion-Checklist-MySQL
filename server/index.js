@@ -382,7 +382,7 @@ app.delete("/remove-contributions/:conversionChecklistID", (req, res) => {
 
 app.post("/add-additional-processing", (req, res) => {
     const checklistID = req.body.checklistID;
-    const apType = req.body.apType;
+    const additionalProcessingType = req.body.additionalProcessingType;
 
     db.query(
         `INSERT INTO additional_processing (
@@ -391,7 +391,7 @@ app.post("/add-additional-processing", (req, res) => {
         )
         
         VALUES (?, ?)`,
-        [checklistID, apType], (err, result) => {
+        [checklistID, additionalProcessingType], (err, result) => {
             if (err) {
                 console.log(err);
             } else {

@@ -1,8 +1,15 @@
 .MuiBox-root {
     width: 100% !important;
     display: flex;
-    margin-bottom: 15px !important;
+    margin-bottom: 25px !important;
     /* margin-top: 5px; */
+    min-height: 78.91px;
+}
+
+textarea {
+    overflow-y: scroll !important;
+    height: 100% !important;
+    resize: none !important;
 }
 
 .material-text-field {
@@ -35,7 +42,7 @@
 .MuiOutlinedInput-root {
     min-height: 50px !important;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-    font-size: 11pt !important;
+    /* font-size: 11pt !important; */
 }
 
 .data-sources .MuiOutlinedInput-root,
@@ -43,7 +50,7 @@
 .post-cleanup-notes .MuiOutlinedInput-root,
 .pre-conversion-manipulation .MuiOutlinedInput-root,
 .post-conversion-info .MuiOutlinedInput-root {
-    min-height: 200px !important;
+    height: 300px !important;
 }
 
 .MuiOutlinedInput-input {

@@ -1,71 +1,75 @@
 import * as React from 'react';
+import { useValidationError } from '../pages/ConversionChecklistPages/Context/ValidationErrorContext';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
-export default function MaterialTextField({
-  field = "",
-  className = "",
-  label = "",
-  helperText = "",
-  characterLimit = 500,
-  placeholder = "",
-  defaultValue = "",
-  inputValue = "",
-  multiline = false,
-  type = "text",
-  required = false,
-  showCharCounter = false,
-  // limitRangeOfInputs = false,
-  requiresValidation = false,
-  invalidInputs = [],
-  invalidInputMsg = "",
-  maxValue = Number.MAX_SAFE_INTEGER,
-  minValue = Number.MIN_SAFE_INTEGER,
-  negativeNumbersAllowed = true,
-  zerosAllowed = true,
-  fractionsAllowed = true,
-  authenticationField = false,
-  textAuthenticationError = "",
+const sx = {
+  '& .MuiTextField-root': { m: 1, width: '25ch' }, // TODO: make sure you understand this! move all constants outside functions
+}
+
+function MaterialTextField({
+  field,
+  className,
+  label,
+  helperText,
+  characterLimit,
+  placeholder,
+  defaultValue,
+  inputValue,
+  multiline,
+  type,
+  required,
+  showCharCounter,
+  requiresTextValidation,
+  isTextValidationCaseSensitive,
+  invalidInputs,
+  invalidInputMsg,
+  authenticationField,
+  minValue,
+  maxValue,
+  negativeNumbersAllowed,
+  zerosAllowed,
+  fractionsAllowed,
   disabled = false,
-  forceErrorOff = false
 }) {
   const [value, setValue] = React.useState(defaultValue);
   const [errorEnabled, setErrorEnabled] = React.useState(false);
-  // const [errorMsg, setErrorMsg] = React.useState("");
   const [displayedHelperText, setDisplayedHelperText] = React.useState(helperText);
-  const [inputLength, setInputLength] = React.useState(type !== "number" ? defaultValue.length : 0);
-  const [firstRender, setFirstRender] = React.useState(true);
+  const [inputLength, setInputLength] = React.useState(type !== "number" ? defaultValue?.length : 0);
+  const authenticationError = useValidationError();
 
-  const handleOnChange = (value) => {
-    if (value.trim() !== "") {
-      if (type === "text" && requiresValidation) {
-        checkInputValidity(value);
-      } else if (type === "email") {
-        checkEmailValidity(value);
-      } else if (type === "password" && requiresValidation) {
-        checkPasswordValidity(value);
-      } else if (type === "number") {
-        checkNumberValidity(parseInt(value));
-      } else {
-        handleValidValue(value);
-      }
-    } else {
-      if (required) {
-        setDisplayedHelperText("Required Field");
-      }
-      handleEmptyValue(value);
-    }
-  }
-
-  const handleOnBlur = () => {
-    if (required && value === "") {
+  const handleEmptyValue = React.useCallback((value) => {
+    setValue(value);
+    inputValue({ field: field, value: "" });
+    // if (showCharCounter && value) {
+    setInputLength(0); // TODO: test this - seems to work in specific data inputted by user scenario, but not sure about other text fields
+    // }
+    if (required) {
       setErrorEnabled(true);
-      setDisplayedHelperText("Required Field");
     }
-  }
+  }, [field, inputValue, required])
 
-  const checkInputValidity = (input) => {
-    if (invalidInputs.includes(input)) {
+  const handleValidValue = React.useCallback((value) => {
+    setValue(value);
+    inputValue({ field: field, value: value });
+    if (showCharCounter) {
+      setInputLength(value.length);
+    }
+    setErrorEnabled(false);
+    setDisplayedHelperText(helperText);
+  }, [field, helperText, inputValue, showCharCounter])
+
+  const handleInvalidNumber = React.useCallback((number, helperText) => {
+    setValue(number);
+    inputValue({ field: field, value: number });
+    setDisplayedHelperText(helperText);
+    setErrorEnabled(true);
+  }, [field, inputValue])
+
+  const checkTextInputValidity = React.useCallback((input) => {
+    input = isTextValidationCaseSensitive ? input : input.toLowerCase();
+    if (invalidInputs.includes(input.trim())) {
       invalidInputMsg === ""
         ? setDisplayedHelperText("Invalid input")
         : setDisplayedHelperText(invalidInputMsg);
@@ -73,51 +77,27 @@ export default function MaterialTextField({
     } else {
       handleValidValue(input);
     }
-  }
+  }, [handleEmptyValue, handleValidValue, invalidInputMsg, invalidInputs, isTextValidationCaseSensitive])
 
-  const checkEmailValidity = (email) => {
+  const checkEmailValidity = React.useCallback((email) => {
     if (email.match(/[^@]+@[^@]+\.+[^@]/)) {
       handleValidValue(email);
     } else {
       setDisplayedHelperText("Please enter a valid email address");
       handleEmptyValue(email);
     }
-  }
+  }, [handleEmptyValue, handleValidValue])
 
-  const checkPasswordValidity = (password) => {
+  const checkPasswordValidity = React.useCallback((password) => {
     if (password.length > 5) {
       handleValidValue(password);
     } else {
       setDisplayedHelperText("Passwords must be at least 6 characters long");
       handleEmptyValue(password);
     }
-  }
+  }, [handleEmptyValue, handleValidValue])
 
-  const checkNumberValidity = (number) => {
-    // if (limitRangeOfInputs) {
-    //   if (number < 0 && !negativeNumbersAllowed) {
-    //     handleInvalidNumber(number, "Negative numbers are not permitted");
-    //   } else if (number === 0 && !zerosAllowed) {
-    //     handleInvalidNumber(number, "Number must be > 0");
-    //   } else if (lowerLimitValue !== null && upperLimitValue === null) {
-    //     if (number >= lowerLimitValue) {
-    //       handleValidValue(number);
-    //     } else {
-    //       handleInvalidNumber(number, "Number is too low");
-    //     }
-    //   } else if (lowerLimitValue === null && upperLimitValue !== null) {
-    //     if (number <= upperLimitValue) {
-    //       handleValidValue(number);
-    //     } else {
-    //       handleInvalidNumber(number, "Number is too high");
-    //     }
-    //   } else if (lowerLimitValue !== null && upperLimitValue !== null) {
-    //     if (lowerLimitValue <= number && number <= upperLimitValue) {
-    //       handleValidValue(number);
-    //     } else {
-    //       handleInvalidNumber(number, "Number outside of valid range");
-    //     }
-    //   }
+  const checkNumberValidity = React.useCallback((number) => {
     if (!negativeNumbersAllowed && number < 0) {
       handleInvalidNumber(number, "Negative numbers aren't allowed");
     } else if (number === 0 && !zerosAllowed) {
@@ -129,105 +109,169 @@ export default function MaterialTextField({
     } else {
       handleValidValue(number);
     }
-  }
-
-  const handleInvalidNumber = (number, helperText) => {
-    // setValue(null);
-    setValue(number);
-    inputValue({ field: field, value: number });
-    setDisplayedHelperText(helperText);
-    setErrorEnabled(true);
-  }
-
-  const handleEmptyValue = (value) => {
-    setValue("");
-    inputValue({ field: field, value: "" });
-    if (showCharCounter && value) {
-      setInputLength(value.length);
-    }
-    if (required) {
-      setErrorEnabled(true);
-    }
-  }
-
-  const handleValidValue = (value) => {
-    setValue(value);
-    inputValue({ field: field, value: value });
-    if (showCharCounter) {
-      setInputLength(value.length);
-    }
-    setErrorEnabled(false);
-    setDisplayedHelperText(helperText);
-  }
+  }, [handleInvalidNumber, handleValidValue, maxValue, minValue, negativeNumbersAllowed, zerosAllowed])
 
   React.useEffect(() => {
-    // if (defaultValue !== "" && firstRender) {
-    //   console.log(defaultValue);
-    //   setValue(defaultValue);
-    //   setFirstRender(false);
-    // }
     if (authenticationField) {
-      if (textAuthenticationError !== "") {
+      if (authenticationError.length) {
         setErrorEnabled(true);
-        setDisplayedHelperText(textAuthenticationError);
+        setDisplayedHelperText(authenticationError);
       } else {
-        if (value.trim() !== "") {
-          setErrorEnabled(false);
-          setDisplayedHelperText("");
-        }
+        setErrorEnabled(false);
+        setDisplayedHelperText("");
+        // }
       }
     }
-  }, [authenticationField, textAuthenticationError, errorEnabled, firstRender, value]) // TODO: check need for firstRender
+  }, [authenticationField, authenticationError, errorEnabled, value]) // TODO: check need for firstRender
+
+  const handleOnSubmit = React.useCallback(
+    (event) => {
+      event.preventDefault()
+    },
+    [],
+  )
+
+  const handleOnChange = React.useCallback(
+    (event) => {
+      const value = event.target.value
+
+      if (value.trim() !== "") {
+        if (type === "text" && requiresTextValidation) {
+          checkTextInputValidity(value);
+        } else if (type === "email") {
+          checkEmailValidity(value);
+        } else if (type === "password" && requiresTextValidation) {
+          checkPasswordValidity(value);
+        } else if (type === "number") {
+          checkNumberValidity(parseInt(value));
+        } else {
+          handleValidValue(value);
+        }
+      } else {
+        if (required) {
+          setDisplayedHelperText("Required Field");
+        }
+        handleEmptyValue(value);
+      }
+    },
+    [checkEmailValidity, checkNumberValidity, checkPasswordValidity, checkTextInputValidity,
+      handleEmptyValue, handleValidValue, required, requiresTextValidation, type]
+  )
+
+  const handleOnBlur = React.useCallback(
+    (event) => {
+      if (required && event.target.value === "") {
+        setErrorEnabled(true);
+        setDisplayedHelperText("Required Field");
+      }
+    }, [required]
+  )
+
+  const handleOnKeyDown = React.useCallback(
+    (event) => {
+      if (type === "number") {
+        if (["e", "E"].includes(event.key)) {
+          event.preventDefault();
+        }
+        if (!fractionsAllowed) {
+          if (["."].includes(event.key)) {
+            event.preventDefault();
+          }
+        }
+      }
+    },
+    [fractionsAllowed, type]
+  )
+
+  const inputProps = React.useMemo(() => ({ // like useCallback, but for any variable - only returns a new object when the value of characterLimit changes
+    maxLength: characterLimit
+  }), [characterLimit])
+
 
   return (
     <Box
-      onSubmit={event => { event.preventDefault(); }}
+      onSubmit={handleOnSubmit}
       className={className}
       component="form"
-      sx={{
-        '& .MuiTextField-root': { m: 1, width: '25ch' },
-      }}
+      sx={sx}
       noValidate
       autoComplete="off">
       <div className="material-text-field">
         <TextField
-          onKeyDown={(evt) => { // TODO: make this a separate function
-            if (type === "number") {
-              if (["e", "E"].includes(evt.key)) {
-                evt.preventDefault();
-              }
-              if (!fractionsAllowed) {
-                if (["."].includes(evt.key)) {
-                  evt.preventDefault();
-                }
-              }
-            }
-          }}
-          // onKeyDown={(evt) => {
-          //   if (type === "number") {
-          //     ["e", "E"].includes(evt.key) && evt.preventDefault()
-          //   }
-          //   type === "number"
-          //     ? ["e", "E"].includes(evt.key) && evt.preventDefault() : "null";
-          // }}
+          onKeyDown={handleOnKeyDown}
           label={label}
           defaultValue={defaultValue}
           type={type}
-          onChange={(event) => handleOnChange(event.target.value)}
-          onBlur={(event) => handleOnBlur(event.target.value)}
+          onChange={handleOnChange}
+          onBlur={handleOnBlur}
           multiline={multiline}
           error={errorEnabled}
           required={required}
           placeholder={placeholder}
           disabled={disabled}
-          inputProps={{
-            maxLength: characterLimit
-          }}
+          inputProps={inputProps}
           helperText={showCharCounter ? !errorEnabled ? displayedHelperText !== ""
-            ? [displayedHelperText, ". Limit: ", inputLength, "/", characterLimit] : ["Limit: ", inputLength, "/", characterLimit]
+            ? [displayedHelperText, ". Limit: ", inputLength, "/", characterLimit].join("") : ["Limit: ", inputLength, "/", characterLimit].join('')
             : displayedHelperText
             : displayedHelperText} />
       </div>
     </Box>
   );
 }
+
+MaterialTextField.propTypes = {
+  field: PropTypes.string,
+  className: PropTypes.string,
+  label: PropTypes.string,
+  helperText: PropTypes.string,
+  characterLimit: PropTypes.number,
+  placeholder: PropTypes.string,
+  defaultValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  inputValue: PropTypes.func,
+  multiline: PropTypes.bool,
+  type: PropTypes.string,
+  required: PropTypes.bool,
+  showCharCounter: PropTypes.bool,
+  requiresTextValidation: PropTypes.bool,
+  isValidationCaseSensitive: PropTypes.bool,
+  invalidInputs: PropTypes.array,
+  invalidInputMsg: PropTypes.string,
+  authenticationField: PropTypes.bool,
+  minValue: PropTypes.number,
+  maxValue: PropTypes.number,
+  negativeNumbersAllowed: PropTypes.bool,
+  zerosAllowed: PropTypes.bool,
+  fractionsAllowed: PropTypes.bool,
+  disabled: PropTypes.bool,
+}
+
+MaterialTextField.defaultProps = {
+  field: "",
+  className: "",
+  label: "",
+  helperText: "",
+  characterLimit: 500,
+  placeholder: "",
+  defaultValue: "",
+  inputValue: () => { },
+  multiline: false,
+  type: "text",
+  required: false,
+  showCharCounter: false,
+  requiresTextValidation: false,
+  isTextValidationCaseSensitive: true,
+  invalidInputs: [],
+  invalidInputMsg: "",
+  authenticationField: false,
+  minValue: Number.MIN_SAFE_INTEGER,
+  maxValue: Number.MAX_SAFE_INTEGER,
+  negativeNumbersAllowed: true,
+  zerosAllowed: true,
+  fractionsAllowed: true,
+  disabled: false,
+}
+
+export default MaterialTextField;

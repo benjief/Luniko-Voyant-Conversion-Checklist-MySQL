@@ -24,7 +24,7 @@ export default function MaterialCheckBox({
             setChecked(false);
             userChecked(false);
         }
-    });
+    }, [forceOff, userChecked]);
 
     return (
         <FormGroup>

@@ -1,12 +1,44 @@
+.alert-container {
+    /* display: flex; */
+    /* flex-direction: row; */
+    /* align-content: center; */
+    /* justify-content: center; */
+    /* margin-top: 20px; */
+    height: calc(100vh - 76.52px);
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* .alert-container::-webkit-scrollbar {
+    display: none;
+} */
+
+.alert-container .MuiSnackbar-root {
+    /* padding: 10px !important; */
+    /* width: 98% !important; */
+    /* position: relative; */
+    top: 60px !important;
+}
+
 .alert-container .MuiPaper-root {
-    flex-direction: row !important;
+    display: grid;
+    justify-items: start;
+    grid-template-columns: 90% 10%;
+    /* flex-direction: row !important; */
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
     font-weight: 500;
     letter-spacing: 0.05ch;
-    top: 60px !important;
-    position: relative;
+    /* position: relative; */
+    /* top: 60px !important; */
     width: 100% !important;
     /* background-color: #009952; */
+}
+
+.alert-container .MuiSnackbarContent-action {
+    padding-left: 0;
+    /* margin-left: 0; */
+    /* margin-right: 0; */
 }
 
 .success-alert .MuiPaper-root {
@@ -14,22 +46,15 @@
 }
 
 .error-alert .MuiPaper-root {
-    background-color: #d32f2f;
+    background-color: #D32F2F;
 }
 
 .alert-container button {
     box-shadow: none !important;
 }
 
-@media only screen and (min-width: 600px) {
+@media screen and (min-width: 600px) {
     .alert-container .MuiSnackbar-root {
-        min-width: 98% !important;
-        /* position: relative; */
-        top: 8px !important;
-        /* flex-direction: row !important; */
-        /* font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-        font-weight: 500;
-        letter-spacing: 0.05ch;
-        background-color: #009952; */
+        width: 98% !important;
     }
 }

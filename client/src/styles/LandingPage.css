@@ -19,8 +19,8 @@
     align-items: center;
     height: 100%;
     width: 95%;
-    max-width: 600px;
-    padding-bottom: 20px;
+    max-width: 900px;
+    /* padding-bottom: 20px; */
 }
 
 .landing-page-options-card {
@@ -41,7 +41,7 @@
     border-radius: 5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 600;
-    font-size: 13pt;
+    font-size: 14pt;
     height: 50px;
     width: 100%;
     transition: 0.1s;

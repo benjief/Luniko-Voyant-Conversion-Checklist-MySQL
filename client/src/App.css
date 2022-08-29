@@ -19,16 +19,22 @@
   font-size: 11pt;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 textarea:focus {
   outline: none;
 }
 
 .transition-element {
   position: absolute;
+  top: 56.5px;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 56.5px);
+  /* height: 100vh; */
   background-image: url("img/background_pattern.png");
-  transition: 1500ms;
+  transition: 800ms;
   z-index: 2;
 }
 
@@ -45,10 +51,14 @@ textarea:focus {
 
 .loading-spinner {
   display: flex;
+  position: absolute;
+  top: 56.5px;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 56.5px);
   justify-content: center;
   align-items: center;
+  background-image: url("img/background_pattern.png");
+  z-index: 2;
 }
 
 input[type="number"] {
@@ -69,14 +79,17 @@ input[type=number]::-webkit-outer-spin-button {
 
 .load-sheet-name-card-content .material-text-field {
   min-height: 76.98px !important;
+  /* TODO: get rid of this */
 }
 
 .load-sheet-name-card-content .MuiBox-root {
   margin-bottom: 0 !important;
+  /* TODO: get rid of this */
 }
 
 .load-sheet-name-card-content button {
   margin-top: 5px !important;
+  /* TODO: get rid of this */
 }
 
 .fading-balls-container {
@@ -85,7 +98,7 @@ input[type=number]::-webkit-outer-spin-button {
   height: 100%;
 }
 
-/* Maybe remove this at some point? */
+/* TODO: maybe remove this at some point? */
 ul::-webkit-scrollbar {
   width: 0px !important;
 }

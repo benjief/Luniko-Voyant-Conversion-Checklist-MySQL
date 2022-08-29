@@ -1,97 +1,44 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+// import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import BootstrapPopover from "../components/BootstrapPopover";
 
-const ExpandMore = styled((props) => {
-    const { expand, ...other } = props;
-    return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
-    }),
-}));
-
-export default function PreConversionChecklistOptionsCard({
-}) {
-    const [expanded, setExpanded] = React.useState(true);
+export default function PreConversionChecklistOptionsCard() {
+    const expanded = true;
 
     return (
         <Card
             sx={{
-                // minWidth: 1,
-                // maxWidth: 1,
-                minHeight: "202px",
+                minHeight: "163.47px",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",
                 transition: "0.5s",
-                backgroundColor: "var(--lunikoDarkGrey)",
+                backgroundColor: "var(--lunikoMidGrey)",
                 marginBottom: "20px"
             }}>
             <div className="card-content">
                 <CardHeader
-                    titleTypographyProps={{ color: "white", fontFamily: "'Raleway', Verdana, Geneva, Tahoma, sans-serif", fontSize: "10.5pt" }}
-                    // subheaderTypographyProps={{ color: "rgba(0, 0, 0, 0.7)", fontFamily: "'Raleway', Verdana, Geneva, Tahoma, sans-serif", fontSize: "10.5pt" }}
-                    // avatar={
-                    //     <Avatar sx={{
-                    //         bgcolor: "var(--lunikoBlue)"
-                    //     }}
-                    //         aria-label="status">
-                    //         {statusAbbreviation}
-                    //     </Avatar>
-                    // }
+                    titleTypographyProps={{ color: "white", fontFamily: "'Raleway', Verdana, Geneva, Tahoma, sans-serif" }}
                     title={<strong>Please choose an option below</strong>}
                 />
-                {/* < CardActions
-                disableSpacing
-                style={{ justifyContent: "center", height: "40px", padding: 0, paddingBottom: "10px" }}>
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                    style={{ marginLeft: 0 }}
-                >
-                    <ExpandMoreIcon />
-                </ExpandMore>
-            </CardActions > */}
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        {/* <Typography
-                        paragraph>
-                        <strong>Updatable Fields</strong>
-                    </Typography> */}
-                        <Link to={"/create-pre-conversion-checklist"}>
+                        <Link to={"/create-or-modify-pre-conversion-checklist/create"}>
                             <button
                                 className="create-pre-conversion-checklist-button">
                                 Create
                             </button>
                         </Link>
-                        <Link to={"/view-pre-conversion-checklist"}>
+                        <Link to={"/create-or-modify-pre-conversion-checklist/modify"}>
                             <button
-                                className="view-pre-conversion-checklist-button">
-                                View/Modify
+                                className="modify-pre-conversion-checklist-button">
+                                Modify
                             </button>
                         </Link>
-                        {/* <div className="popover-container">
-                            <BootstrapPopover
-                                popoverText=
-                                {[<strong>All identifiers </strong>, "added to this request will be ",
-                                    "able to view it and receive updates pertaining to it."]}>
-                            </BootstrapPopover>
-                        </div> */}
                     </CardContent>
                 </Collapse>
             </div>

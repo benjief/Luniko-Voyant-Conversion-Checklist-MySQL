@@ -1,46 +1,43 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
-export default function MaterialSingleSelect(
+function MaterialSingleSelect(
     {
-        field = "",
-        label = "",
-        placeholder = "",
-        defaultValue = "",
-        singleSelectOptions = [],
-        selectedValue = "",
-        isDisabled = false,
-        required = false
+        field,
+        label,
+        placeholder,
+        defaultValue,
+        singleSelectOptions,
+        selectedValue,
+        isDisabled,
+        required,
     }
 
 ) {
-    const [value, setValue] = React.useState(defaultValue);
+    const [value, setValue] = React.useState(defaultValue.value !== null ? defaultValue : null);
     const [errorEnabled, setErrorEnabled] = React.useState(false);
-    const [errorMsg, setErrorMsg] = React.useState("");
+    const [displayedHelperText, setDisplayedHelperText] = React.useState("");
 
-    const handleOnChange = (object) => {
-        if (object) {
-            setValue(object);
-            selectedValue({ field: field, value: object.value });
-            setErrorEnabled(false);
-            setErrorMsg("");
-        } else {
-            setValue("");
-            selectedValue({ field: field, value: "" });
-            if (required) {
+    const handleOnChange = React.useCallback((value) => {
+        if (required) {
+            if (value) {
+                setErrorEnabled(false);
+                setDisplayedHelperText("");
+            } else {
                 setErrorEnabled(true);
-                setErrorMsg("Required Field");
+                setDisplayedHelperText("Required Field");
             }
         }
-    }
+    }, [required])
 
-    const handleOnBlur = () => {
+    const handleOnBlur = React.useCallback(() => {
         if (required && (value === "")) {
             setErrorEnabled(true);
-            setErrorMsg("Required Field");
+            setDisplayedHelperText("Required Field");
         }
-    }
+    }, [required, value])
 
     return (
         <Autocomplete
@@ -51,11 +48,13 @@ export default function MaterialSingleSelect(
             value={value}
             disablePortal
             disabled={isDisabled}
-            // id="combo-box-demo"
-            options={singleSelectOptions}
-            // defaultValue={defaultValue}
+            options={singleSelectOptions.sort((a, b) => (a.label > b.label) ? 1 : -1)}
             sx={{ width: "100%", marginBottom: "10px" }}
-            onChange={(event, object) => handleOnChange(object)}
+            onChange={(event, value) => {
+                setValue(value);
+                selectedValue({ field: field, value: value ? value : { label: "", value: null } });
+                handleOnChange(value);
+            }}
             onBlur={handleOnBlur}
             renderInput={(params) =>
                 <TextField
@@ -64,8 +63,31 @@ export default function MaterialSingleSelect(
                     placeholder={placeholder}
                     required={required}
                     error={errorEnabled}
-                    helperText={errorMsg} />
-            }
-        />
+                    helperText={displayedHelperText} />
+            } />
     );
 }
+
+MaterialSingleSelect.propTypes = {
+    field: PropTypes.string,
+    label: PropTypes.string,
+    placeholder: PropTypes.string,
+    defaultValue: PropTypes.object,
+    singleSelectOptions: PropTypes.array,
+    selectedValue: PropTypes.func,
+    isDisabled: PropTypes.bool,
+    required: PropTypes.bool,
+}
+
+MaterialSingleSelect.defaultProps = {
+    field: "",
+    label: "",
+    placeholder: "",
+    defaultValue: null,
+    singleSelectOptions: [],
+    selectedValue: () => { },
+    isDisabled: false,
+    required: false,
+}
+
+export default MaterialSingleSelect;

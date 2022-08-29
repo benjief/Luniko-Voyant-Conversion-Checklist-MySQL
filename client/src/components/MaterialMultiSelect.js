@@ -1,60 +1,36 @@
 import * as React from 'react';
-import Chip from '@mui/material/Chip';
+import PropTypes from 'prop-types';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
 
-export default function MaterialMultiSelect(
+function MaterialMultiSelect(
   {
-    field = "",
-    label = "",
-    placeholder = "",
-    defaultValue = [],
-    multiSelectOptions = [],
-    selectedValues = [],
-    limitTags = 1,
-    required = false,
-    invalidOptions = []
+    field,
+    label,
+    placeholder,
+    defaultValue,
+    multiSelectOptions,
+    selectedValues,
+    limitTags,
+    required,
+    invalidOptions,
   }
 ) {
 
   const [values, setValues] = React.useState(defaultValue);
   const [errorEnabled, setErrorEnabled] = React.useState(false);
-  const [errorMsg, setErrorMsg] = React.useState("");
+  const [displayedHelperText, setDisplayedHelperText] = React.useState("");
 
-  const handleOnChange = (object) => {
-    if (object.length) {
-      setValues(object);
-      selectedValues({ field: field, value: object });
-      setErrorEnabled(false);
-      setErrorMsg("");
-    } else {
-      setValues([]);
-      selectedValues({ field: field, value: [] });
-      if (required) {
-        setErrorEnabled(true);
-        setErrorMsg("Required Field");
-      }
-    }
-  }
-
-  const handleOnBlur = () => {
-    if (required && !values.length) {
-      setErrorEnabled(true);
-      setErrorMsg("Required Field");
-    }
-  }
-
-  const checkForLabelInValues = (label) => {
+  const checkForLabelInValues = React.useCallback((label) => {
     for (let i = 0; i < values.length; i++) {
       if (values[i].label === label) {
         return true;
       }
     }
     return false;
-  }
+  }, [values])
 
-  const setDisabledOptions = (option) => {
+  const setDisabledOptions = React.useCallback((option) => {
     if (!values.length) {
       return false;
     } else {
@@ -64,7 +40,29 @@ export default function MaterialMultiSelect(
         return checkForLabelInValues("N/A");
       }
     }
-  }
+  }, [checkForLabelInValues, values.length])
+
+  const handleOnChange = React.useCallback((value) => {
+    if (required) {
+      if (value) {
+        setErrorEnabled(false);
+        setDisplayedHelperText("");
+      } else {
+        setErrorEnabled(true);
+        setDisplayedHelperText("Required Field");
+      }
+    }
+    if (!value) {
+      selectedValues({ field: field, value: [] });
+    }
+  }, [field, required, selectedValues])
+
+  const handleOnBlur = React.useCallback(() => {
+    if (required && !values.length) {
+      setErrorEnabled(true);
+      setDisplayedHelperText("Required Field");
+    }
+  }, [required, values.length])
 
   return (
     <Autocomplete
@@ -76,27 +74,52 @@ export default function MaterialMultiSelect(
       value={values}
       disablePortal
       limitTags={limitTags}
-      // id="tags-outlined"
-      options={multiSelectOptions}
+      options={multiSelectOptions.sort((a, b) => (a.label > b.label) ? 1 : -1)}
       getOptionDisabled={(option) => {
         return setDisabledOptions(option);
       }}
       getOptionLabel={(option) => option.label}
-      // defaultValue={[top100Films[13]]}
       filterSelectedOptions
-      onChange={(event, object) => handleOnChange(object)}
+      onChange={(event, valuesArray) => {
+        setValues(valuesArray);
+        selectedValues({ field: field, value: valuesArray });
+        handleOnChange(valuesArray);
+      }}
       onBlur={handleOnBlur}
       renderInput={(params) => (
         <TextField
-          // color='warning'
           {...params}
           label={label}
           placeholder={placeholder}
           required={required}
           error={errorEnabled}
-          helperText={errorMsg}
-        />
-      )}
-    />
+          helperText={displayedHelperText} />
+      )} />
   );
 }
+
+MaterialMultiSelect.propTypes = {
+  field: PropTypes.string,
+  label: PropTypes.string,
+  placeholder: PropTypes.string,
+  defaultValue: PropTypes.array,
+  multiSelectOptions: PropTypes.array,
+  selectedValues: PropTypes.func,
+  limitTags: PropTypes.number,
+  required: PropTypes.bool,
+  invalidOptions: PropTypes.array,
+}
+
+MaterialMultiSelect.defaultProps = {
+  field: "",
+  label: "",
+  placeholder: "",
+  defaultValue: [],
+  multiSelectOptions: [],
+  selectedValues: () => { },
+  limitTags: 1,
+  required: false,
+  invalidOptions: [],
+}
+
+export default MaterialMultiSelect;

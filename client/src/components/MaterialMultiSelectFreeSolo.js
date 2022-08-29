@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -7,22 +8,23 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+// import { v4 as uuidv4 } from "uuid";
 import "../styles/DialogComponents.css";
 
 const filter = createFilterOptions();
 
-export default function MaterialMultiSelectFreeSolo(
+function MaterialMultiSelectFreeSolo(
     {
-        field = "",
-        className = "",
-        label = "",
-        placeholder = "",
-        defaultValue = [],
-        multiSelectOptions = [],
-        invalidOptions = [],
-        selectedValues = [],
-        limitTags = 1,
-        required = false,
+        field,
+        className,
+        label,
+        placeholder,
+        defaultValue,
+        multiSelectOptions,
+        invalidOptions,
+        selectedValues,
+        limitTags,
+        required,
     }) {
     const [values, setValues] = React.useState(defaultValue);
     const [open, toggleOpen] = React.useState(false);
@@ -36,8 +38,8 @@ export default function MaterialMultiSelectFreeSolo(
 
     const handleClose = () => {
         setDialogValue({
-            firstName: '',
-            lastName: '',
+            firstName: "",
+            lastName: "",
         });
 
         toggleOpen(false);
@@ -49,39 +51,89 @@ export default function MaterialMultiSelectFreeSolo(
     };
 
     const [dialogValue, setDialogValue] = React.useState({
-        firstName: '',
-        lastName: '',
+        firstName: "",
+        lastName: "",
     });
 
-    const handleSubmit = (event) => {
+    const checkInputValueAgainstOptions = React.useCallback((inputValue) => {
+        if (inputValue.trim().length && multiSelectOptions.length) {
+            let matchingOptions = multiSelectOptions.filter((val) => {
+                return val.label.toLowerCase() === inputValue.toLowerCase();
+            });
+            return matchingOptions.length ? false : true;
+        }
+    }, [multiSelectOptions])
+
+    const checkInputValueAgainstSelectedValues = React.useCallback((inputValue) => {
+        let matchingSelectedValues = [];
+        if (inputValue.trim() !== "" && multiSelectOptions.length) {
+            matchingSelectedValues = values.filter((val) => {
+                return val.label.toLowerCase() === inputValue.toLowerCase();
+            });
+        }
+        return matchingSelectedValues.length ? false : true;
+    }, [multiSelectOptions.length, values])
+
+
+    const checkInputValueAgainstInvalidOptions = React.useCallback((inputValue) => {
+        let matchingInvalidOptions = [];
+        if (inputValue.trim() !== "" && invalidOptions.length) {
+            matchingInvalidOptions = invalidOptions.filter((val) => {
+                return val.label.toLowerCase() === inputValue.toLowerCase();
+            });
+        }
+        return matchingInvalidOptions.length ? false : true;
+    }, [invalidOptions])
+
+    const checkExistingOptionsAgainstInvalidOptions = React.useCallback((existingOption) => {
+        let matchingInvalidOptions = [];
+        if (existingOption.value && invalidOptions.length) {
+            matchingInvalidOptions = invalidOptions.filter((val) => {
+                return val.value === existingOption.value;
+            })
+        }
+        return matchingInvalidOptions.length ? true : false;
+    }, [invalidOptions])
+
+    const getOptionWithLabel = React.useCallback((optionName) => {
+        let matchingOptions = [];
+        if (optionName && multiSelectOptions.length) {
+            matchingOptions = multiSelectOptions.filter((val) => {
+                return val.label === optionName;
+            });
+        }
+        return matchingOptions.length ? matchingOptions[0] : "";
+    }, [multiSelectOptions])
+
+    const handleSubmit = React.useCallback((event) => {
         event.preventDefault();
+        let fullName = [dialogValue.firstName, dialogValue.lastName].join(" ");
 
         // prevents duplicate values from being added
         if (checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName)
             && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)
             && checkInputValueAgainstInvalidOptions(dialogValue.firstName + " " + dialogValue.lastName)) {
-            let tempArray = values;
-            tempArray.push({
-                label: dialogValue.firstName + " " + dialogValue.lastName,
-                value: -1,
+            setValues(prev => {
+                let copyOfValues = [...prev];
+                copyOfValues.push({ label: fullName, value: -1 });
+                selectedValues({ field: field, value: copyOfValues });
+                return copyOfValues;
             });
-            setValues(tempArray);
-            selectedValues({ field: field, value: tempArray });
-            // TODO: make these functions consistent (i.e. when they return true/false)
             // This makes sure the entered value isn't illegal or already selected before adding it to the list of selected values
-        } else if (!checkInputValueAgainstOptions(dialogValue.firstName + " " + dialogValue.lastName) && checkInputValueAgainstSelectedValues(dialogValue.firstName + " " + dialogValue.lastName)) {
-            console.log("adding ", dialogValue.firstName + " " + dialogValue.lastName);
-            let tempArray = values;
-            tempArray.push(getOptionWithLabel(dialogValue.firstName + " " + dialogValue.lastName));
-            setValues(tempArray);
-            selectedValues({ field: field, value: tempArray });
+        } else if (!checkInputValueAgainstOptions(fullName)) {
+            setValues(prev => {
+                let copyOfValues = [...prev];
+                copyOfValues.push(getOptionWithLabel(fullName));
+                selectedValues({ field: field, value: copyOfValues });
+                return copyOfValues;
+            });
         }
         handleClose();
-    };
+    }, [checkInputValueAgainstInvalidOptions, checkInputValueAgainstOptions, checkInputValueAgainstSelectedValues, dialogValue.firstName, dialogValue.lastName, field, getOptionWithLabel, selectedValues]);
 
-    const handleOnChange = (object) => {
+    const handleOnChange = React.useCallback((value) => {
         if (required) {
-            if (object) {
+            if (value) {
                 setErrorEnabled(false);
                 setDisplayedHelperText("");
             } else {
@@ -89,193 +141,100 @@ export default function MaterialMultiSelectFreeSolo(
                 setDisplayedHelperText("Required Field");
             }
         }
-        if (!object) {
+        if (!value) {
             selectedValues({ field: field, value: [] });
         }
-    }
+    }, [field, required, selectedValues])
 
-    const handleOnBlur = () => {
+    const handleOnBlur = React.useCallback(() => {
         if (required && (!values || values === []) && !open) {
             setErrorEnabled(true);
             setDisplayedHelperText("Required Field");
         }
-    }
+    }, [open, required, values])
 
-    // const checkValuesArrayAgainstOptions = (valuesArray) => {
-    //     if (valuesArray.length) {
-    //         let selection = valuesArray[valuesArray.length - 1];
-    //         for (let i = 0; i < multiSelectOptions.length; i++) {
-    //             if (/* selection.label.toLowerCase() === multiSelectOptions[i].label.toLowerCase()
-    //                 || */ selection.inputValue && selection.inputValue.toLowerCase() === multiSelectOptions[i].label.toLowerCase()) {
-    //                 return false;
-    //             }
-    //         }
-    //         return true;
-    //     }
-    // }
+    const handleOnChangeNameDialog = (property, value) => {
+        let complementProperty = property === "firstName" ? "lastName" : "firstName";
 
-    const checkInputValueAgainstOptions = (inputValue) => {
-        if (inputValue.trim() !== "" && multiSelectOptions.length) {
-            for (let i = 0; i < multiSelectOptions.length; i++) {
-                if (inputValue.toLowerCase() === multiSelectOptions[i].label.toLowerCase()) {
-                    return false;
-                }
+        setDialogValue(
+            prev => ({ ...prev, [property]: value })
+        );
+
+        if (!value.trim().length) {
+            property === "firstName"
+                ? setNameDialogError(property, true)
+                : setNameDialogError(property, true);
+            setAddButtonDisabled(true);
+        } else {
+            property === 'firstName'
+                ? setNameDialogError(property, false)
+                : setNameDialogError(property, false);
+
+            if (dialogValue[complementProperty].trim().length) {
+                setAddButtonDisabled(false);
             }
-            return true;
         }
-        return true;
     }
 
-    const checkInputValueAgainstSelectedValues = (inputValue) => {
-        if (inputValue.trim() !== "" && values.length) {
-            for (let i = 0; i < values.length; i++) {
-                if (inputValue.toLowerCase() === values[i].label.toLowerCase()) {
-                    return false;
-                }
+    const handleOnBlurNameDialog = (property) => {
+        let complementProperty = property === "firstName" ? "lastName" : "firstName";
+
+        if (!dialogValue[property].trim().length) {
+            property === "firstName"
+                ? setNameDialogError(property, true)
+                : setNameDialogError(property, true);
+            setAddButtonDisabled(true);
+        } else {
+            property === "firstName"
+                ? setNameDialogError(property, false)
+                : setNameDialogError(property, false);
+            if (dialogValue[complementProperty].trim().length) {
+                setAddButtonDisabled(false);
             }
-            return true;
         }
-        return true;
     }
 
-    const checkInputValueAgainstInvalidOptions = (inputValue) => {
-        if (inputValue.trim() !== "" && invalidOptions.length) {
+    const setNameDialogError = (property, booleanValue) => {
+        property === "firstName"
+            ? setFirstNameErrorEnabled(booleanValue)
+            : setLastNameErrorEnabled(booleanValue);
+        if (booleanValue) {
+            property === "firstName"
+                ? setFirstNameDisplayedHelperText("Required Field")
+                : setLastNameDisplayedHelperText("Required Field");
+        } else {
+            property === "firstName"
+                ? setFirstNameDisplayedHelperText("")
+                : setLastNameDisplayedHelperText("");
+        }
+    }
+
+    const handleDialogErrors = (firstName, lastName) => {
+        !firstName.trim().length ? setNameDialogError("firstName", true) : setNameDialogError("firstName", false);
+        !lastName.trim().length ? setNameDialogError("lastName", true) : setNameDialogError("lastName", false);
+        !firstName.trim().length || !lastName.trim().length ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
+        toggleOpen(true);
+        setDialogValue({
+            firstName: firstName,
+            lastName: lastName,
+        });
+    }
+
+    React.useEffect(() => {
+        const getObjectsForInvalidOptions = () => { // TODO: make this more efficient (or think of a completely different way of doing it)
             for (let i = 0; i < invalidOptions.length; i++) {
-                if (invalidOptions[i].label.toLowerCase() === inputValue.toLowerCase()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return true;
-    }
-
-    const checkExistingOptionsAgainstInvalidOptions = (existingOption) => {
-        // console.log(invalidOptions);
-        if (existingOption.value && invalidOptions.length) {
-            for (let i = 0; i < invalidOptions.length; i++) {
-                if (invalidOptions[i].value === existingOption.value) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return false;
-    }
-
-    const getObjectsForInvalidOptions = () => { // TODO: make this more efficient (or think of a completely different way of doing it)
-        for (let i = 0; i < invalidOptions.length; i++) {
-            if (!invalidOptions[i].label) {
-                for (let j = 0; j < multiSelectOptions.length; j++) {
-                    if (multiSelectOptions[j].value === invalidOptions[i]) {
-                        invalidOptions[i] = multiSelectOptions[j];
+                if (!invalidOptions[i].label) {
+                    for (let j = 0; j < multiSelectOptions.length; j++) {
+                        if (multiSelectOptions[j].value === invalidOptions[i]) {
+                            invalidOptions[i] = multiSelectOptions[j];
+                        }
                     }
                 }
             }
         }
-    }
 
-    const getOptionWithLabel = (name) => {
-        if (name && multiSelectOptions.length) {
-            for (let i = 0; i < multiSelectOptions.length; i++) {
-                if (multiSelectOptions[i].label === name) {
-                    return multiSelectOptions[i];
-                }
-            }
-            return "";
-        }
-        return "";
-    }
-
-    const concatenateLastName = (lastNameArray) => {
-        let lastName = "";
-        for (let i = 0; i < lastNameArray.length; i++) {
-            i === lastNameArray.length - 1
-                ? lastName += lastNameArray[i]
-                : lastName += lastNameArray[i] + " ";
-        }
-        return lastName;
-    }
-
-    const handleOnChangeFirstNameDialog = (value) => {
-        setDialogValue({
-            ...dialogValue,
-            firstName: value,
-        })
-
-        if (value.trim() === "") {
-            setFirstNameDialogError(true);
-            setAddButtonDisabled(true);
-        } else {
-            setFirstNameDialogError(false);
-            if (dialogValue.lastName.trim() !== "") {
-                setAddButtonDisabled(false);
-            }
-        }
-    }
-
-    const handleOnBlurFirstNameDialog = () => {
-        if (dialogValue.firstName.trim() === "") {
-            setFirstNameDialogError(true);
-            setAddButtonDisabled(true);
-        } else {
-            setFirstNameDialogError(false);
-            if (dialogValue.lastName.trim() !== "") {
-                setAddButtonDisabled(false);
-            }
-        }
-    }
-
-    const handleOnChangeLastNameDialog = (value) => {
-        setDialogValue({
-            ...dialogValue,
-            lastName: value,
-        })
-
-        if (value.trim() === "") {
-            setLastNameDialogError(true);
-            setAddButtonDisabled(true);
-        } else {
-            setLastNameDialogError(false);
-            if (dialogValue.firstName.trim() !== "") {
-                setAddButtonDisabled(false);
-            }
-        }
-    }
-
-    const handleOnBlurLastNameDialog = () => {
-        if (dialogValue.lastName.trim() === "") {
-            setLastNameDialogError(true);
-            setAddButtonDisabled(true);
-        } else {
-            setLastNameDialogError(false);
-            if (dialogValue.firstName.trim() !== "") {
-                setAddButtonDisabled(false);
-            }
-        }
-    }
-
-    const setFirstNameDialogError = (booleanValue) => {
-        setFirstNameErrorEnabled(booleanValue);
-        if (booleanValue) {
-            setFirstNameDisplayedHelperText("Required Field");
-        } else {
-            setFirstNameDisplayedHelperText("");
-        }
-    }
-
-    const setLastNameDialogError = (booleanValue) => {
-        setLastNameErrorEnabled(booleanValue);
-        if (booleanValue) {
-            setLastNameDisplayedHelperText("Required Field");
-        } else {
-            setLastNameDisplayedHelperText("");
-        }
-    }
-
-    React.useEffect(() => {
         getObjectsForInvalidOptions();
-    });
+    }, [invalidOptions, multiSelectOptions]);
 
     return (
         <React.Fragment>
@@ -290,38 +249,19 @@ export default function MaterialMultiSelectFreeSolo(
                 limitTags={limitTags}
                 onBlur={handleOnBlur}
                 onChange={(event, valuesArray) => {
-                    // let isNewValue = checkValuesArrayAgainstOptions(valuesArray);
-                    // if (isNewValue) {
                     let newValue = valuesArray[valuesArray.length - 1];
-                    if (typeof newValue === 'string') {
+                    if (typeof newValue === "string") {
                         // timeout to avoid instant validation of the dialog's form.
                         setTimeout(() => {
                             let firstName = newValue.split(" ")[0];
-                            let lastName = concatenateLastName(newValue.split(" ").slice(1));
-                            firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
-                            lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
-                            firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
-                            toggleOpen(true);
-                            setDialogValue({
-                                firstName: firstName,
-                                lastName: lastName,
-                            });
+                            let lastName = (newValue.split(" ").slice(1)).join(" ");
+                            handleDialogErrors(firstName, lastName);
                         });
                     } else if (newValue && newValue.inputValue) {
-                        console.log(newValue.inputValue);
                         // console.log(newValue.inputValue);
-                        // console.log(newValue.inputValue.split(" ")[0]);
-                        // console.log(newValue.inputValue.split(" ").slice(1));
                         let firstName = newValue.inputValue.split(" ")[0];
-                        let lastName = concatenateLastName(newValue.inputValue.split(" ").slice(1));
-                        firstName.trim() === "" ? setFirstNameDialogError(true) : setFirstNameDialogError(false);
-                        lastName.trim() === "" ? setLastNameDialogError(true) : setLastNameDialogError(false);
-                        firstName.trim() === "" || lastName.trim() === "" ? setAddButtonDisabled(true) : setAddButtonDisabled(false);
-                        toggleOpen(true);
-                        setDialogValue({
-                            firstName: firstName,
-                            lastName: lastName,
-                        });
+                        let lastName = (newValue.inputValue.split(" ").slice(1)).join(" ");
+                        handleDialogErrors(firstName, lastName);
                     } else {
                         setValues(valuesArray);
                         selectedValues({ field: field, value: valuesArray });
@@ -331,7 +271,7 @@ export default function MaterialMultiSelectFreeSolo(
                 filterOptions={(options, params) => {
                     const filtered = filter(options, params);
 
-                    if (params.inputValue.trim() !== ""
+                    if (params.inputValue.trim().length
                         && checkInputValueAgainstOptions(params.inputValue)
                         && checkInputValueAgainstSelectedValues(params.inputValue)
                         && checkInputValueAgainstInvalidOptions(params.inputValue)) {
@@ -342,21 +282,11 @@ export default function MaterialMultiSelectFreeSolo(
                     }
                     return filtered;
                 }}
-                id="free-solo-dialog-demo"
-                options={multiSelectOptions}
+                options={multiSelectOptions.sort((a, b) => (a.label > b.label) ? 1 : -1)}
                 getOptionDisabled={(option) => {
                     return checkExistingOptionsAgainstInvalidOptions(option);
                 }}
-                getOptionLabel={(option) => {
-                    // e.g value selected with enter, right from the input
-                    if (typeof option === 'string') {
-                        return option;
-                    }
-                    if (option.inputValue) {
-                        return option.inputValue;
-                    }
-                    return option.label;
-                }}
+                getOptionLabel={(option) => option.label || ""}
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
@@ -390,9 +320,9 @@ export default function MaterialMultiSelectFreeSolo(
                             value={dialogValue.firstName}
                             error={firstNameErrorEnabled}
                             required={true}
-                            onBlur={handleOnBlurFirstNameDialog}
+                            onBlur={() => handleOnBlurNameDialog("firstName")}
                             onChange={(event) =>
-                                handleOnChangeFirstNameDialog(event.target.value)}
+                                handleOnChangeNameDialog("firstName", event.target.value)}
                             inputProps={{
                                 maxLength: 45
                             }}
@@ -407,9 +337,9 @@ export default function MaterialMultiSelectFreeSolo(
                             value={dialogValue.lastName}
                             error={lastNameErrorEnabled}
                             required={true}
-                            onBlur={handleOnBlurLastNameDialog}
+                            onBlur={() => handleOnBlurNameDialog("lastName")}
                             onChange={(event) =>
-                                handleOnChangeLastNameDialog(event.target.value)}
+                                handleOnChangeNameDialog("lastName", event.target.value)}
                             inputProps={{
                                 maxLength: 45
                             }}
@@ -428,3 +358,31 @@ export default function MaterialMultiSelectFreeSolo(
         </React.Fragment >
     );
 }
+
+MaterialMultiSelectFreeSolo.propTypes = {
+    field: PropTypes.string,
+    className: PropTypes.string,
+    label: PropTypes.string,
+    placeholder: PropTypes.string,
+    defaultValue: PropTypes.array,
+    multiSelectOptions: PropTypes.array,
+    invalidOptions: PropTypes.array,
+    selectedValues: PropTypes.func,
+    limitTags: PropTypes.number,
+    required: PropTypes.bool,
+}
+
+MaterialMultiSelectFreeSolo.defaultProps = {
+    field: "",
+    className: "",
+    label: "",
+    placeholder: "",
+    defaultValue: [],
+    multiSelectOptions: [],
+    invalidOptions: [],
+    selectedValues: () => { },
+    limitTags: 1,
+    required: false,
+}
+
+export default MaterialMultiSelectFreeSolo;

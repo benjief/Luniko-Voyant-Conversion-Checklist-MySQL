@@ -31,7 +31,7 @@
     width: 100%;
 }
 
-.create-post-conversion-checklist-button, .view-post-conversion-checklist-button {
+.create-post-conversion-checklist-button, .modify-post-conversion-checklist-button {
     padding: 10px;
     /* margin-top: 5px !important; */
     /* margin-bottom: 10px; */
@@ -48,7 +48,7 @@
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
-.view-post-conversion-checklist-button {
+.modify-post-conversion-checklist-button {
     margin-top: 10px !important;
 }
 

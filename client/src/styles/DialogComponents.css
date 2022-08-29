@@ -93,8 +93,13 @@
 }
 
 .dialog-component .MuiTypography-root {
-    font-size: 11pt !important;
+    /* font-size: 11pt !important; */
     padding-bottom: 0;
+}
+
+.MuiDialogTitle-root {
+    font-weight: 600;
+    font-size: 13pt !important;
 }
 
 .dialog-component .MuiDialogContentText-root {
@@ -102,15 +107,11 @@
 }
 
 .dialog-component .MuiFormControl-root {
-    min-height: 68.98px;
+    min-height: 70.91px;
 }
 
 .dialog-component .MuiFormControl-root:last-of-type:not(:first-of-type) {
     margin-top: 15px !important;
-}
-
-.dialog-component .MuiInput-root {
-    font-size: 11pt;
 }
 
 .dialog-component .MuiButton-root {
