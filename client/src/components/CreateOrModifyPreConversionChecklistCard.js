@@ -52,12 +52,18 @@ function CreateOrModifyPreConversionChecklistCard({
 }) {
     const expanded = true;
     const formUpdated = React.useRef(false);
+    const forceUpdateButtonDisabled = React.useRef(true);
 
     const handleOnChange = (returnedObject) => {
         setFormProps(
             prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
         );
         formUpdated.current = true;
+        setTimeout(() => {
+            if (forceUpdateButtonDisabled.current) {
+                forceUpdateButtonDisabled.current = false;
+            }
+        }, 10);
     }
 
     const handleOnCheckOrDecheck = React.useCallback((checkState) => {
@@ -71,8 +77,6 @@ function CreateOrModifyPreConversionChecklistCard({
         <div>
             <Card
                 sx={{
-                    // minWidth: 1,
-                    // maxWidth: 1,
                     maxHeight: "calc(100vh - 328.52px)",
                     overflowY: "scroll",
                     borderRadius: "10px",
@@ -243,7 +247,7 @@ function CreateOrModifyPreConversionChecklistCard({
                 displayFadingBalls={displayFadingBalls}
                 handleOnClick={true}
                 handleOnClickFunction={submitOrUpdateChecklist}
-                isSubmitButtonDisabled={isSubmitOrUpdateButtonDisabled}>
+                isSubmitButtonDisabled={isSubmitOrUpdateButtonDisabled || (isModificationCard && forceUpdateButtonDisabled.current)}>
             </SubmitButton>
             <Link to={`/`}>
                 <button

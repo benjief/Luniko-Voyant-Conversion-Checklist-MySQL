@@ -37,7 +37,7 @@ function CreateOrModifyPreConversionChecklist() {
         recordsPreCleanupNotes: "",
         recordsPostCleanupNotes: "",
         preConversionManipulation: "",
-        isFormReviewed: false,
+        isFormReviewed: pageFunctionality === "modify" ? true : false,
     });
     const conversionChecklistID = useRef("");
     const newPersonnel = useRef([]);
@@ -98,8 +98,9 @@ function CreateOrModifyPreConversionChecklist() {
 
         const fetchLoadSheetNamesAlreadyInDB = async () => {
             try {
+                let dbFunction = pageFunctionality === "create" ? "get-all-ls-names" : "get-valid-pre-conversion-ls-names";
                 async.current = true;
-                await Axios.get("https://voyant-conversion-checklist.herokuapp.com/get-all-ls-names", {
+                await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/${dbFunction}`, {
                     timeout: 5000
                 })
                     .then(res => {
@@ -248,8 +249,8 @@ function CreateOrModifyPreConversionChecklist() {
             if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
                 formProps["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
             } else if (!isChecklistSubmitted.current) {
-                if (formProps["loadSheetName"].trim().length && formProps["loadSheetOwner"]?.value.length
-                    && formProps["decisionMaker"]?.value.length && formProps["conversionType"]?.value.length
+                if (formProps["loadSheetName"]?.trim().length && formProps["loadSheetOwner"].value?.length
+                    && formProps["decisionMaker"].value?.length && formProps["conversionType"].value?.length
                     && formProps["additionalProcessing"].length && formProps["dataSources"]?.trim().length) {
                     setIsReviewChecklistCheckboxDisabled(false);
                 } else {

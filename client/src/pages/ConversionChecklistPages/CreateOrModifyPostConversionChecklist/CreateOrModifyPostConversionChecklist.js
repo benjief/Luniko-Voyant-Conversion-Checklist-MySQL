@@ -26,7 +26,7 @@ function CreateOrModifyPostConversionChecklist() {
         postConversionLoadingErrors: "",
         postConversionValidationResults: "",
         postConversionChanges: "",
-        isFormReviewed: false,
+        isFormReviewed: pageFunctionality === "modify" ? true : false,
         isFormApproved: false,
     });
     const conversionChecklistID = useRef("");
@@ -151,7 +151,7 @@ function CreateOrModifyPostConversionChecklist() {
                     setIsReviewChecklistCheckboxDisabled(true);
                     setIsApproveChecklistCheckboxDisabled(true);
                 }
-                if (formProps["isFormReviewed"] && formProps["isFormApproved"]) {
+                if (formProps["isFormReviewed"]) {
                     setIsSubmitOrUpdateButtonDisabled(false);
                 } else {
                     setIsSubmitOrUpdateButtonDisabled(true);
@@ -204,6 +204,7 @@ function CreateOrModifyPostConversionChecklist() {
                     postConversionLoadingErrors: formProps["postConversionLoadingErrors"]?.length ? formProps["postConversionLoadingErrors"] : null,
                     postConversionValidationResults: formProps["postConversionValidationResults"]?.length ? formProps["postConversionValidationResults"] : null,
                     postConversionChanges: formProps["postConversionChanges"]?.length ? formProps["postConversionChanges"] : null,
+                    approvedByITDirector: formProps["isFormApproved"]
                 })
                     .then(res => {
                         async.current = false;
@@ -238,9 +239,12 @@ function CreateOrModifyPostConversionChecklist() {
                         setFormProps={setFormProps}
                         isModificationCard={pageFunctionality === "create" ? false : true}
                         existingLoadSheetName={formProps["loadSheetName"]}
-                        invalidLoadSheetNames={validLoadSheetNames.current}
+                        existingPostConversionLoadingErrors={formProps["postConversionLoadingErrors"]}
+                        existingPostConversionValidationResults={formProps["postConversionValidationResults"]}
+                        existingPostConversionChanges={formProps["postConversionChanges"]}
                         isReviewCheckboxDisabled={isReviewChecklistCheckboxDisabled || async.current}
                         isApproveCheckboxDisabled={isApproveChecklistCheckboxDisabled || async.current}
+                        isFormApproved={formProps["isFormApproved"]}
                         isSubmitOrUpdateButtonDisabled={isSubmitOrUpdateButtonDisabled}
                         isCancelButtonDisabled={async.current}
                         submitOrUpdateChecklist={handleSubmitOrUpdate}

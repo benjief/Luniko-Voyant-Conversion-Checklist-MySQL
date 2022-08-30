@@ -109,7 +109,8 @@ app.get('/get-valid-post-conversion-ls-names', (req, res) => {
          WHERE 
             cc_post_conversion_loading_errors IS NOT NULL AND
             cc_post_conversion_validation_results IS NOT NULL AND
-            cc_post_conversion_changes IS NOT NULL`,
+            cc_post_conversion_changes IS NOT NULL AND
+            is_approved = 0`,
         (err, result) => {
             if (err) {
                 console.log(err);

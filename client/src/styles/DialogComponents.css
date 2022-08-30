@@ -1,46 +1,19 @@
 .form-approval-container {
-    display: flex;
-    flex-direction: row !important;
-    max-height: 27px;
+    display: grid;
+    grid-template-columns: 5% 95%;
+    align-items: center;
     padding: 0 !important;
     margin-top: 5px;
-    /* margin-left: 9px; */
-    /* margin-bottom: 10px !important; */
     width: 100% !important;
     height: 40px !important;
-    font-size: 1rem;
+    font-size: 12pt;
 }
-
-/* .no-valid-credential-supplied-approval-container,
-.valid-credential-approval-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-} */
-
-/* .no-valid-credential-supplied-approval-container {
-    margin-left: 10px;
-}
-
-.no-valid-credential-supplied-approval-container svg {
-    color: var(--lunikoBlue) !important;
-} */
-
-/* .no-valid-credential-supplied-approval-container svg:hover {
-    cursor: pointer;
-} */
 
 .form-approval-container p {
     display: flex;
     height: 100%;
-    align-items: center !important;
-}
-
-.password-form-dialog-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-right: 9px;
+    align-items: center;
+    margin: 0;
 }
 
 .password-form-dialog-container button {
@@ -50,20 +23,27 @@
 }
 
 .password-form-dialog-container button svg {
-    margin-left: 10px;
+    margin-right: 1.5px;
+}
+
+.password-form-dialog-container button:not(:disabled) svg {
+    color: var(--lunikoBlue);
 }
 
 .password-form-dialog-container button:not(:disabled) svg:hover {
-    color: var(--lunikoBlue);
     cursor: pointer;
 }
 
+.dialog-component .MuiPaper-root {
+    width: 100%;
+}
+
 .dialog-component .MuiInput-root::after {
-    border-bottom: 2px solid var(--lunikoBlue) !important;
+    border-bottom: 2px solid var(--lunikoBlue);
 }
 
 .dialog-component .Mui-error:after {
-    border-bottom: 2px solid #d32f2f !important;
+    border-bottom: 2px solid #d32f2f;
 }
 
 /* prevents dialog box from growing when helper text is posted */
@@ -78,7 +58,6 @@
 }
 
 .dialog-component .MuiTypography-root {
-    /* font-size: 11pt !important; */
     padding-bottom: 0;
 }
 
@@ -102,16 +81,23 @@
 .dialog-component .MuiButton-root {
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
     color: var(--lunikoBlue);
-    font-size: 1.75ch;
+    font-size: 1.85ch;
     font-weight: 700;
+    text-transform: none !important;
 }
 
-/* .MuiDialogContent-root {
-    background-image: url("../img/background_pattern.png");
-} */
-
-/* .checkbox-dialog button {
-    color: var(--lunikoBlue);
+#alert-dialog-description {
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
-    box-shadow: none !important;
-} */
+    font-size: 12pt;
+    padding-bottom: 0 !important
+}
+
+.material-dialog-inactive-button, .material-dialog-active-button {
+    border-radius: 3px !important;
+    color: var(--lunikoBlue) !important;
+    font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif !important;
+    font-size: 1.85ch !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    padding: 2px 10px 2px 10px !important;
+}

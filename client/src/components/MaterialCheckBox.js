@@ -16,17 +16,17 @@ function MaterialCheckBox({
 }) {
     const [checked, setChecked] = React.useState(defaultChecked);
 
-    const handleOnChange = (status) => {
-        setChecked(status);
-        userChecked(status);
+    const handleOnChange = (checked) => {
+        setChecked(checked);
+        userChecked(checked);
     }
 
     React.useEffect(() => {
-        if (forceOff) {
+        if (forceOff && checked) {
             setChecked(false);
             userChecked(false);
         }
-    }, [forceOff, userChecked]);
+    }, [checked, forceOff, userChecked]);
 
     return (
         <FormGroup>
@@ -50,7 +50,7 @@ MaterialCheckBox.propTypes = {
     className: PropTypes.string,
     label: PropTypes.string,
     forceOff: PropTypes.bool,
-    userChecked: PropTypes.bool,
+    userChecked: PropTypes.func,
     defaultChecked: PropTypes.bool,
     disabled: PropTypes.bool,
 }
@@ -59,7 +59,7 @@ MaterialCheckBox.defaultProps = {
     className: "",
     label: "",
     forceOff: false,
-    userChecked: false,
+    userChecked: () => { },
     defaultChecked: false,
     disabled: false,
 }

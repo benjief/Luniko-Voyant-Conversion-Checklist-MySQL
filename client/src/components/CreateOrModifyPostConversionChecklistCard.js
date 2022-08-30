@@ -20,6 +20,7 @@ function CreateOrModifyPreConversionChecklistCard({
     existingPostConversionChanges,
     isReviewCheckboxDisabled,
     isApproveCheckboxDisabled,
+    isFormApproved,
     isSubmitOrUpdateButtonDisabled,
     isCancelButtonDisabled,
     submitOrUpdateChecklist,
@@ -27,17 +28,32 @@ function CreateOrModifyPreConversionChecklistCard({
 }) {
     const expanded = true;
     const formUpdated = React.useRef(false);
+    const forceUpdateButtonDisabled = React.useRef(true);
     const [isCheckboxUnlocked, setIsCheckboxUnlocked] = React.useState(false);
+
+    // React.useEffect(() => {
+    //     console.log(isSubmitOrUpdateButtonDisabled);
+    // }, [isSubmitOrUpdateButtonDisabled])
 
     const handleOnChange = (returnedObject) => {
         setFormProps(
             prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
         );
         formUpdated.current = true;
+        setTimeout(() => {
+            if (forceUpdateButtonDisabled.current) {
+                forceUpdateButtonDisabled.current = false;
+            }
+        }, 10);
     }
 
     const handleOnCheckOrDecheck = React.useCallback((property, checkState) => {
         formUpdated.current = false;
+        if (property === "isFormApproved") {
+            if (forceUpdateButtonDisabled.current) {
+                forceUpdateButtonDisabled.current = false;
+            }
+        }
         setFormProps(
             prev => ({ ...prev, [property]: checkState })
         );
@@ -119,7 +135,7 @@ function CreateOrModifyPreConversionChecklistCard({
             <MaterialCheckBox
                 label="Reviewed by Load Sheet Owner and Decision Maker"
                 forceOff={formUpdated.current}
-                userChecked={(checkState) => handleOnCheckOrDecheck("formReviewed", checkState)}
+                userChecked={(checkState) => handleOnCheckOrDecheck("isFormReviewed", checkState)}
                 defaultChecked={isModificationCard ? true : false}
                 disabled={isReviewCheckboxDisabled}>
             </MaterialCheckBox>
@@ -127,7 +143,7 @@ function CreateOrModifyPreConversionChecklistCard({
                 {isCheckboxUnlocked
                     ? <div className="valid-credential-supplied-approval-container">
                         <MaterialCheckBox
-                            userChecked={(checkState) => handleOnCheckOrDecheck("formApproved", checkState)}>
+                            userChecked={(checkState) => handleOnCheckOrDecheck("isFormApproved", checkState)}>
                         </MaterialCheckBox>
                     </div>
                     : <div className="no-valid-credential-supplied-approval-container">
@@ -135,21 +151,46 @@ function CreateOrModifyPreConversionChecklistCard({
                             content="Please enter your IT Director password."
                             label="password"
                             password="test"
-                            isUnlocked={setIsCheckboxUnlocked}
+                            setIsCheckboxUnlocked={setIsCheckboxUnlocked}
                             isDisabled={isApproveCheckboxDisabled}>
                         </MaterialPasswordDialog>
                     </div>
                 }
                 <p style={{ color: isApproveCheckboxDisabled ? "rgba(0, 0, 0, 0.38)" : "rgba(0, 0, 0, 0.87)" }}>Approved by IT Director</p>
             </div>
-            <SubmitButton
-                className={"submit-or-update-checklist-button"}
-                submitButtonText={isModificationCard ? "Update" : "Submit"}
-                displayFadingBalls={displayFadingBalls}
-                handleOnClick={true}
-                handleOnClickFunction={submitOrUpdateChecklist}
-                isSubmitButtonDisabled={isSubmitOrUpdateButtonDisabled}>
-            </SubmitButton>
+            {isFormApproved || !isModificationCard
+                ? <MaterialDialog
+                    isDialogDisabled={isSubmitOrUpdateButtonDisabled || (isModificationCard && forceUpdateButtonDisabled.current)}
+                    exteriorButton={
+                        <SubmitButton
+                            className={"submit-or-update-checklist-button"}
+                            isSubmitButtonDisabled={isSubmitOrUpdateButtonDisabled || (isModificationCard && forceUpdateButtonDisabled.current)}
+                            submitButtonText={isModificationCard ? "Update" : "Submit"}
+                            displayFadingBalls={displayFadingBalls}>
+                        </SubmitButton>
+                    }
+                    inactiveButtonText="Cancel"
+                    displayActiveButton={true}
+                    activeButtonFunction={submitOrUpdateChecklist}
+                    activeButtonText={isModificationCard ? "Update" : "Submit"}
+                    dialogDescription={isFormApproved
+                        ? <div>
+                            <p><u>Pre</u>-conversion checklists can <b>no longer be updated</b> once a post-conversion checklist is submitted. Additionally, <u>post</u>-conversion checklists approved by an IT director are <b>considered final</b> once submitted.</p>
+                        </div>
+                        : !isModificationCard
+                            ? <div>
+                                <p><u>Pre</u>-conversion checklists <b>can no longer be updated</b> once a post-conversion checklist is submitted.</p>
+                            </div>
+                            : null}>
+                </MaterialDialog>
+                : <SubmitButton
+                    className={"submit-or-update-checklist-button"}
+                    submitButtonText={"Update"}
+                    displayFadingBalls={displayFadingBalls}
+                    handleOnClick={true}
+                    handleOnClickFunction={submitOrUpdateChecklist}
+                    isSubmitButtonDisabled={isSubmitOrUpdateButtonDisabled || forceUpdateButtonDisabled.current}>
+                </SubmitButton>}
             <Link to={`/`}>
                 <button
                     className="cancel-button"
@@ -170,6 +211,7 @@ CreateOrModifyPreConversionChecklistCard.propTypes = {
     existingPostConversionChanges: PropTypes.string,
     isReviewCheckboxDisabled: PropTypes.bool,
     isApproveCheckboxDisabled: PropTypes.bool,
+    isFormApproved: PropTypes.bool,
     isSubmitOrUpdateButtonDisabled: PropTypes.bool,
     isCancelButtonDisabled: PropTypes.bool,
     submitOrUpdateChecklist: PropTypes.func,
@@ -185,6 +227,7 @@ CreateOrModifyPreConversionChecklistCard.defaultProps = {
     existingPostConversionChanges: "",
     isReviewCheckboxDisabled: true,
     isApproveCheckboxDisabled: true,
+    isFormApproved: false,
     isSubmitOrUpdateButtonDisabled: true,
     isCancelButtonDisabled: false,
     submitOrUpdateChecklist: () => { },
