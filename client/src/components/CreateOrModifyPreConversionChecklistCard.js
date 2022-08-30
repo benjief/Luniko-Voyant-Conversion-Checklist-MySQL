@@ -24,8 +24,17 @@ const additionalProcessingOptions = [
     { value: "D", label: "New Data to Be Added" },
     { value: "N", label: "N/A" }
 ];
+
+const requiredFields = [
+    "loadSheetName", "personnelOptions", "loadSheetOwner",
+    "decisionMaker", "contributors", "conversionType",
+    "additionalProcessing", "dataSources", "uniqueRecordsPreCleanup",
+    "uniqueRecordsPostCleanup", "isFormReviewed"
+];
 function CreateOrModifyPreConversionChecklistCard({
-    setFormProps,
+    optionalFormProps,
+    setRequiredFormProps,
+    // checkFields,
     isModificationCard,
     existingLoadSheetName,
     invalidLoadSheetNames,
@@ -50,14 +59,23 @@ function CreateOrModifyPreConversionChecklistCard({
     displayFadingBalls,
 }) {
     const expanded = true;
-    const formUpdated = React.useRef(false);
+    const [formUpdated, setFormUpdated] = React.useState(false);
     const forceUpdateButtonDisabled = React.useRef(true);
 
+    // React.useEffect(() => {
+    //     console.log(isCheckboxDisabled);
+    // }, [isCheckboxDisabled]);
+
     const handleOnChange = (returnedObject) => {
-        setFormProps(
-            prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
-        );
-        formUpdated.current = true;
+        if (requiredFields.includes(returnedObject.field)) {
+            setRequiredFormProps(
+                prev => ({ ...prev, [returnedObject.field]: returnedObject.value }));
+        } else {
+            let copyOfFormProps = optionalFormProps;
+            copyOfFormProps[returnedObject.field] = returnedObject.value;
+            optionalFormProps = copyOfFormProps;
+        }
+        setFormUpdated(true);
         setTimeout(() => {
             if (forceUpdateButtonDisabled.current) {
                 forceUpdateButtonDisabled.current = false;
@@ -65,12 +83,13 @@ function CreateOrModifyPreConversionChecklistCard({
         }, 10);
     }
 
-    const handleOnCheckOrDecheck = React.useCallback((checkState) => {
-        formUpdated.current = false;
-        setFormProps(
+    const handleOnCheckOrDecheck = (checkState) => {
+        // console.log(checkState);
+        setFormUpdated(false);
+        setRequiredFormProps(
             prev => ({ ...prev, isFormReviewed: checkState })
         );
-    }, [setFormProps]);
+    }
 
     return (
         <div>
@@ -235,7 +254,7 @@ function CreateOrModifyPreConversionChecklistCard({
             </Card >
             <MaterialCheckBox
                 label="Reviewed by Load Sheet Owner and Decision Maker"
-                forceOff={formUpdated.current}
+                forceOff={formUpdated}
                 userChecked={handleOnCheckOrDecheck}
                 defaultChecked={isModificationCard ? true : false}
                 disabled={isCheckboxDisabled}>
@@ -260,7 +279,9 @@ function CreateOrModifyPreConversionChecklistCard({
 }
 
 CreateOrModifyPreConversionChecklistCard.propTypes = {
-    setFormProps: PropTypes.func,
+    optionalFormProps: PropTypes.object,
+    setRequiredFormProps: PropTypes.func,
+    // checkFields: PropTypes.func,
     isModificationCard: PropTypes.bool,
     existingLoadSheetName: PropTypes.string,
     invalidLoadSheetNames: PropTypes.array,
@@ -286,7 +307,9 @@ CreateOrModifyPreConversionChecklistCard.propTypes = {
 }
 
 CreateOrModifyPreConversionChecklistCard.defaultProps = {
-    setFormProps: () => { },
+    optionalFormProps: {},
+    setRequiredFormProps: () => { },
+    // checkFields: () => { },
     isModificationCard: false,
     existingLoadSheetName: "",
     invalidLoadSheetNames: [],
