@@ -24,7 +24,6 @@ const additionalProcessingOptions = [
     { value: "D", label: "New Data to Be Added" },
     { value: "N", label: "N/A" }
 ];
-
 function CreateOrModifyPreConversionChecklistCard({
     setFormProps,
     isModificationCard,

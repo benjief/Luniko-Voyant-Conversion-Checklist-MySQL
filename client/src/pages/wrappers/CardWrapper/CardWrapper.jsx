@@ -22,24 +22,24 @@ function CardWrapper({
                     ? "create-or-modify-pre-conversion-checklist"
                     : postConversionChecklist
                         ? "create-or-modify-post-conversion-checklist"
-                        : "view-completed-conversion-checklist"}>
+                        : "view-conversion-checklist"}>
                     <div className="page-message">
                         {preConversionChecklist || postConversionChecklist
                             ? "Please Fill in the Fields Below:"
-                            : "View Your Completed Checklist Below:"}
+                            : "View Your Checklist Below:"}
                     </div>
                     <div className={
                         preConversionChecklist
                             ? "create-or-modify-pre-conversion-checklist-container"
                             : postConversionChecklist
                                 ? "create-or-modify-post-conversion-checklist-container"
-                                : "view-completed-conversion-checklist-container"}>
+                                : "view-conversion-checklist-container"}>
                         <div className={
                             preConversionChecklist
                                 ? "create-or-modify-pre-conversion-checklist-card"
                                 : postConversionChecklist
                                     ? "create-or-modify-post-conversion-checklist-card"
-                                    : "view-completed-conversion-checklist-card"}>
+                                    : "view-conversion-checklist-card"}>
                             {children}
                         </div>
                     </div>

@@ -166,7 +166,7 @@ function CreateOrModifyPostConversionChecklist() {
                 setIsValidLoadSheetNameEntered(true);
                 isDataBeingFetched.current = false;
                 setRendering(true);
-                setIsSubmitOrUpdateButtonDisabled(true);
+                setIsRequestChecklistButtonDisabled(true);
             } else {
                 invalidChecklistNameError("Invalid load sheet name");
             }

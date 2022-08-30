@@ -19,7 +19,7 @@ function CreateOrModifyPreConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const { pageFunctionality } = useParams();
     const [isValidLoadSheetNameEntered, setIsValidLoadSheetNameEntered] = useState(false);
-    const invalidChecklistNameError = useValidationErrorUpdate();
+    const invalidLoadSheetNameError = useValidationErrorUpdate();
     const [isRequestChecklistButtonDisabled, setIsRequestChecklistButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transitionElementVisibility, setTransitionElementVisibility] = useState("visible");
@@ -271,9 +271,9 @@ function CreateOrModifyPreConversionChecklist() {
                 setIsValidLoadSheetNameEntered(true);
                 isDataBeingFetched.current = false;
                 setRendering(true);
-                setIsSubmitOrUpdateButtonDisabled(true);
+                setIsRequestChecklistButtonDisabled(true);
             } else {
-                invalidChecklistNameError("Invalid load sheet name");
+                invalidLoadSheetNameError("Invalid load sheet name");
             }
         }
     }
@@ -299,7 +299,6 @@ function CreateOrModifyPreConversionChecklist() {
     const runWriteAsyncFunctions = async () => {
         getNewPersonnel();
         try { // TODO: is try/catch block necessary, or can we use individual functions being called?
-            console.log(newPersonnel.current);
             for (let i = 0; i < newPersonnel.current.length; i++) {
                 await addNewPersonnelToDB(newPersonnel.current[i]);
             }

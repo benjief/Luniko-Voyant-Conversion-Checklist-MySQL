@@ -1,5 +1,5 @@
 .enter-valid-load-sheet-name,
-.create-or-modify-pre-conversion-checklist {
+.view-conversion-checklist {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -11,7 +11,7 @@
 }
 
 .enter-valid-load-sheet-name-container,
-.create-or-modify-pre-conversion-checklist-container {
+.view-conversion-checklist-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,19 +22,20 @@
 }
 
 .enter-valid-load-sheet-name-card,
-.create-or-modify-pre-conversion-checklist-card {
+.view-conversion-checklist-card {
     width: 100%;
 }
 
+.view-conversion-checklist-card p {
+    font-size: 12pt !important;
+}
+
 .submit-load-sheet-name-button,
-.submit-or-update-checklist-button,
-.cancel-button {
+.back-button {
     padding: 10px;
-    /* margin-top: 20px; */
     /* margin-bottom: 10px; */
     border: none;
     color: white;
-    /* background-color: var(--lunikoBlue); */
     border-radius: 5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 600;
@@ -45,25 +46,26 @@
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
-.submit-or-update-checklist-button {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
 .submit-load-sheet-name-button:not(:disabled),
-.submit-or-update-checklist-button:not(:disabled),
-.cancel-button:not(:disabled) {
+.back-button {
     background-color: var(--lunikoBlue);
 }
 
 .submit-load-sheet-name-button:not(:disabled):hover,
-.submit-or-update-checklist-button:not(:disabled):hover,
-.cancel-button:not(:disabled):hover {
+.back-button:hover {
     background-color: var(--lunikoOrange);
 }
 
-.submit-load-sheet-name-button:disabled,
-.submit-or-update-checklist-button:disabled,
-.cancel-button:disabled {
+.submit-load-sheet-name-button:disabled {
     background-color: #BFBFBF;
+}
+
+.view-data-sources,
+.view-pre-cleanup-notes,
+.view-post-cleanup-notes,
+.view-pre-conversion-manipulation,
+.view-post-conversion-loading-errors,
+.view-post-conversion-validation-results,
+.view-post-conversion-changes {
+    white-space: pre-wrap;
 }

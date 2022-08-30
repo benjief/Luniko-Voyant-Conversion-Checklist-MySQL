@@ -31,7 +31,7 @@
 .cancel-button {
     padding: 10px;
     /* margin-top: 20px; */
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     border: none;
     color: white;
     /* background-color: var(--lunikoBlue); */
@@ -41,20 +41,16 @@
     font-size: 14pt;
     height: 50px;
     width: 100%;
-    transition: 0.1s;
+    transition: 0.2s;
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
 .submit-or-update-checklist-button {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
-.back-button {
-    margin-top: 0 !important;
-}
-
-.cancel-button {
-    margin-bottom: 0 !important;
+.submit-or-update-checklist-button {
+    margin-bottom: 10px;
 }
 
 .submit-load-sheet-name-button:not(:disabled),

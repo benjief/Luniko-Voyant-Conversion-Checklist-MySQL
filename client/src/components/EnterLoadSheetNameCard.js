@@ -13,6 +13,7 @@ function EnterLoadSheetNameCard({
     requestChecklist,
     isSubmitButtonDisabled,
     displayFadingBalls,
+    isUserViewingConversionChecklist,
 }) {
     const expanded = true;
     const invalidTestScriptNameError = useValidationErrorUpdate();
@@ -40,7 +41,9 @@ function EnterLoadSheetNameCard({
                 <div className="load-sheet-name-card-content">
                     <CardHeader
                         titleTypographyProps={{ color: "white", fontFamily: "'Raleway', Verdana, Geneva, Tahoma, sans-serif", textAlign: "center" }}
-                        title={<strong>Please enter a valid {titleString}conversion load sheet name</strong>} />
+                        title={isUserViewingConversionChecklist
+                            ? <strong>Please enter a valid checklist name</strong>
+                            : <strong>Please enter a valid {titleString}conversion load sheet name</strong>} />
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <CardContent>
                             <MaterialTextField
@@ -73,6 +76,7 @@ EnterLoadSheetNameCard.propTypes = {
     requestChecklist: PropTypes.func,
     isSubmitButtonDisabled: PropTypes.bool,
     displayFadingBalls: PropTypes.bool,
+    isUserViewingConversionChecklist: PropTypes.bool,
 }
 
 EnterLoadSheetNameCard.defaultProps = {
@@ -81,6 +85,7 @@ EnterLoadSheetNameCard.defaultProps = {
     requestChecklist: () => { },
     isSubmitButtonDisabled: true,
     displayFadingBalls: false,
+    isUserViewingConversionChecklist: false,
 }
 
 export default EnterLoadSheetNameCard;

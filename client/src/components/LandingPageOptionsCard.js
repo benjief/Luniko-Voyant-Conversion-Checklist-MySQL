@@ -41,10 +41,10 @@ export default function LandingPageOptionsCard() {
                                 Post-Conversion Checklist
                             </button>
                         </Link>
-                        <Link to={"/view-completed-conversion-checklist"}>
+                        <Link to={"/view-conversion-checklist"}>
                             <button
-                                className="completed-conversion-checklist-button">
-                                View Completed Checklist
+                                className="view-conversion-checklist-button">
+                                View Checklist
                             </button>
                         </Link>
                     </CardContent>
