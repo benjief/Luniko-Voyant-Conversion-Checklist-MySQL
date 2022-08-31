@@ -27,7 +27,7 @@ function EnterLoadSheetNameCard({
     const invalidTestScriptNameError = useValidationErrorUpdate();
 
     /**
-     * Handles changes to a card field (form prop). The corresponding field (form prop) in the page housing this card is updated with the value entered. Note that because we're dealing with load sheet names here, we need to eliminate any white space from the user-entered string and make it lower case. This allows the string to be properly compared to load sheet names that already exist in the database on the page containing this card.
+     * Handles changes to a card field (form prop). The corresponding field (form prop) in the page housing this card is updated with the value entered. Note that because we're dealing with load sheet names here, we need to eliminate any white space from the user-entered string and make it lower case. This allows the string to be properly compared to load sheet names that already exist in the database on the page containing this card (i.e. all the strings being compared to are lower case and don't contain any outside white space).
      * @param {object} returnedObject - the object containing the field to be updated and the value to which that field should be updated.
      */
     const handleOnChange = (returnedObject) => {

@@ -272,10 +272,10 @@ function CreateOrModifyPreConversionChecklistCard({
             </Card >
             <MaterialCheckBox
                 label="Reviewed by Load Sheet Owner and Decision Maker"
-                forceOff={formUpdated}
+                isForcedOff={formUpdated}
                 userChecked={handleOnCheckOrDecheck}
                 defaultChecked={isModificationCard ? true : false}
-                disabled={isCheckboxDisabled}>
+                isDisabled={isCheckboxDisabled}>
             </MaterialCheckBox>
             <SubmitButton
                 className={"submit-or-update-checklist-button"}

@@ -148,10 +148,10 @@ function CreateOrModifyPostConversionChecklistCard({
             </Card >
             <MaterialCheckBox
                 label="Reviewed by Load Sheet Owner and Decision Maker"
-                forceOff={formUpdated.current}
+                isForcedOff={formUpdated.current}
                 userChecked={(checkState) => handleOnCheckOrDecheck("isFormReviewed", checkState)}
                 defaultChecked={isModificationCard ? true : false}
-                disabled={isReviewCheckboxDisabled}>
+                isDisabled={isReviewCheckboxDisabled}>
             </MaterialCheckBox>
             <div className="form-approval-container">
                 {isCheckboxUnlocked

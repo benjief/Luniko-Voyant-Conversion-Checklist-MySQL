@@ -6,13 +6,17 @@ import Checkbox from '@mui/material/Checkbox';
 import CircleOutlined from '@mui/icons-material/CircleOutlined';
 import CheckCircle from '@mui/icons-material/CheckCircle';
 
+/**
+ * A checkbox customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-checkbox/.
+ * @returns said checkbox.
+ */
 function MaterialCheckBox({
     className,
-    label,
-    forceOff,
-    userChecked,
-    defaultChecked,
-    disabled,
+    label, // text that is displayed beside the checkbox
+    isForcedOff, // whether or not the checkbox should be forced off
+    userChecked, // callback function that handles the state of the checkbox (i.e. checked/unchecked, or true/false)
+    defaultChecked, // whether or not the checkbox should be checked upon loading
+    isDisabled, // whether or not the checkbox is disabled
 }) {
     const [checked, setChecked] = React.useState(defaultChecked);
 
@@ -22,18 +26,18 @@ function MaterialCheckBox({
     }
 
     React.useEffect(() => {
-        if (forceOff && checked) {
+        if (isForcedOff && checked) {
             setChecked(false);
             userChecked(false);
         }
-    }, [checked, forceOff, userChecked]);
+    }, [checked, isForcedOff, userChecked]);
 
     return (
         <FormGroup>
             <FormControlLabel control={
                 <Checkbox
                     className={className}
-                    disabled={disabled}
+                    disabled={isDisabled}
                     disableRipple
                     color="primary"
                     icon={<CircleOutlined />}
@@ -49,19 +53,19 @@ function MaterialCheckBox({
 MaterialCheckBox.propTypes = {
     className: PropTypes.string,
     label: PropTypes.string,
-    forceOff: PropTypes.bool,
+    isForcedOff: PropTypes.bool,
     userChecked: PropTypes.func,
     defaultChecked: PropTypes.bool,
-    disabled: PropTypes.bool,
+    isDisabled: PropTypes.bool,
 }
 
 MaterialCheckBox.defaultProps = {
     className: "",
     label: "",
-    forceOff: false,
+    isForcedOff: false,
     userChecked: () => { },
     defaultChecked: false,
-    disabled: false,
+    isDisabled: false,
 }
 
 export default MaterialCheckBox;
