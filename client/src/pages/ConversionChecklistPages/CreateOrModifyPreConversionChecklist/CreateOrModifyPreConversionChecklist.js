@@ -204,6 +204,7 @@ function CreateOrModifyPreConversionChecklist() {
                             conversionType: { value: conversionChecklistInfo.cc_conversion_type, label: DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversion_type) },
                         }));
                         let copyOfFormProps = nonSelectorFormProps.current;
+                        copyOfFormProps["loadSheetName"] = conversionChecklistInfo.cc_load_sheet_name;
                         copyOfFormProps["dataSources"] = conversionChecklistInfo.cc_data_sources;
                         copyOfFormProps["uniqueRecordsPreCleanup"] = conversionChecklistInfo.uq_records_pre_cleanup;
                         copyOfFormProps["uniqueRecordsPostCleanup"] = conversionChecklistInfo.uq_records_post_cleanup;

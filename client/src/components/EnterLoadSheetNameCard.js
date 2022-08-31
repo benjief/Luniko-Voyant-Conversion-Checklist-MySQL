@@ -7,22 +7,31 @@ import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 import MaterialTextField from './MaterialTextField';
 import SubmitButton from './SubmitButton';
+
+/**
+ * This card allows users to retrieve checklist information from the database by entering a valid load sheet name. Note that the validity of a load sheet name is determined by the page that contains this card.
+ * @returns said card.
+ */
 function EnterLoadSheetNameCard({
-    titleString,
-    useSetFormProps,
-    setFormProps,
-    useRefHookFormProps,
-    checkIfRequiredFieldsArePopulated,
-    requestChecklist,
-    isSubmitButtonDisabled,
-    displayFadingBalls,
-    isUserViewingConversionChecklist,
+    titleString, // text that shows up at the top of the card
+    useSetFormProps, // whether or not this component should use the setFormProps defined below to update props
+    setFormProps, // function to handle setting form props
+    useRefHookFormProps, // object containing form props that are defined using a useRef hook on the page containing this component 
+    checkIfRequiredFieldsArePopulated, // function used to check whether or not all required fields are populated
+    requestChecklist, // function to handle the user requesting a checklist
+    isSubmitButtonDisabled, // whether or not the submit button is disabled
+    displayFadingBalls, // whether or not fading balls are displayed (to indicate that the page is writing checklist information)
+    isUserViewingConversionChecklist, // whether or not the user is simply viewing a checklist (vs. creating or updating one)
 }) {
     const expanded = true;
     const invalidTestScriptNameError = useValidationErrorUpdate();
 
+    /**
+     * Handles changes to a card field (form prop). The corresponding field (form prop) in the page housing this card is updated with the value entered. Note that because we're dealing with load sheet names here, we need to eliminate any white space from the user-entered string and make it lower case. This allows the string to be properly compared to load sheet names that already exist in the database on the page containing this card.
+     * @param {object} returnedObject - the object containing the field to be updated and the value to which that field should be updated.
+     */
     const handleOnChange = (returnedObject) => {
-        invalidTestScriptNameError("");
+        invalidTestScriptNameError(""); // context variable
         if (setFormProps) {
             setFormProps(
                 prev => ({ ...prev, [returnedObject.field]: returnedObject.value.trim().toLowerCase() })
@@ -30,7 +39,7 @@ function EnterLoadSheetNameCard({
         }
         if (useRefHookFormProps) {
             let copyOfFormProps = useRefHookFormProps;
-            copyOfFormProps[returnedObject.field] = returnedObject.value;
+            copyOfFormProps[returnedObject.field] = returnedObject.value.trim().toLowerCase();
             checkIfRequiredFieldsArePopulated();
         }
     }

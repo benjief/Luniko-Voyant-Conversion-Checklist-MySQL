@@ -138,6 +138,7 @@ function CreateOrModifyPostConversionChecklist() {
                         await setFormProps(
                             prev => ({
                                 ...prev,
+                                loadSheetName: conversionChecklistInfo.cc_load_sheet_name,
                                 postConversionLoadingErrors: conversionChecklistInfo.cc_post_conversion_loading_errors,
                                 postConversionValidationResults: conversionChecklistInfo.cc_post_conversion_validation_results,
                                 postConversionChanges: conversionChecklistInfo.cc_post_conversion_changes,

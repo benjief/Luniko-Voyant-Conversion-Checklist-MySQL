@@ -158,6 +158,7 @@ app.get('/get-conversion-checklist-info/:loadSheetName', (req, res) => {
     db.query(
         `SELECT
             cc_id,
+            cc_load_sheet_name,
             cc_load_sheet_owner, 
             cc_decision_maker, 
             cc_conversion_type, 

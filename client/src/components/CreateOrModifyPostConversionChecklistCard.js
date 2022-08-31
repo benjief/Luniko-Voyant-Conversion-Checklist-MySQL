@@ -11,20 +11,24 @@ import MaterialDialog from './MaterialDialog';
 import MaterialPasswordDialog from './MaterialPasswordDialog';
 import SubmitButton from './SubmitButton';
 
-function CreateOrModifyPreConversionChecklistCard({
-    setFormProps,
-    isModificationCard,
+/**
+ * This card houses all of the fields required to submit a post-conversion checklist.
+ * @returns said card.
+ */
+function CreateOrModifyPostConversionChecklistCard({
+    setFormProps, // function to handle setting form props
+    isModificationCard, // whether or not the card is being used to update a checklist
     existingLoadSheetName,
     existingPostConversionLoadingErrors,
     existingPostConversionValidationResults,
     existingPostConversionChanges,
-    isReviewCheckboxDisabled,
-    isApproveCheckboxDisabled,
-    isFormApproved,
-    isSubmitOrUpdateButtonDisabled,
-    isCancelButtonDisabled,
-    submitOrUpdateChecklist,
-    displayFadingBalls,
+    isReviewCheckboxDisabled, // whether or not the review form checkbox is disabled
+    isApproveCheckboxDisabled, // whether or not the approve form checkbox is disabled
+    isFormApproved, // whether or not the form is approved
+    isSubmitOrUpdateButtonDisabled, // whether or not the submit (or update) button is disabled
+    isCancelButtonDisabled, // whether or not the cancel button is disabled
+    submitOrUpdateChecklist, // function to handle checklist submission/updating
+    displayFadingBalls, // whether or not fading balls are displayed (to indicate that the page is writing checklist information)
 }) {
     const expanded = true;
     const formUpdated = React.useRef(false);
@@ -35,11 +39,16 @@ function CreateOrModifyPreConversionChecklistCard({
     //     console.log(isSubmitOrUpdateButtonDisabled);
     // }, [isSubmitOrUpdateButtonDisabled])
 
+    /**
+     * Handles changes to a card field (form prop). The corresponding field (form prop) in the page housing this card is updated with the value entered. forceUpdateButtonDisabled is a prop used to ensure that the update button is disabled until an update has been made to the form by the user.
+     * @param {object} returnedObject - the object containing the field to be updated and the value to which that field should be updated.
+     */
     const handleOnChange = (returnedObject) => {
         setFormProps(
             prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
         );
         formUpdated.current = true;
+        // timeout needed to avoid a tiny blip in button functionality
         setTimeout(() => {
             if (forceUpdateButtonDisabled.current) {
                 forceUpdateButtonDisabled.current = false;
@@ -47,6 +56,11 @@ function CreateOrModifyPreConversionChecklistCard({
         }, 10);
     }
 
+    /**
+     * Handles changes to a form checkbox/radio button. The corresponding field (form prop) in the page housing this card is updated with the check state (i.e. checked/unchecked, or true/false). forceUpdateButtonDisabled is a prop used to ensure that the update button is disabled until an update has been made to the form by the user. This update should include having the form approved by an IT director.
+     * @param {string} property - "isFormReviewed" or "isFormApproved" depending on which checkbox/radio button is clicked on.
+     * @param {boolean} checkState - true or false, depending on the state of the checkbox/radio button.
+     */
     const handleOnCheckOrDecheck = React.useCallback((property, checkState) => {
         formUpdated.current = false;
         if (property === "isFormApproved") {
@@ -158,6 +172,7 @@ function CreateOrModifyPreConversionChecklistCard({
                 }
                 <p style={{ color: isApproveCheckboxDisabled ? "rgba(0, 0, 0, 0.38)" : "rgba(0, 0, 0, 0.87)" }}>Approved by IT Director</p>
             </div>
+            {/* Different warning messages are displayed to the user, depending on the state of the form when they click on submit or update. If the user is updating a post-conversion checklist without it being approved, no warning message is displayed. */}
             {isFormApproved || !isModificationCard
                 ? <MaterialDialog
                     isDialogDisabled={isSubmitOrUpdateButtonDisabled || (isModificationCard && forceUpdateButtonDisabled.current)}
@@ -202,7 +217,7 @@ function CreateOrModifyPreConversionChecklistCard({
     );
 }
 
-CreateOrModifyPreConversionChecklistCard.propTypes = {
+CreateOrModifyPostConversionChecklistCard.propTypes = {
     setFormProps: PropTypes.func,
     isModificationCard: PropTypes.bool,
     existingLoadSheetName: PropTypes.string,
@@ -218,7 +233,7 @@ CreateOrModifyPreConversionChecklistCard.propTypes = {
     displayFadingBalls: PropTypes.bool,
 }
 
-CreateOrModifyPreConversionChecklistCard.defaultProps = {
+CreateOrModifyPostConversionChecklistCard.defaultProps = {
     setFormProps: () => { },
     isModificationCard: false,
     existingLoadSheetName: "",
@@ -235,4 +250,4 @@ CreateOrModifyPreConversionChecklistCard.defaultProps = {
 }
 
 
-export default CreateOrModifyPreConversionChecklistCard;
+export default CreateOrModifyPostConversionChecklistCard;

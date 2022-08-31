@@ -68,12 +68,12 @@ function MaterialTextField({
   }, [field, inputValue])
 
   const checkTextInputValidity = React.useCallback((input) => {
-    input = isTextValidationCaseSensitive ? input : input.toLowerCase();
-    if (invalidInputs.includes(input.trim())) {
+    let comparisonInput = isTextValidationCaseSensitive ? input : input.toLowerCase();
+    if (invalidInputs.includes(comparisonInput.trim())) {
       invalidInputMsg === ""
         ? setDisplayedHelperText("Invalid input")
         : setDisplayedHelperText(invalidInputMsg);
-      handleEmptyValue(input);
+      handleEmptyValue(comparisonInput);
     } else {
       handleValidValue(input);
     }

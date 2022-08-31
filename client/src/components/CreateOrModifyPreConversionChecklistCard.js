@@ -12,8 +12,8 @@ import MaterialMultiSelect from './MaterialMultiSelect';
 import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
 import MaterialCheckBox from './MaterialCheckBox';
 import SubmitButton from './SubmitButton';
-// import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
 
+// pre-defined selector options
 const conversionTypeOptions = [
     { value: "M", label: "Manual" },
     { value: "D", label: "DMT" }
@@ -25,23 +25,29 @@ const additionalProcessingOptions = [
     { value: "N", label: "N/A" }
 ];
 
+// fields (form props) that are tied to selector components
 const selectorFields = [
     "personnelOptions", "loadSheetOwner", "decisionMaker",
     "contributors", "conversionType", "additionalProcessing",
 ];
+
+/**
+ * This card houses all of the fields required to submit a pret-conversion checklist.
+ * @returns said card.
+ */
 function CreateOrModifyPreConversionChecklistCard({
-    nonSelectorFormProps,
-    setSelectorFormProps,
-    checkIfRequiredFieldsArePopulated,
-    isModificationCard,
+    nonSelectorFormProps, // object containing form props NOT tied to selector components
+    setSelectorFormProps, // function to handle setting form props tied to selector components
+    checkIfRequiredFieldsArePopulated, // function used to check whether or not all required fields are populated
+    isModificationCard, // whether or not the card is being used to update a checklist
     existingLoadSheetName,
-    invalidLoadSheetNames,
+    invalidLoadSheetNames, // array containing load sheet names that can't be used (i.e. already exist in the database)
     existingPersonnelOptions,
-    invalidPersonnel,
+    invalidPersonnel, // array containing invalid load sheet owners/decision makers (i.e. contributors for this checklist)
     existingLoadSheetOwner,
     existingDecisionMaker,
     existingContributors,
-    invalidContributors,
+    invalidContributors, // array containing invalid contributors (i.e. the load sheet owner/decision maker for this checklist)
     existingConversionType,
     existingAdditionalProcessing,
     existingDataSources,
@@ -50,11 +56,11 @@ function CreateOrModifyPreConversionChecklistCard({
     existingRecordsPreCleanupNotes,
     existingRecordsPostCleanupNotes,
     existingPreConversionManipulation,
-    isCheckboxDisabled,
-    isSubmitOrUpdateButtonDisabled,
-    isCancelButtonDisabled,
-    submitOrUpdateChecklist,
-    displayFadingBalls,
+    isCheckboxDisabled, // whether or not the review form checkbox is disabled
+    isSubmitOrUpdateButtonDisabled, // whether or not the submit (or update) button is disabled
+    isCancelButtonDisabled, // whether or not the cancel button is disabled
+    submitOrUpdateChecklist, // function to handle checklist submission/updating
+    displayFadingBalls, // whether or not fading balls are displayed (to indicate that the page is writing checklist information)
 }) {
     const expanded = true;
     const [formUpdated, setFormUpdated] = React.useState(false);
@@ -64,18 +70,25 @@ function CreateOrModifyPreConversionChecklistCard({
     //     console.log(isCheckboxDisabled);
     // }, [isCheckboxDisabled]);
 
+    /**
+     * Handles changes to a card field (form prop). The corresponding field (form prop) in the page housing this card is updated with the value entered. Note that the method by which props are updated is different for those tied to selector components and those that aren't. forceUpdateButtonDisabled is a prop used to ensure that the update button is disabled until an update has been made to the form by the user.
+     * @param {object} returnedObject - the object containing the field to be updated and the value to which that field should be updated.
+     */
     const handleOnChange = (returnedObject) => {
+        // props tied to selector components (using a useState hook in the page containing this card)
         if (selectorFields.includes(returnedObject.field)) {
             setSelectorFormProps(
                 prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
             );
         } else {
+            // props NOT tied to selector components (using a useRef hook in page containing this card)
             let copyOfFormProps = nonSelectorFormProps;
             copyOfFormProps[returnedObject.field] = returnedObject.value;
             nonSelectorFormProps = copyOfFormProps;
         }
         checkIfRequiredFieldsArePopulated();
         setFormUpdated(true);
+        // timeout needed to avoid a tiny blip in button functionality
         setTimeout(() => {
             if (forceUpdateButtonDisabled.current) {
                 forceUpdateButtonDisabled.current = false;
@@ -83,6 +96,10 @@ function CreateOrModifyPreConversionChecklistCard({
         }, 10);
     }
 
+    /**
+     * Handles changes to a form checkbox/radio button. The corresponding field (form prop) in the page housing this card is updated with the check state (i.e. checked/unchecked, or true/false).
+     * @param {boolean} checkState - true or false, depending on the state of the checkbox/radio button.
+     */
     const handleOnCheckOrDecheck = (checkState) => {
         // console.log(checkState);
         setFormUpdated(false);

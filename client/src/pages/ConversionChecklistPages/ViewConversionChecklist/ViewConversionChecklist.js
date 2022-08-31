@@ -141,6 +141,7 @@ function ViewConversionChecklist() {
                         await setFormProps(
                             prev => ({
                                 ...prev,
+                                loadSheetName: conversionChecklistInfo.cc_load_sheet_name,
                                 conversionType: { value: conversionChecklistInfo.cc_conversion_type, label: DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversion_type) },
                                 dataSources: conversionChecklistInfo.cc_data_sources,
                                 uniqueRecordsPreCleanup: conversionChecklistInfo.uq_records_pre_cleanup,
