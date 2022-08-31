@@ -220,21 +220,21 @@ function MaterialMultiSelectFreeSolo(
         });
     }
 
-    React.useEffect(() => {
-        const getObjectsForInvalidOptions = () => { // TODO: make this more efficient (or think of a completely different way of doing it)
-            for (let i = 0; i < invalidOptions.length; i++) {
-                if (!invalidOptions[i].label) {
-                    for (let j = 0; j < multiSelectOptions.length; j++) {
-                        if (multiSelectOptions[j].value === invalidOptions[i]) {
-                            invalidOptions[i] = multiSelectOptions[j];
-                        }
-                    }
-                }
-            }
-        }
+    // React.useEffect(() => {
+    //     const getObjectsForInvalidOptions = () => { // TODO: make this more efficient (or think of a completely different way of doing it)
+    //         for (let i = 0; i < invalidOptions.length; i++) {
+    //             if (!invalidOptions[i].label) {
+    //                 for (let j = 0; j < multiSelectOptions.length; j++) {
+    //                     if (multiSelectOptions[j].value === invalidOptions[i]) {
+    //                         invalidOptions[i] = multiSelectOptions[j];
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        getObjectsForInvalidOptions();
-    }, [invalidOptions, multiSelectOptions]);
+    //     getObjectsForInvalidOptions();
+    // }, [invalidOptions, multiSelectOptions]);
 
     return (
         <React.Fragment>

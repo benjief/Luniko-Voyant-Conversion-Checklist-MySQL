@@ -24,16 +24,25 @@ function MaterialDialog({
 }) {
     const [open, setOpen] = React.useState(false);
 
+    /**
+     * Opens the dialog popup.
+     */
     const handleClickOpen = () => {
         if (!isDialogDisabled) {
             setOpen(true);
         }
     };
 
+    /**
+     * Closes the dialog popup.
+     */
     const handleClose = () => {
         setOpen(false);
     };
 
+    /**
+     * Closes the dialog popup before calling the active button function (if it's set be displayed).
+     */
     const handleOnClickActiveButton = () => {
         handleClose();
         activeButtonFunction();

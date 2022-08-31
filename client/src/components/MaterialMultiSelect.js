@@ -3,17 +3,20 @@ import PropTypes from 'prop-types';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
+/**
+ * A multiple select component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-select/.
+ * @returns said selector.
+ */
 function MaterialMultiSelect(
   {
-    field,
-    label,
-    placeholder,
-    defaultValue,
-    multiSelectOptions,
-    selectedValues,
-    limitTags,
-    required,
-    invalidOptions,
+    field, // name of the field being selected
+    label, // text displayed inside of the selector before the user has input anything
+    placeholder, // text displayed inside of the selector after the user has input something
+    defaultValue, // values to be selected by the component upon initial render
+    multiSelectOptions, // selectable options
+    selectedValues, // callback function that provides selected value(s) to the component containing this component
+    limitTags, // number of (selected options) displayed inside of this selector when the user clicks outside of it
+    required, // whether or not this is a required field
   }
 ) {
 
@@ -21,13 +24,14 @@ function MaterialMultiSelect(
   const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
   const [displayedHelperText, setDisplayedHelperText] = React.useState("");
 
+  /**
+   * 
+   */
   const checkForLabelInValues = React.useCallback((label) => {
-    for (let i = 0; i < values.length; i++) {
-      if (values[i].label === label) {
-        return true;
-      }
-    }
-    return false;
+    let matchingLabels = values.filter((val => {
+      return val.label === label;
+    }));
+    return matchingLabels.length ? true : false;
   }, [values])
 
   const setDisabledOptions = React.useCallback((option) => {
@@ -107,7 +111,6 @@ MaterialMultiSelect.propTypes = {
   selectedValues: PropTypes.func,
   limitTags: PropTypes.number,
   required: PropTypes.bool,
-  invalidOptions: PropTypes.array,
 }
 
 MaterialMultiSelect.defaultProps = {
@@ -119,7 +122,6 @@ MaterialMultiSelect.defaultProps = {
   selectedValues: () => { },
   limitTags: 1,
   required: false,
-  invalidOptions: [],
 }
 
 export default MaterialMultiSelect;
