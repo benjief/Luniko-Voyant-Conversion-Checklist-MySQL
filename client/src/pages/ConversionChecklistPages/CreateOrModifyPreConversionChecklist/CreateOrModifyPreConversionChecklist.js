@@ -15,6 +15,10 @@ import "../../../styles/InputComponents.css";
 import "../../../styles/CardComponents.css";
 import "../../../styles/AlertComponents.css";
 
+/**
+ * This page allows users to create or modify pre-conversion checklists. Load sheet names must be different than any other load sheet name already written to the database. Personnel and contributors that aren't already listed as options can be added (and will then be written to the database). Load sheet owners/decision makers and contributers are mutually exclusive.
+ * @returns a page housing all of the components needed to implement the above functionality.
+ */
 function CreateOrModifyPreConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const { pageFunctionality } = useParams();
@@ -23,14 +27,8 @@ function CreateOrModifyPreConversionChecklist() {
     const [isRequestChecklistButtonDisabled, setIsRequestChecklistButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transitionElementVisibility, setTransitionElementVisibility] = useState("visible");
-    const nonSelectorFormProps = useRef({
+    const nonSelectorFormProps = useRef({   // props that aren't tied to selector components
         loadSheetName: "",
-        // personnelOptions: [],
-        // loadSheetOwner: { label: "", value: null },
-        // decisionMaker: { label: "", value: null },
-        // contributors: [],
-        // conversionType: { label: "", value: null },
-        // additionalProcessing: [],
         dataSources: "",
         uniqueRecordsPreCleanup: "",
         uniqueRecordsPostCleanup: "",
@@ -39,23 +37,16 @@ function CreateOrModifyPreConversionChecklist() {
         preConversionManipulation: "",
         isFormReviewed: pageFunctionality === "modify" ? true : false,
     });
-    const [selectorFormProps, setSelectorFormProps] = useState({
-        // loadSheetName: "",
+    const [selectorFormProps, setSelectorFormProps] = useState({ // props that are tied to selector components
         personnelOptions: [],
         loadSheetOwner: { label: "", value: null },
         decisionMaker: { label: "", value: null },
         contributors: [],
         conversionType: { label: "", value: null },
         additionalProcessing: [],
-        // dataSources: "",
-        // uniqueRecordsPreCleanup: "",
-        // uniqueRecordsPostCleanup: "",
-        // isFormReviewed: pageFunctionality === "modify" ? true : false,
     })
     const conversionChecklistID = useRef("");
     const newPersonnel = useRef([]);
-    // const [newPersonnel, setNewPersonnel] = useState([]);
-    // const [isFormReviewed, setIsFormReviewed] = useState(false);
     const [isSubmitOrUpdateButtonDisabled, setIsSubmitOrUpdateButtonDisabled] = useState(true);
     const [isReviewChecklistCheckboxDisabled, setIsReviewChecklistCheckboxDisabled] = useState(true);
     const async = useRef(false);
@@ -75,32 +66,36 @@ function CreateOrModifyPreConversionChecklist() {
 
     const navigate = useNavigate();
 
+    /**
+     * Displays an alert with the correct type of error (success or error). 
+     * @param {string} errorType 
+     */
     const handleError = useCallback((errorType) => {
         setIsErrorThrown(true);
         alertType.current = "error-alert";
         errorType === "r"
-            ? alertMessage.current = loadErrorMessage
-            : alertMessage.current = writeErrorMessage;
-
-        // Delay is set up just in case an error is generated before the is fully-displayed
-        // let delay = transitionElementOpacity === "100%" ? 500 : rendering ? 500 : 0;
-        let delay = 0; // TODO: test this and amend if necessary
+            ? alertMessage.current = loadErrorMessage // read error message
+            : alertMessage.current = writeErrorMessage; // write error message
 
         if (rendering) {
             setRendering(false);
         }
 
-        setTimeout(() => {
-            setAlert(true);
-        }, delay);
+        setAlert(true);
     }, [setIsErrorThrown, writeErrorMessage, rendering]);
 
+    /**
+     * Closes an alert that is on display and redirects the user to the app homepage.
+     */
     const handleAlertClosed = () => {
         console.log("alert closed");
         setAlert(false);
         navigate("/");
     }
 
+    /**
+     * Checks if all required form fields have been populated by the user. If all required fields have been populated, the "review checklist" radio button is activated. If not, it is set to disabled. Once the "review checklist" radio button has been checked by the user, the submit (or update) button is activated. If the "review checklist" radio button gets unchecked for whatever reason (whether that be the user unchecking it, or a required field being removed), the submit (or update) button will be disabled.
+     */
     const checkIfRequiredFieldsArePopulated = useCallback(() => {
         if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
             nonSelectorFormProps.current["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
@@ -115,19 +110,24 @@ function CreateOrModifyPreConversionChecklist() {
                 setIsSubmitOrUpdateButtonDisabled(true);
             }
         } else {
-            // console.log(selectorFormProps["loadSheetOwner"].value.length);
             setIsReviewChecklistCheckboxDisabled(true);
         }
-    }, [pageFunctionality, isValidLoadSheetNameEntered, selectorFormProps])
+    }, [isValidLoadSheetNameEntered, pageFunctionality, selectorFormProps])
 
     useEffect(() => {
+        /**
+         * Calls functions that gather information required for the initial page load.
+         */
         const runPrimaryReadAsyncFunctions = async () => {
             isDataBeingFetched.current = true;
             await fetchLoadSheetNamesAlreadyInDB();
-            await fetchPersonnelAlreadyInDB();
+            await fetchAndWritePersonnelAlreadyInDB();
             setRendering(false);
         }
 
+        /**
+         * Fetches load sheet names that are already stored in the database and writes them to loadSheetNamesAlreadyInDB. If a user is creating a pre-conversion checklist, all the load sheet names in the database are fetched and written. Alternatively, if the user is modifying an existing form, since the load sheet name is immutable once submitted, only pre-conversion load sheet names must be fetched by the page (so that only pre-conversion checklists are loadable).
+         */
         const fetchLoadSheetNamesAlreadyInDB = async () => {
             try {
                 let dbFunction = pageFunctionality === "create" ? "get-all-ls-names" : "get-valid-pre-conversion-ls-names";
@@ -145,7 +145,10 @@ function CreateOrModifyPreConversionChecklist() {
             }
         }
 
-        const fetchPersonnelAlreadyInDB = async () => {
+        /**
+         * Fetches and writes personnel that already exist in the database to the personnelOptions prop in selectorFormProps.
+         */
+        const fetchAndWritePersonnelAlreadyInDB = async () => {
             if (!async.current) {
                 try {
                     async.current = true;
@@ -166,13 +169,21 @@ function CreateOrModifyPreConversionChecklist() {
             }
         }
 
+        /**
+         * Calls functions that fetch and write information required for displaying a previously-submitted pre-conversion checklist.
+         * @param {string} loadSheetName - the load sheet name corresponding to the checklist for which information is being fetched.
+         */
         const runSecondaryReadAsyncFunctions = async (loadSheetName) => {
             isDataBeingFetched.current = true;
-            await getConversionChecklistInfo(loadSheetName);
+            await fetchAndWriteConversionChecklistInfo(loadSheetName);
             setRendering(false);
         }
 
-        const getConversionChecklistInfo = async (loadSheetName) => {
+        /**
+         * Fetches and writes (/calls functions to write) pre-conversion checklist information to nonSelectorFormProps and selectorFormProps.
+         * @param {string} loadSheetName - the load sheet name corresponding to the checklist for which information is being fetched.
+         */
+        const fetchAndWriteConversionChecklistInfo = async (loadSheetName) => {
             try {
                 async.current = true;
                 await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-conversion-checklist-info/${loadSheetName}`, {
@@ -182,10 +193,12 @@ function CreateOrModifyPreConversionChecklist() {
                         async.current = false;
                         let conversionChecklistInfo = res.data[0];
                         conversionChecklistID.current = conversionChecklistInfo.cc_id;
+                        // these functions assist in fetching and writing information that requires further Axios calls to props
                         await fetchAndWritePersonnelInfo("loadSheetOwner", conversionChecklistInfo.cc_load_sheet_owner);
                         await fetchAndWritePersonnelInfo("decisionMaker", conversionChecklistInfo.cc_decision_maker);
                         await fetchAndWriteSubmittedContributors();
                         await fetchAndWriteAdditionalProcessing();
+                        // these props can be written in place
                         setSelectorFormProps(prev => ({
                             ...prev,
                             conversionType: { value: conversionChecklistInfo.cc_conversion_type, label: DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversion_type) },
@@ -205,6 +218,11 @@ function CreateOrModifyPreConversionChecklist() {
             }
         }
 
+        /**
+         * Fetches personnel information from the database corresponding to a given personnel ID and writes that information to selectorFormProps. A personnel object of the form {value: personnelID, label: personnelName} is written to the correct field in selectorFormProps.
+         * @param {string} field - the selectorFormProps field to be written to (e.g. loadSheetOwner or decisionMaker).
+         * @param {string} personnelID - a string containing the personnel used to fetch information from the database.
+         */
         const fetchAndWritePersonnelInfo = async (field, personnelID) => {
             if (!async.current) {
                 try {
@@ -213,7 +231,7 @@ function CreateOrModifyPreConversionChecklist() {
                         timeout: 5000
                     })
                         .then(res => {
-                            let dataToWrite = { value: personnelID, label: res.data[0].pers_name };
+                            let dataToWrite = { value: personnelID, label: res.data[0].pers_name }; // an array is returned
                             setSelectorFormProps(prev => ({ ...prev, [field]: dataToWrite }));
                             // setFormProps(
                             //     prev => ({ ...prev, [field]: dataToWrite })
@@ -227,6 +245,9 @@ function CreateOrModifyPreConversionChecklist() {
             }
         }
 
+        /**
+         * Fetches information about contributors that have been submitted as part of a pre-conversion checklist. An array of personnel objects that have the form {value: personnelID, label: personnelName} is written to the correct field in selectorFormProps.
+         */
         const fetchAndWriteSubmittedContributors = async () => {
             if (!async.current) {
                 try {
@@ -249,6 +270,9 @@ function CreateOrModifyPreConversionChecklist() {
             }
         }
 
+        /**
+         * Fetches information about additional processing that has submitted as part of a pre-conversion checklist. An array of additional processing objects that have the form {value: ap_type, label: descriptor for ap_type (obtained from DecoderFunctions.js)} is written to the correct field in selectorFormProps.
+         */
         const fetchAndWriteAdditionalProcessing = async () => {
             if (!async.current) {
                 try {
@@ -272,6 +296,7 @@ function CreateOrModifyPreConversionChecklist() {
         }
 
         if (rendering) {
+            // runs fetch/write functions, depending on the page's state
             if ((pageFunctionality === "create" && !isDataBeingFetched.current)
                 || (pageFunctionality === "modify" && !isValidLoadSheetNameEntered && !isDataBeingFetched.current)) {
                 runPrimaryReadAsyncFunctions();
@@ -279,29 +304,16 @@ function CreateOrModifyPreConversionChecklist() {
                 runSecondaryReadAsyncFunctions(nonSelectorFormProps.current["loadSheetName"]);
             }
         } else {
+            // makes page visible
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
             checkIfRequiredFieldsArePopulated();
-            // console.log(selectorFormProps);
-            // if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
-            //     selectorFormProps["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
-            // } else if (!isChecklistSubmitted.current) {
-            //     if (selectorFormProps["loadSheetName"]?.trim().length && selectorFormProps["loadSheetOwner"].value?.length
-            //         && selectorFormProps["decisionMaker"].value?.length && selectorFormProps["conversionType"].value?.length
-            //         && selectorFormProps["additionalProcessing"].length && selectorFormProps["dataSources"]?.trim().length) {
-            //         setIsReviewChecklistCheckboxDisabled(false);
-            //     } else {
-            //         setIsReviewChecklistCheckboxDisabled(true);
-            //     }
-            //     if (selectorFormProps["isFormReviewed"]) {
-            //         setIsSubmitOrUpdateButtonDisabled(false);
-            //     } else {
-            //         setIsSubmitOrUpdateButtonDisabled(true);
-            //     }
-            // }
         }
     }, [checkIfRequiredFieldsArePopulated, handleError, selectorFormProps, isValidLoadSheetNameEntered, pageFunctionality, rendering])
 
+    /**
+     * When a user requests a load sheet name that has previously been written to the database, that load sheet name is validated (through a call to validateChecklistNameEntered). If the load sheet name entered is indeed valid, setValidLoadSheetName is set to true, as is rendering, and the "request checklist" button is disabled. Then, the useEffect hook carries out secondary read async functions to fetch/write all of the necessary checklist information to the page. If the load sheet name entered isn't valid, an error message is displayed.
+     */
     const handleRequestChecklist = () => {
         if (!isValidLoadSheetNameEntered) {
             if (validateChecklistNameEntered()) {
@@ -310,12 +322,17 @@ function CreateOrModifyPreConversionChecklist() {
                 setRendering(true);
                 setIsRequestChecklistButtonDisabled(true);
             } else {
+                // this is a context variable
                 invalidLoadSheetNameError("Invalid load sheet name");
             }
         }
     }
 
     // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
+    /**
+     * Compares the load sheet name entered by the user to load sheet names obtained by the page's primary read functions. If the entered load sheet name is matched against the set of valid load sheet names (this will depend on the page and what kind of checklist is being retrieved), the function returns true. If not, it returns false.
+     * @returns true if the entered load sheet name is matched against the set of valid load sheet names, false otherwise.
+     */
     const validateChecklistNameEntered = () => {
         for (let i = 0; i < loadSheetNamesAlreadyInDB.current.length; i++) {
             let escapeRegExpMatch = nonSelectorFormProps.current["loadSheetName"].replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -326,13 +343,19 @@ function CreateOrModifyPreConversionChecklist() {
         return false;
     }
 
-    const handleSubmitOrUpdate = () => {
+    /**
+     * When the user clicks on the submit (or update) button, the isChecklistSubmitted prop is set to true, and said button is disabled (to prevent multiple submission clicks). A set of fading balls is then displayed (to indicate that the page is working on a request), and the page's write functions are triggered through runWriteAysncFunctions.
+     */
+    const handleSubmitOrUpdate = () => { // TODO: abstract this function
         isChecklistSubmitted.current = true;
         setIsSubmitOrUpdateButtonDisabled(true);
         setDisplayFadingBalls(true);
         runWriteAsyncFunctions();
     }
 
+    /**
+     * Calls a series of functions that write checklist information to the database. First, new personnel (entered by the user, who aren't already in the database) are gathered. Then, they are added to the databse (if they exist). After this, if a user has created a new conversion checklist, the checklist, along with the user's selected additional processing and any submitted contributors (if they exist) are written to the database. If a user is updating a checklist, any additional processing or contributors that were previously submitted are first removed from the database (since they're stored in separate tables), before being re-added, using updated information, and updating the previously-submitted checklist's fields. n alert is displayed once all of the called functions have run.
+     */
     const runWriteAsyncFunctions = async () => {
         getNewPersonnel();
         try { // TODO: is try/catch block necessary, or can we use individual functions being called?
@@ -353,13 +376,16 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Newly-added personnel are assigned a value of -1. A newly-added load sheet owner is checked for, followed by a newly-added decision maker and contributors. Since load sheet owners and decision makers can be identical, an additional check is carried out to determine whether or not these are the same person. If they're not, two additional personnel will be added to the database. If they are, only one record will be added (since adding both would create redundancy). Note that all new personnel are assigned a UID, using uuidv4 (https://www.npmjs.com/package/uuid).
+     */
     const getNewPersonnel = useCallback(() => {
         async.current = true;
         let newLoadSheetOwner = selectorFormProps["loadSheetOwner"].value === -1
             ? selectorFormProps["loadSheetOwner"]
             : null;
         let newDecisionMaker = selectorFormProps["decisionMaker"].value === -1
-            ? (newLoadSheetOwner?.label !== selectorFormProps["decisionMaker"].label)
+            ? (newLoadSheetOwner?.label !== selectorFormProps["decisionMaker"].label) // additional check
                 ? selectorFormProps["decisionMaker"]
                 : null
             : null;
@@ -381,6 +407,10 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Writes new personnel to the database, using the UID assigned in getNewPersonnel (above), along with their first and last names, entered by the user.
+     * @param {object} personnelToAdd - personnel object containing information for the personnel to be written to the database.
+     */
     const addNewPersonnelToDB = async (personnelToAdd) => {
         if (!async.current) {
             let firstName = personnelToAdd.label.split(" ")[0];
@@ -402,8 +432,12 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Calls functions that remove records from the database and add additional processing/contributions records. If the user is writing a new checklist to the database, only the write functions are called. If the user is updating a pre-existing checklist, additional processing/contributions records are removed and re-written from/to the database before said checklist is updated.
+     * @param {string} operation  - "create" or "update" depending on what the user is doing (i.e. creating or updating a checklist).
+     */
     const runChecklistSideFunctions = async (operation) => {
-        if (operation === "update") {
+        if (operation === "update") { // records are only removed if the user is updating a checklist
             await removeRecordsFromDB("additional-processing");
             await removeRecordsFromDB("contributions");
         }
@@ -415,6 +449,9 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Creates a new record by writing submitted checklist information to the database.
+     */
     const addChecklistToDB = async () => {
         if (!async.current) {
             try {
@@ -433,7 +470,11 @@ function CreateOrModifyPreConversionChecklist() {
                 })
                     .then(res => {
                         async.current = false;
-                        conversionChecklistID.current = res.data.insertId; // TODO: get rid of this?
+                        /* 
+                        a conversion checklist ID is generated server-side and returned to be used while writing additional (processing 
+                        contribution records.
+                        */
+                        conversionChecklistID.current = res.data.insertId;
                     });
             } catch (e) {
                 console.log(e);
@@ -442,6 +483,10 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Deletes records from the database. The Axios function called depends on the function input.
+     * @param {string} processToExecute - "additional-processing" or "contributions" depending on what is to be deleted from the database.
+     */
     const removeRecordsFromDB = async (processToExecute) => {
         const axiosProcessString = `${["https://voyant-conversion-checklist.herokuapp.com/remove-", processToExecute].join("")}/${conversionChecklistID.current}`;
         if (!async.current) {
@@ -459,13 +504,17 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Writes a submitted additional processing record to the database, using the ID of the checklist being created/updated.
+     * @param {object} additionalProcessingToAdd - object containing the additional processing record to be written.
+     */
     const addAdditionalProcessingToDB = async (additionalProcessingToAdd) => {
         if (!async.current) {
             try {
                 async.current = true;
                 await Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-additional-processing", {
                     checklistID: conversionChecklistID.current,
-                    additionalProcessingType: additionalProcessingToAdd.value
+                    additionalProcessingType: additionalProcessingToAdd.value // only the value is written to the database
                 })
                     .then(res => {
                         async.current = false;
@@ -477,13 +526,17 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Writes a submitted contribution record to the database, using the ID of the checklist being created/updated.
+     * @param {object} contributionToAdd - object containing the contribution record to be written. 
+     */
     const addContributionsToDB = async (contributionToAdd) => {
         if (!async.current) {
             try {
                 async.current = true;
                 await Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-contribution", {
                     checklistID: conversionChecklistID.current,
-                    contributorID: contributionToAdd.value
+                    contributorID: contributionToAdd.value // only the value is written to the database
                 }).then(res => {
                     async.current = false;
                 });
@@ -494,6 +547,9 @@ function CreateOrModifyPreConversionChecklist() {
         }
     }
 
+    /**
+     * Updates a checklist record in the database with newly-submitted information. Note that all information is overwritten, even if a particular field hasn't actually been changed.
+     */
     const updateChecklistInDB = async () => {
         if (!async.current) {
             try {
@@ -554,7 +610,7 @@ function CreateOrModifyPreConversionChecklist() {
                         existingContributors={selectorFormProps["contributors"]}
                         invalidContributors={
                             selectorFormProps["loadSheetOwner"].label && selectorFormProps["decisionMaker"].label
-                                ? Array.from(new Set(selectorFormProps["contributors"].concat([selectorFormProps["loadSheetOwner"], selectorFormProps["decisionMaker"]]))) // TODO: fix this roundabout way of doing things
+                                ? Array.from(new Set(selectorFormProps["contributors"].concat([selectorFormProps["loadSheetOwner"], selectorFormProps["decisionMaker"]])))
                                 : selectorFormProps["loadSheetOwner"].label ? selectorFormProps["contributors"].concat(selectorFormProps["loadSheetOwner"])
                                     : selectorFormProps["decisionMaker"].label ? selectorFormProps["contributors"].concat(selectorFormProps["decisionMaker"])
                                         : selectorFormProps["contributors"]

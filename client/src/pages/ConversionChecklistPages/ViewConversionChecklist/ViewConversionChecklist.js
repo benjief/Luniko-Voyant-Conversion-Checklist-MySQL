@@ -14,6 +14,10 @@ import "../../../styles/InputComponents.css";
 import "../../../styles/CardComponents.css";
 import "../../../styles/AlertComponents.css";
 
+/**
+ * This page allows users to view all checklists stored in the database, regardless of what state they're at (i.e. pre-/post-conversion or completed).
+ * @returns a page housing all of the components needed to implement the above functionality.
+ */
 function ViewConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const [isValidLoadSheetNameEntered, setIsValidLoadSheetNameEntered] = useState(false);
@@ -52,22 +56,23 @@ function ViewConversionChecklist() {
 
     const navigate = useNavigate();
 
+    /**
+     * Displays an alert with the correct type of error (success or error). 
+     * @param {string} errorType 
+     */
     const handleError = useCallback(() => {
         setIsErrorThrown(true);
-
-        // Delay is set up just in case an error is generated before the is fully-displayed
-        // let delay = transitionElementOpacity === "100%" ? 500 : rendering ? 500 : 0;
-        let delay = 0; // TODO: test this and amend if necessary
 
         if (rendering) {
             setRendering(false);
         }
 
-        setTimeout(() => {
-            setAlert(true);
-        }, delay);
+        setAlert(true);
     }, [setIsErrorThrown, rendering]);
 
+    /**
+     * Closes an alert that is on display and redirects the user to the app homepage.
+     */
     const handleAlertClosed = () => {
         console.log("alert closed");
         setAlert(false);
@@ -75,12 +80,18 @@ function ViewConversionChecklist() {
     }
 
     useEffect(() => {
+        /**
+         * Calls functions that gather information required for the initial page load.
+         */
         const runPrimaryReadAsyncFunctions = async () => {
             isDataBeingFetched.current = true;
             await fetchLoadSheetNamesAlreadyInDB();
             setRendering(false);
         }
 
+        /**
+         * Fetches load sheet names that are already stored in the database and writes them to loadSheetNamesAlreadyInDB. Because this page allows users to view any checklist that exists in the database, all existing load sheet names are fetched/written.
+         */
         const fetchLoadSheetNamesAlreadyInDB = async () => {
             try {
                 async.current = true;
@@ -97,13 +108,21 @@ function ViewConversionChecklist() {
             }
         }
 
+        /**
+         * Calls functions that fetch and write information required for displaying a checklist.
+         * @param {string} loadSheetName - the load sheet name corresponding to the checklist for which information is being fetched.
+         */
         const runSecondaryReadAsyncFunctions = async (loadSheetName) => {
             isDataBeingFetched.current = true;
-            await getConversionChecklistInfo(loadSheetName);
+            await fetchAndWriteConversionChecklistInfo(loadSheetName);
             setRendering(false);
         }
 
-        const getConversionChecklistInfo = async (loadSheetName) => {
+        /**
+         * Fetches and writes checklist information to formProps. All fields are fetched/written, regardless of whether or not they contain information other than NULL.
+         * @param {string} loadSheetName - the load sheet name corresponding to the checklist for which information is being fetched.
+         */
+        const fetchAndWriteConversionChecklistInfo = async (loadSheetName) => {
             try {
                 async.current = true;
                 await Axios.get(`https://voyant-conversion-checklist.herokuapp.com/get-conversion-checklist-info/${loadSheetName}`, {
@@ -113,10 +132,12 @@ function ViewConversionChecklist() {
                         async.current = false;
                         let conversionChecklistInfo = res.data[0];
                         conversionChecklistID.current = conversionChecklistInfo.cc_id;
+                        // these functions assist in fetching and writing information that requires further Axios calls to props
                         await fetchAndWritePersonnelInfo("loadSheetOwner", conversionChecklistInfo.cc_load_sheet_owner);
                         await fetchAndWritePersonnelInfo("decisionMaker", conversionChecklistInfo.cc_decision_maker);
                         await fetchAndWriteSubmittedContributors();
                         await fetchAndWriteAdditionalProcessing();
+                        // these props can be written in place
                         await setFormProps(
                             prev => ({
                                 ...prev,
@@ -140,6 +161,11 @@ function ViewConversionChecklist() {
             }
         }
 
+        /**
+         * Fetches personnel information from the database corresponding to a given personnel ID and writes that information to formProps. A personnel object of the form {value: personnelID, label: personnelName} is written to the correct field in formProps.
+         * @param {string} field - the formProps field to be written to (e.g. loadSheetOwner or decisionMaker).
+         * @param {string} personnelID - a string containing the personnel used to fetch information from the database.
+         */
         const fetchAndWritePersonnelInfo = async (field, personnelID) => {
             if (!async.current) {
                 try {
@@ -161,6 +187,9 @@ function ViewConversionChecklist() {
             }
         }
 
+        /**
+         * Fetches information about contributors that have been submitted as part of a checklist. An array of personnel objects that have the form {value: personnelID, label: personnelName} is written to the correct field in formProps.
+         */
         const fetchAndWriteSubmittedContributors = async () => {
             if (!async.current) {
                 try {
@@ -182,6 +211,9 @@ function ViewConversionChecklist() {
             }
         }
 
+        /**
+         * Fetches information about additional processing that has submitted as part of a checklist. An array of additional processing objects that have the form {value: ap_type, label: descriptor for ap_type (obtained from DecoderFunctions.js)} is written to the correct field in formProps. 
+         */
         const fetchAndWriteAdditionalProcessing = async () => {
             if (!async.current) {
                 try {
@@ -204,12 +236,14 @@ function ViewConversionChecklist() {
         }
 
         if (rendering) {
+            // runs fetch/write functions, depending on the page's state
             if (!isValidLoadSheetNameEntered && !isDataBeingFetched.current) {
                 runPrimaryReadAsyncFunctions()
             } else if (!isDataBeingFetched.current) {
                 runSecondaryReadAsyncFunctions(formProps["loadSheetName"]);
             }
         } else {
+            // makes page visible
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
             if (!isValidLoadSheetNameEntered) {
@@ -218,17 +252,9 @@ function ViewConversionChecklist() {
         }
     }, [formProps, handleError, isValidLoadSheetNameEntered, rendering])
 
-    // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
-    const validateChecklistNameEntered = () => {
-        for (let i = 0; i < loadSheetNamesAlreadyInDB.current.length; i++) {
-            let escapeRegExpMatch = formProps["loadSheetName"].replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-            if (new RegExp(`(?:^|s|$)${escapeRegExpMatch}(?:^|s|$)`).test(loadSheetNamesAlreadyInDB.current[i])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * When a user requests a load sheet name that has previously been written to the database, that load sheet name is validated (through a call to validateChecklistNameEntered). If the load sheet name entered is indeed valid, setValidLoadSheetName is set to true, as is rendering, and the "request checklist" button is disabled. Then, the useEffect hook carries out secondary read async functions to fetch/write all of the necessary checklist information to the page. If the load sheet name entered isn't valid, an error message is displayed.
+     */
     const handleRequestChecklist = () => {
         if (!isValidLoadSheetNameEntered) {
             if (validateChecklistNameEntered()) {
@@ -240,6 +266,21 @@ function ViewConversionChecklist() {
                 invalidLoadSheetNameError("Invalid load sheet name");
             }
         }
+    }
+
+    // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
+    /**
+    * Compares the load sheet name entered by the user to load sheet names obtained by the page's primary read functions. If the entered load sheet name is matched against the set of valid load sheet names (this will depend on the page and what kind of checklist is being retrieved), the function returns true. If not, it returns false.
+     * @returns true if the entered load sheet name is matched against the set of valid load sheet names, false otherwise.
+     */
+    const validateChecklistNameEntered = () => {
+        for (let i = 0; i < loadSheetNamesAlreadyInDB.current.length; i++) {
+            let escapeRegExpMatch = formProps["loadSheetName"].replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            if (new RegExp(`(?:^|s|$)${escapeRegExpMatch}(?:^|s|$)`).test(loadSheetNamesAlreadyInDB.current[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return (
