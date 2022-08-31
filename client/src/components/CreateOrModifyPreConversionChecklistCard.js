@@ -25,16 +25,14 @@ const additionalProcessingOptions = [
     { value: "N", label: "N/A" }
 ];
 
-const requiredFields = [
-    "loadSheetName", "personnelOptions", "loadSheetOwner",
-    "decisionMaker", "contributors", "conversionType",
-    "additionalProcessing", "dataSources", "uniqueRecordsPreCleanup",
-    "uniqueRecordsPostCleanup", "isFormReviewed"
+const selectorFields = [
+    "personnelOptions", "loadSheetOwner", "decisionMaker",
+    "contributors", "conversionType", "additionalProcessing",
 ];
 function CreateOrModifyPreConversionChecklistCard({
-    optionalFormProps,
-    setRequiredFormProps,
-    // checkFields,
+    nonSelectorFormProps,
+    setSelectorFormProps,
+    checkIfRequiredFieldsArePopulated,
     isModificationCard,
     existingLoadSheetName,
     invalidLoadSheetNames,
@@ -67,14 +65,16 @@ function CreateOrModifyPreConversionChecklistCard({
     // }, [isCheckboxDisabled]);
 
     const handleOnChange = (returnedObject) => {
-        if (requiredFields.includes(returnedObject.field)) {
-            setRequiredFormProps(
-                prev => ({ ...prev, [returnedObject.field]: returnedObject.value }));
+        if (selectorFields.includes(returnedObject.field)) {
+            setSelectorFormProps(
+                prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
+            );
         } else {
-            let copyOfFormProps = optionalFormProps;
+            let copyOfFormProps = nonSelectorFormProps;
             copyOfFormProps[returnedObject.field] = returnedObject.value;
-            optionalFormProps = copyOfFormProps;
+            nonSelectorFormProps = copyOfFormProps;
         }
+        checkIfRequiredFieldsArePopulated();
         setFormUpdated(true);
         setTimeout(() => {
             if (forceUpdateButtonDisabled.current) {
@@ -86,9 +86,10 @@ function CreateOrModifyPreConversionChecklistCard({
     const handleOnCheckOrDecheck = (checkState) => {
         // console.log(checkState);
         setFormUpdated(false);
-        setRequiredFormProps(
-            prev => ({ ...prev, isFormReviewed: checkState })
-        );
+        let copyOfFormProps = nonSelectorFormProps;
+        copyOfFormProps["isFormReviewed"] = checkState;
+        nonSelectorFormProps = copyOfFormProps;
+        checkIfRequiredFieldsArePopulated();
     }
 
     return (
@@ -279,9 +280,9 @@ function CreateOrModifyPreConversionChecklistCard({
 }
 
 CreateOrModifyPreConversionChecklistCard.propTypes = {
-    optionalFormProps: PropTypes.object,
-    setRequiredFormProps: PropTypes.func,
-    // checkFields: PropTypes.func,
+    nonSelectorFormProps: PropTypes.object,
+    setSelectorFormProps: PropTypes.func,
+    checkIfRequiredFieldsArePopulated: PropTypes.func,
     isModificationCard: PropTypes.bool,
     existingLoadSheetName: PropTypes.string,
     invalidLoadSheetNames: PropTypes.array,
@@ -307,9 +308,9 @@ CreateOrModifyPreConversionChecklistCard.propTypes = {
 }
 
 CreateOrModifyPreConversionChecklistCard.defaultProps = {
-    optionalFormProps: {},
-    setRequiredFormProps: () => { },
-    // checkFields: () => { },
+    nonSelectorFormProps: {},
+    setSelectorFormProps: () => { },
+    checkIfRequiredFieldsArePopulated: () => { },
     isModificationCard: false,
     existingLoadSheetName: "",
     invalidLoadSheetNames: [],

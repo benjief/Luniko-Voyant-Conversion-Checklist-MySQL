@@ -23,34 +23,34 @@ function CreateOrModifyPreConversionChecklist() {
     const [isRequestChecklistButtonDisabled, setIsRequestChecklistButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transitionElementVisibility, setTransitionElementVisibility] = useState("visible");
-    const optionalFormProps = useRef({
-        // loadSheetName: "",
+    const nonSelectorFormProps = useRef({
+        loadSheetName: "",
         // personnelOptions: [],
         // loadSheetOwner: { label: "", value: null },
         // decisionMaker: { label: "", value: null },
         // contributors: [],
         // conversionType: { label: "", value: null },
         // additionalProcessing: [],
-        // dataSources: "",
-        // uniqueRecordsPreCleanup: "",
-        // uniqueRecordsPostCleanup: "",
+        dataSources: "",
+        uniqueRecordsPreCleanup: "",
+        uniqueRecordsPostCleanup: "",
         recordsPreCleanupNotes: "",
         recordsPostCleanupNotes: "",
         preConversionManipulation: "",
-        // isFormReviewed: pageFunctionality === "modify" ? true : false,
+        isFormReviewed: pageFunctionality === "modify" ? true : false,
     });
-    const [requiredFormProps, setRequiredFormProps] = useState({
-        loadSheetName: "",
+    const [selectorFormProps, setSelectorFormProps] = useState({
+        // loadSheetName: "",
         personnelOptions: [],
         loadSheetOwner: { label: "", value: null },
         decisionMaker: { label: "", value: null },
         contributors: [],
         conversionType: { label: "", value: null },
         additionalProcessing: [],
-        dataSources: "",
-        uniqueRecordsPreCleanup: "",
-        uniqueRecordsPostCleanup: "",
-        isFormReviewed: pageFunctionality === "modify" ? true : false,
+        // dataSources: "",
+        // uniqueRecordsPreCleanup: "",
+        // uniqueRecordsPostCleanup: "",
+        // isFormReviewed: pageFunctionality === "modify" ? true : false,
     })
     const conversionChecklistID = useRef("");
     const newPersonnel = useRef([]);
@@ -101,21 +101,24 @@ function CreateOrModifyPreConversionChecklist() {
         navigate("/");
     }
 
-    // const checkIfRequiredFieldsArePopulated = useCallback(() => {
-    //     console.log("checking fields");
-    //     if (optionalFormProps.current["loadSheetName"]?.trim().length && requiredFormProps["loadSheetOwner"].value?.length
-    //         && requiredFormProps["decisionMaker"].value?.length && optionalFormProps.current["conversionType"].value?.length
-    //         && requiredFormProps["additionalProcessing"].length && optionalFormProps.current["dataSources"]?.trim().length
-    //         && optionalFormProps.current["uniqueRecordsPreCleanup"] > 0 && optionalFormProps.current["uniqueRecordsPostCleanup"] > 0) {
-    //         console.log("all required fields filled in");
-    //         setIsReviewChecklistCheckboxDisabled(false);
-    //     } else {
-    //         console.log("all required fields NOT filled in");
-    //         if (!isReviewChecklistCheckboxDisabled) {
-    //             setIsReviewChecklistCheckboxDisabled(true);
-    //         }
-    //     }
-    // }, [requiredFormProps, isReviewChecklistCheckboxDisabled])
+    const checkIfRequiredFieldsArePopulated = useCallback(() => {
+        if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
+            nonSelectorFormProps.current["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
+        } else if (nonSelectorFormProps.current["loadSheetName"]?.trim().length && selectorFormProps["loadSheetOwner"].value
+            && selectorFormProps["decisionMaker"].value && selectorFormProps["conversionType"].value
+            && selectorFormProps["additionalProcessing"].length && nonSelectorFormProps.current["dataSources"]?.trim().length
+            && nonSelectorFormProps.current["uniqueRecordsPreCleanup"] > 0 && nonSelectorFormProps.current["uniqueRecordsPostCleanup"] > 0) {
+            setIsReviewChecklistCheckboxDisabled(false);
+            if (nonSelectorFormProps.current["isFormReviewed"]) {
+                setIsSubmitOrUpdateButtonDisabled(false);
+            } else {
+                setIsSubmitOrUpdateButtonDisabled(true);
+            }
+        } else {
+            // console.log(selectorFormProps["loadSheetOwner"].value.length);
+            setIsReviewChecklistCheckboxDisabled(true);
+        }
+    }, [pageFunctionality, isValidLoadSheetNameEntered, selectorFormProps])
 
     useEffect(() => {
         const runPrimaryReadAsyncFunctions = async () => {
@@ -150,7 +153,7 @@ function CreateOrModifyPreConversionChecklist() {
                         timeout: 5000
                     })
                         .then(res => {
-                            setRequiredFormProps(prev => ({ ...prev, personnelOptions: res.data.map(({ pers_id, pers_fname, pers_lname }) => ({ value: pers_id, label: [pers_fname, pers_lname].join(" ") })) }));
+                            setSelectorFormProps(prev => ({ ...prev, personnelOptions: res.data.map(({ pers_id, pers_fname, pers_lname }) => ({ value: pers_id, label: [pers_fname, pers_lname].join(" ") })) }));
                             // setFormProps(
                             //     prev => ({ ...prev, personnelOptions: res.data.map(({ pers_id, pers_fname, pers_lname }) => ({ value: pers_id, label: [pers_fname, pers_lname].join(" ") })) })
                             // )
@@ -183,18 +186,18 @@ function CreateOrModifyPreConversionChecklist() {
                         await fetchAndWritePersonnelInfo("decisionMaker", conversionChecklistInfo.cc_decision_maker);
                         await fetchAndWriteSubmittedContributors();
                         await fetchAndWriteAdditionalProcessing();
-                        setRequiredFormProps(prev => ({
+                        setSelectorFormProps(prev => ({
                             ...prev,
                             conversionType: { value: conversionChecklistInfo.cc_conversion_type, label: DecoderFunctions.getConversionType(conversionChecklistInfo.cc_conversion_type) },
-                            dataSources: conversionChecklistInfo.cc_data_sources,
-                            uniqueRecordsPreCleanup: conversionChecklistInfo.uq_records_pre_cleanup,
-                            uniqueRecordsPostCleanup: conversionChecklistInfo.uq_records_post_cleanup,
                         }));
-                        let copyOfFormProps = optionalFormProps.current;
+                        let copyOfFormProps = nonSelectorFormProps.current;
+                        copyOfFormProps["dataSources"] = conversionChecklistInfo.cc_data_sources;
+                        copyOfFormProps["uniqueRecordsPreCleanup"] = conversionChecklistInfo.uq_records_pre_cleanup;
+                        copyOfFormProps["uniqueRecordsPostCleanup"] = conversionChecklistInfo.uq_records_post_cleanup;
                         copyOfFormProps["recordsPreCleanupNotes"] = conversionChecklistInfo.cc_records_pre_cleanup_notes;
                         copyOfFormProps["recordsPostCleanupNotes"] = conversionChecklistInfo.cc_records_post_cleanup_notes;
                         copyOfFormProps["preConversionManipulation"] = conversionChecklistInfo.cc_pre_conversion_manipulation;
-                        optionalFormProps.current = copyOfFormProps;
+                        nonSelectorFormProps.current = copyOfFormProps;
                     });
             } catch (e) {
                 console.log("error caught:", e);
@@ -211,7 +214,7 @@ function CreateOrModifyPreConversionChecklist() {
                     })
                         .then(res => {
                             let dataToWrite = { value: personnelID, label: res.data[0].pers_name };
-                            setRequiredFormProps(prev => ({ ...prev, [field]: dataToWrite }));
+                            setSelectorFormProps(prev => ({ ...prev, [field]: dataToWrite }));
                             // setFormProps(
                             //     prev => ({ ...prev, [field]: dataToWrite })
                             // );
@@ -233,7 +236,7 @@ function CreateOrModifyPreConversionChecklist() {
                     })
                         .then(res => {
                             let dataToWrite = res.data.map(({ pers_id, pers_name }) => ({ value: pers_id, label: pers_name }));
-                            setRequiredFormProps(prev => ({ ...prev, contributors: dataToWrite }));
+                            setSelectorFormProps(prev => ({ ...prev, contributors: dataToWrite }));
                             // setFormProps(
                             //     prev => ({ ...prev, contributors: dataToWrite })
                             // );
@@ -255,7 +258,7 @@ function CreateOrModifyPreConversionChecklist() {
                     })
                         .then(res => {
                             let dataToWrite = res.data.map(({ ap_type }) => ({ value: ap_type, label: DecoderFunctions.getAdditionalProcessingType(ap_type) }));
-                            setRequiredFormProps(prev => ({ ...prev, additionalProcessing: dataToWrite }));
+                            setSelectorFormProps(prev => ({ ...prev, additionalProcessing: dataToWrite }));
                             // setFormProps(
                             //     prev => ({ ...prev, additionalProcessing: dataToWrite })
                             // );
@@ -273,29 +276,31 @@ function CreateOrModifyPreConversionChecklist() {
                 || (pageFunctionality === "modify" && !isValidLoadSheetNameEntered && !isDataBeingFetched.current)) {
                 runPrimaryReadAsyncFunctions();
             } else if (pageFunctionality === "modify" && isValidLoadSheetNameEntered && !isDataBeingFetched.current) {
-                runSecondaryReadAsyncFunctions(requiredFormProps["loadSheetName"]);
+                runSecondaryReadAsyncFunctions(nonSelectorFormProps.current["loadSheetName"]);
             }
         } else {
             setTransitionElementOpacity("0%");
             setTransitionElementVisibility("hidden");
-            if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
-                requiredFormProps["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
-            } else if (!isChecklistSubmitted.current) {
-                if (requiredFormProps["loadSheetName"]?.trim().length && requiredFormProps["loadSheetOwner"].value?.length
-                    && requiredFormProps["decisionMaker"].value?.length && requiredFormProps["conversionType"].value?.length
-                    && requiredFormProps["additionalProcessing"].length && requiredFormProps["dataSources"]?.trim().length) {
-                    setIsReviewChecklistCheckboxDisabled(false);
-                } else {
-                    setIsReviewChecklistCheckboxDisabled(true);
-                }
-                if (requiredFormProps["isFormReviewed"]) {
-                    setIsSubmitOrUpdateButtonDisabled(false);
-                } else {
-                    setIsSubmitOrUpdateButtonDisabled(true);
-                }
-            }
+            checkIfRequiredFieldsArePopulated();
+            // console.log(selectorFormProps);
+            // if (pageFunctionality === "modify" && !isValidLoadSheetNameEntered) {
+            //     selectorFormProps["loadSheetName"].trim().length ? setIsRequestChecklistButtonDisabled(false) : setIsRequestChecklistButtonDisabled(true);
+            // } else if (!isChecklistSubmitted.current) {
+            //     if (selectorFormProps["loadSheetName"]?.trim().length && selectorFormProps["loadSheetOwner"].value?.length
+            //         && selectorFormProps["decisionMaker"].value?.length && selectorFormProps["conversionType"].value?.length
+            //         && selectorFormProps["additionalProcessing"].length && selectorFormProps["dataSources"]?.trim().length) {
+            //         setIsReviewChecklistCheckboxDisabled(false);
+            //     } else {
+            //         setIsReviewChecklistCheckboxDisabled(true);
+            //     }
+            //     if (selectorFormProps["isFormReviewed"]) {
+            //         setIsSubmitOrUpdateButtonDisabled(false);
+            //     } else {
+            //         setIsSubmitOrUpdateButtonDisabled(true);
+            //     }
+            // }
         }
-    }, [requiredFormProps, handleError, isValidLoadSheetNameEntered, pageFunctionality, rendering])
+    }, [checkIfRequiredFieldsArePopulated, handleError, selectorFormProps, isValidLoadSheetNameEntered, pageFunctionality, rendering])
 
     const handleRequestChecklist = () => {
         if (!isValidLoadSheetNameEntered) {
@@ -313,7 +318,7 @@ function CreateOrModifyPreConversionChecklist() {
     // adapted from https://stackoverflow.com/questions/60440139/check-if-a-string-contains-exact-match
     const validateChecklistNameEntered = () => {
         for (let i = 0; i < loadSheetNamesAlreadyInDB.current.length; i++) {
-            let escapeRegExpMatch = requiredFormProps["loadSheetName"].replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+            let escapeRegExpMatch = nonSelectorFormProps.current["loadSheetName"].replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
             if (new RegExp(`(?:^|s|$)${escapeRegExpMatch}(?:^|s|$)`).test(loadSheetNamesAlreadyInDB.current[i])) {
                 return true;
             }
@@ -350,15 +355,15 @@ function CreateOrModifyPreConversionChecklist() {
 
     const getNewPersonnel = useCallback(() => {
         async.current = true;
-        let newLoadSheetOwner = requiredFormProps["loadSheetOwner"].value === -1
-            ? requiredFormProps["loadSheetOwner"]
+        let newLoadSheetOwner = selectorFormProps["loadSheetOwner"].value === -1
+            ? selectorFormProps["loadSheetOwner"]
             : null;
-        let newDecisionMaker = requiredFormProps["decisionMaker"].value === -1
-            ? (newLoadSheetOwner?.label !== requiredFormProps["decisionMaker"].label)
-                ? requiredFormProps["decisionMaker"]
+        let newDecisionMaker = selectorFormProps["decisionMaker"].value === -1
+            ? (newLoadSheetOwner?.label !== selectorFormProps["decisionMaker"].label)
+                ? selectorFormProps["decisionMaker"]
                 : null
             : null;
-        let newContributors = requiredFormProps["contributors"].filter((val) => {
+        let newContributors = selectorFormProps["contributors"].filter((val) => {
             return val.value === -1;
         });
         let arrayOfNewPersonnel = [newLoadSheetOwner, newDecisionMaker].concat(newContributors);
@@ -368,7 +373,7 @@ function CreateOrModifyPreConversionChecklist() {
         newPersonnel.current = arrayOfNewPersonnel;
         async.current = false;
         assignUIDsToNewPersonnel();
-    }, [requiredFormProps]);
+    }, [selectorFormProps]);
 
     const assignUIDsToNewPersonnel = () => {
         for (let i = 0; i < newPersonnel.current.length; i++) {
@@ -402,11 +407,11 @@ function CreateOrModifyPreConversionChecklist() {
             await removeRecordsFromDB("additional-processing");
             await removeRecordsFromDB("contributions");
         }
-        for (let i = 0; i < requiredFormProps["additionalProcessing"].length; i++) {
-            await addAdditionalProcessingToDB(requiredFormProps["additionalProcessing"][i]);
+        for (let i = 0; i < selectorFormProps["additionalProcessing"].length; i++) {
+            await addAdditionalProcessingToDB(selectorFormProps["additionalProcessing"][i]);
         }
-        for (let i = 0; i < requiredFormProps["contributors"].length; i++) {
-            await addContributionsToDB(requiredFormProps["contributors"][i]);
+        for (let i = 0; i < selectorFormProps["contributors"].length; i++) {
+            await addContributionsToDB(selectorFormProps["contributors"][i]);
         }
     }
 
@@ -415,16 +420,16 @@ function CreateOrModifyPreConversionChecklist() {
             try {
                 async.current = true;
                 await Axios.post("https://voyant-conversion-checklist.herokuapp.com/add-checklist", {
-                    loadSheetName: requiredFormProps["loadSheetName"],
-                    loadSheetOwner: requiredFormProps["loadSheetOwner"].value,
-                    decisionMaker: requiredFormProps["decisionMaker"].value,
-                    conversionType: requiredFormProps["conversionType"].value,
-                    dataSources: requiredFormProps["dataSources"],
-                    uniqueRecordsPreCleanup: requiredFormProps["uniqueRecordsPreCleanup"],
-                    uniqueRecordsPostCleanup: requiredFormProps["uniqueRecordsPostCleanup"],
-                    recordsPreCleanupNotes: optionalFormProps.current["recordsPreCleanupNotes"]?.length ? optionalFormProps.current["recordsPreCleanupNotes"] : null,
-                    recordsPostCleanupNotes: optionalFormProps.current["recordsPostCleanupNotes"]?.length ? optionalFormProps.current["recordsPostCleanupNotes"] : null,
-                    preConversionManipulation: optionalFormProps.current["preConversionManipulation"]?.length ? optionalFormProps.current["preConversionManipulation"] : null,
+                    loadSheetName: nonSelectorFormProps.current["loadSheetName"],
+                    loadSheetOwner: selectorFormProps["loadSheetOwner"].value,
+                    decisionMaker: selectorFormProps["decisionMaker"].value,
+                    conversionType: selectorFormProps["conversionType"].value,
+                    dataSources: nonSelectorFormProps.current["dataSources"],
+                    uniqueRecordsPreCleanup: nonSelectorFormProps.current["uniqueRecordsPreCleanup"],
+                    uniqueRecordsPostCleanup: nonSelectorFormProps.current["uniqueRecordsPostCleanup"],
+                    recordsPreCleanupNotes: nonSelectorFormProps.current["recordsPreCleanupNotes"]?.length ? nonSelectorFormProps.current["recordsPreCleanupNotes"] : null,
+                    recordsPostCleanupNotes: nonSelectorFormProps.current["recordsPostCleanupNotes"]?.length ? nonSelectorFormProps.current["recordsPostCleanupNotes"] : null,
+                    preConversionManipulation: nonSelectorFormProps.current["preConversionManipulation"]?.length ? nonSelectorFormProps.current["preConversionManipulation"] : null,
                 })
                     .then(res => {
                         async.current = false;
@@ -494,16 +499,16 @@ function CreateOrModifyPreConversionChecklist() {
             try {
                 async.current = true;
                 await Axios.put(`https://voyant-conversion-checklist.herokuapp.com/update-pre-conversion-checklist/${conversionChecklistID.current}`, {
-                    loadSheetName: requiredFormProps["loadSheetName"],
-                    loadSheetOwner: requiredFormProps["loadSheetOwner"].value,
-                    decisionMaker: requiredFormProps["decisionMaker"].value,
-                    conversionType: requiredFormProps["conversionType"].value,
-                    dataSources: requiredFormProps["dataSources"],
-                    uniqueRecordsPreCleanup: requiredFormProps["uniqueRecordsPreCleanup"],
-                    uniqueRecordsPostCleanup: requiredFormProps["uniqueRecordsPostCleanup"],
-                    recordsPreCleanupNotes: optionalFormProps.current["recordsPreCleanupNotes"]?.length ? optionalFormProps.current["recordsPreCleanupNotes"] : null,
-                    recordsPostCleanupNotes: optionalFormProps.current["recordsPostCleanupNotes"]?.length ? optionalFormProps.current["recordsPostCleanupNotes"] : null,
-                    preConversionManipulation: optionalFormProps.current["preConversionManipulation"]?.length ? optionalFormProps.current["preConversionManipulation"] : null,
+                    loadSheetName: nonSelectorFormProps.current["loadSheetName"],
+                    loadSheetOwner: selectorFormProps["loadSheetOwner"].value,
+                    decisionMaker: selectorFormProps["decisionMaker"].value,
+                    conversionType: selectorFormProps["conversionType"].value,
+                    dataSources: nonSelectorFormProps.current["dataSources"],
+                    uniqueRecordsPreCleanup: nonSelectorFormProps.current["uniqueRecordsPreCleanup"],
+                    uniqueRecordsPostCleanup: nonSelectorFormProps.current["uniqueRecordsPostCleanup"],
+                    recordsPreCleanupNotes: nonSelectorFormProps.current["recordsPreCleanupNotes"]?.length ? nonSelectorFormProps.current["recordsPreCleanupNotes"] : null,
+                    recordsPostCleanupNotes: nonSelectorFormProps.current["recordsPostCleanupNotes"]?.length ? nonSelectorFormProps.current["recordsPostCleanupNotes"] : null,
+                    preConversionManipulation: nonSelectorFormProps.current["preConversionManipulation"]?.length ? nonSelectorFormProps.current["preConversionManipulation"] : null,
                 })
                     .then(res => {
                         async.current = false;
@@ -536,32 +541,32 @@ function CreateOrModifyPreConversionChecklist() {
                     isErrorThrown={isErrorThrown}
                     preConversionChecklist={true}>
                     <CreateOrModifyPreConversionChecklistCard
-                        optionalFormProps={optionalFormProps.current}
-                        setRequiredFormProps={setRequiredFormProps}
-                        // checkFields={checkIfRequiredFieldsArePopulated}
+                        nonSelectorFormProps={nonSelectorFormProps.current}
+                        setSelectorFormProps={setSelectorFormProps}
+                        checkIfRequiredFieldsArePopulated={checkIfRequiredFieldsArePopulated}
                         isModificationCard={pageFunctionality === "create" ? false : true}
-                        existingLoadSheetName={requiredFormProps["loadSheetName"]}
+                        existingLoadSheetName={nonSelectorFormProps.current["loadSheetName"]}
                         invalidLoadSheetNames={loadSheetNamesAlreadyInDB.current}
-                        existingPersonnelOptions={requiredFormProps["personnelOptions"]}
-                        invalidPersonnel={requiredFormProps["contributors"]}
-                        existingLoadSheetOwner={requiredFormProps["loadSheetOwner"]}
-                        existingDecisionMaker={requiredFormProps["decisionMaker"]}
-                        existingContributors={requiredFormProps["contributors"]}
+                        existingPersonnelOptions={selectorFormProps["personnelOptions"]}
+                        invalidPersonnel={selectorFormProps["contributors"]}
+                        existingLoadSheetOwner={selectorFormProps["loadSheetOwner"]}
+                        existingDecisionMaker={selectorFormProps["decisionMaker"]}
+                        existingContributors={selectorFormProps["contributors"]}
                         invalidContributors={
-                            requiredFormProps["loadSheetOwner"].label && requiredFormProps["decisionMaker"].label
-                                ? Array.from(new Set(requiredFormProps["contributors"].concat([requiredFormProps["loadSheetOwner"], requiredFormProps["decisionMaker"]]))) // TODO: fix this roundabout way of doing things
-                                : requiredFormProps["loadSheetOwner"].label ? requiredFormProps["contributors"].concat(requiredFormProps["loadSheetOwner"])
-                                    : requiredFormProps["decisionMaker"].label ? requiredFormProps["contributors"].concat(requiredFormProps["decisionMaker"])
-                                        : requiredFormProps["contributors"]
+                            selectorFormProps["loadSheetOwner"].label && selectorFormProps["decisionMaker"].label
+                                ? Array.from(new Set(selectorFormProps["contributors"].concat([selectorFormProps["loadSheetOwner"], selectorFormProps["decisionMaker"]]))) // TODO: fix this roundabout way of doing things
+                                : selectorFormProps["loadSheetOwner"].label ? selectorFormProps["contributors"].concat(selectorFormProps["loadSheetOwner"])
+                                    : selectorFormProps["decisionMaker"].label ? selectorFormProps["contributors"].concat(selectorFormProps["decisionMaker"])
+                                        : selectorFormProps["contributors"]
                         }
-                        existingConversionType={requiredFormProps["conversionType"]}
-                        existingAdditionalProcessing={requiredFormProps["additionalProcessing"]}
-                        existingDataSources={requiredFormProps["dataSources"]}
-                        existingUniqueRecordsPreCleanup={requiredFormProps["uniqueRecordsPreCleanup"]}
-                        existingUniqueRecordsPostCleanup={requiredFormProps["uniqueRecordsPostCleanup"]}
-                        existingRecordsPreCleanupNotes={optionalFormProps.current["recordsPreCleanupNotes"]}
-                        existingRecordsPostCleanupNotes={optionalFormProps.current["recordsPostCleanupNotes"]}
-                        existingPreConversionManipulation={optionalFormProps.current["preConversionManipulation"]}
+                        existingConversionType={selectorFormProps["conversionType"]}
+                        existingAdditionalProcessing={selectorFormProps["additionalProcessing"]}
+                        existingDataSources={nonSelectorFormProps.current["dataSources"]}
+                        existingUniqueRecordsPreCleanup={nonSelectorFormProps.current["uniqueRecordsPreCleanup"]}
+                        existingUniqueRecordsPostCleanup={nonSelectorFormProps.current["uniqueRecordsPostCleanup"]}
+                        existingRecordsPreCleanupNotes={nonSelectorFormProps.current["recordsPreCleanupNotes"]}
+                        existingRecordsPostCleanupNotes={nonSelectorFormProps.current["recordsPostCleanupNotes"]}
+                        existingPreConversionManipulation={nonSelectorFormProps.current["preConversionManipulation"]}
                         isCheckboxDisabled={isReviewChecklistCheckboxDisabled || async.current}
                         isSubmitOrUpdateButtonDisabled={isSubmitOrUpdateButtonDisabled}
                         isCancelButtonDisabled={async.current}
@@ -580,7 +585,9 @@ function CreateOrModifyPreConversionChecklist() {
                                 <div className="enter-valid-load-sheet-name-card">
                                     <EnterLoadSheetNameCard
                                         titleString={"pre-"}
-                                        setFormProps={setRequiredFormProps}
+                                        useSetFormProps={false}
+                                        useRefHookFormProps={nonSelectorFormProps.current}
+                                        checkIfRequiredFieldsArePopulated={checkIfRequiredFieldsArePopulated}
                                         requestChecklist={handleRequestChecklist}
                                         isSubmitButtonDisabled={isRequestChecklistButtonDisabled}>
                                     </EnterLoadSheetNameCard>

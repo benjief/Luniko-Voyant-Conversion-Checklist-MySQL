@@ -9,7 +9,10 @@ import MaterialTextField from './MaterialTextField';
 import SubmitButton from './SubmitButton';
 function EnterLoadSheetNameCard({
     titleString,
+    useSetFormProps,
     setFormProps,
+    useRefHookFormProps,
+    checkIfRequiredFieldsArePopulated,
     requestChecklist,
     isSubmitButtonDisabled,
     displayFadingBalls,
@@ -20,9 +23,16 @@ function EnterLoadSheetNameCard({
 
     const handleOnChange = (returnedObject) => {
         invalidTestScriptNameError("");
-        setFormProps(
-            prev => ({ ...prev, [returnedObject.field]: returnedObject.value.trim().toLowerCase() })
-        );
+        if (setFormProps) {
+            setFormProps(
+                prev => ({ ...prev, [returnedObject.field]: returnedObject.value.trim().toLowerCase() })
+            );
+        }
+        if (useRefHookFormProps) {
+            let copyOfFormProps = useRefHookFormProps;
+            copyOfFormProps[returnedObject.field] = returnedObject.value;
+            checkIfRequiredFieldsArePopulated();
+        }
     }
 
     return (
@@ -72,7 +82,10 @@ function EnterLoadSheetNameCard({
 
 EnterLoadSheetNameCard.propTypes = {
     titleString: PropTypes.string,
+    useSetFormProps: PropTypes.bool,
     setFormProps: PropTypes.func,
+    useRefHookFormProps: PropTypes.object,
+    checkIfRequiredFieldsArePopulated: PropTypes.func,
     requestChecklist: PropTypes.func,
     isSubmitButtonDisabled: PropTypes.bool,
     displayFadingBalls: PropTypes.bool,
@@ -81,7 +94,10 @@ EnterLoadSheetNameCard.propTypes = {
 
 EnterLoadSheetNameCard.defaultProps = {
     titleString: "",
+    useSetFormProps: true,
     setFormProps: () => { },
+    useRefHookFormProps: {},
+    checkIfRequiredFieldsArePopulated: () => { },
     requestChecklist: () => { },
     isSubmitButtonDisabled: true,
     displayFadingBalls: false,
