@@ -6,10 +6,10 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 import MaterialSingleSelect from './MaterialSingleSelect';
-import MaterialSingleSelectFreeSolo from './MaterialSingleSelectFreeSolo';
+import MaterialMultiSelectFreeSoloForNames from './MaterialMultiSelectFreeSoloForNames';
 import MaterialTextField from './MaterialTextField';
 import MaterialMultiSelect from './MaterialMultiSelect';
-import MaterialMultiSelectFreeSolo from './MaterialMultiSelectFreeSolo';
+import MaterialSingleSelectFreeSoloForNames from './MaterialSingleSelectFreeSoloForNames';
 import MaterialCheckBox from './MaterialCheckBox';
 import SubmitButton from './SubmitButton';
 
@@ -147,7 +147,7 @@ function CreateOrModifyPreConversionChecklistCard({
                                 invalidInputMsg="Load sheet name already exists"
                                 field="loadSheetName">
                             </MaterialTextField>
-                            <MaterialSingleSelectFreeSolo
+                            <MaterialSingleSelectFreeSoloForNames
                                 className="add-personnel-dialog" //TODO: are class names needed?
                                 label="Load Sheet Owner"
                                 placeholder="Who is this load sheet's owner?"
@@ -157,8 +157,8 @@ function CreateOrModifyPreConversionChecklistCard({
                                 required={true}
                                 defaultValue={existingLoadSheetOwner}
                                 field="loadSheetOwner">
-                            </MaterialSingleSelectFreeSolo>
-                            <MaterialSingleSelectFreeSolo
+                            </MaterialSingleSelectFreeSoloForNames>
+                            <MaterialSingleSelectFreeSoloForNames
                                 className="add-personnel-dialog"
                                 label="Decision Maker"
                                 placeholder="Who is the decision maker?"
@@ -168,8 +168,8 @@ function CreateOrModifyPreConversionChecklistCard({
                                 required={true}
                                 defaultValue={existingDecisionMaker}
                                 field="decisionMaker">
-                            </MaterialSingleSelectFreeSolo>
-                            <MaterialMultiSelectFreeSolo
+                            </MaterialSingleSelectFreeSoloForNames>
+                            <MaterialMultiSelectFreeSoloForNames
                                 className="add-contributors-dialog"
                                 label="Add Other Contributors"
                                 placeholder="Who else was involved?"
@@ -179,7 +179,7 @@ function CreateOrModifyPreConversionChecklistCard({
                                 invalidOptions={invalidContributors}
                                 required={false}
                                 field="contributors">
-                            </MaterialMultiSelectFreeSolo>
+                            </MaterialMultiSelectFreeSoloForNames>
                             <MaterialSingleSelect
                                 label="Conversion Type"
                                 placeholder="Conversion Type"

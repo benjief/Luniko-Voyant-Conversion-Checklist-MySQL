@@ -13,7 +13,7 @@ import "../styles/DialogComponents.css";
 
 const filter = createFilterOptions();
 
-function MaterialSingleSelectFreeSolo(
+function MaterialSingleSelectFreeSoloForNames(
     {
         field,
         className,
@@ -36,12 +36,11 @@ function MaterialSingleSelectFreeSolo(
     const [isAddButtonDisabled, setIsAddButtonDisabled] = React.useState(true);
 
     const handleClose = () => {
+        toggleOpen(false);
         setDialogValue({
             firstName: "",
             lastName: "",
         });
-
-        toggleOpen(false);
         setIsFirstNameErrorEnabled(false);
         setFirstNameDisplayedHelperText("");
         setIsLastNameErrorEnabled(false);
@@ -321,7 +320,7 @@ function MaterialSingleSelectFreeSolo(
     );
 }
 
-MaterialSingleSelectFreeSolo.propTypes = {
+MaterialSingleSelectFreeSoloForNames.propTypes = {
     field: PropTypes.string,
     className: PropTypes.string,
     label: PropTypes.string,
@@ -333,7 +332,7 @@ MaterialSingleSelectFreeSolo.propTypes = {
     required: PropTypes.bool,
 }
 
-MaterialSingleSelectFreeSolo.defaultProps = {
+MaterialSingleSelectFreeSoloForNames.defaultProps = {
     field: "",
     className: "",
     label: "",
@@ -345,4 +344,4 @@ MaterialSingleSelectFreeSolo.defaultProps = {
     required: false,
 }
 
-export default MaterialSingleSelectFreeSolo;
+export default MaterialSingleSelectFreeSoloForNames;
