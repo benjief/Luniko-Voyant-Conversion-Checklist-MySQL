@@ -17,6 +17,7 @@ function MaterialMultiSelect(
     selectedValues, // callback function that provides selected value(s) to the component containing this component
     limitTags, // number of (selected options) displayed inside of this selector when the user clicks outside of it
     required, // whether or not this is a required field
+    invalidOptions, // an array of options that aren't valid (e.g. if a user has chosen an option that invalidates other options)
   }
 ) {
 
@@ -24,27 +25,36 @@ function MaterialMultiSelect(
   const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
   const [displayedHelperText, setDisplayedHelperText] = React.useState("");
 
-  /**
-   * 
-   */
-  const checkForLabelInValues = React.useCallback((label) => {
-    let matchingLabels = values.filter((val => {
-      return val.label === label;
-    }));
-    return matchingLabels.length ? true : false;
-  }, [values])
+  // const checkForLabelInValues = React.useCallback((label) => {
+  //   for (let i = 0; i < values.length; i++) {
+  //     if (values[i].label === label) {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }, [values])
 
-  const setDisabledOptions = React.useCallback((option) => {
-    if (!values.length) {
-      return false;
-    } else {
-      if (option.label === "N/A") {
-        return !checkForLabelInValues(option);
-      } else {
-        return checkForLabelInValues("N/A");
-      }
+  // const setDisabledOptions = React.useCallback((option) => {
+  //   if (!values.length) {
+  //     return false;
+  //   } else {
+  //     if (option.label === "N/A") {
+  //       return !checkForLabelInValues(option);
+  //     } else {
+  //       return checkForLabelInValues("N/A");
+  //     }
+  //   }
+  // }, [checkForLabelInValues, values.length])
+
+  const checkExistingOptionsAgainstInvalidOptions = React.useCallback((existingOption) => {
+    let matchingInvalidOptions = [];
+    if (existingOption.value && invalidOptions.length) {
+      matchingInvalidOptions = invalidOptions.filter((val) => {
+        return val.value === existingOption.value;
+      })
     }
-  }, [checkForLabelInValues, values.length])
+    return matchingInvalidOptions.length ? true : false;
+  }, [invalidOptions])
 
   const handleOnChange = React.useCallback((value) => {
     if (required) {
@@ -80,7 +90,7 @@ function MaterialMultiSelect(
       limitTags={limitTags}
       options={multiSelectOptions.sort((a, b) => (a.label > b.label) ? 1 : -1)}
       getOptionDisabled={(option) => {
-        return setDisabledOptions(option);
+        return checkExistingOptionsAgainstInvalidOptions(option);
       }}
       getOptionLabel={(option) => option.label}
       filterSelectedOptions
@@ -111,6 +121,7 @@ MaterialMultiSelect.propTypes = {
   selectedValues: PropTypes.func,
   limitTags: PropTypes.number,
   required: PropTypes.bool,
+  invalidOptions: PropTypes.array,
 }
 
 MaterialMultiSelect.defaultProps = {
@@ -122,6 +133,7 @@ MaterialMultiSelect.defaultProps = {
   selectedValues: () => { },
   limitTags: 1,
   required: false,
+  invalidOptions: [],
 }
 
 export default MaterialMultiSelect;

@@ -19,9 +19,13 @@ const conversionTypeOptions = [
     { value: "D", label: "DMT" }
 ];
 
-const additionalProcessingOptions = [
+// these two sets of additional processing options are mutually exclusive
+const additionalProcessingOptions_1 = [
     { value: "C", label: "Cleanup Needed" },
     { value: "D", label: "New Data to Be Added" },
+];
+
+const additionalProcessingOptions_2 = [
     { value: "N", label: "N/A" }
 ];
 
@@ -189,8 +193,14 @@ function CreateOrModifyPreConversionChecklistCard({
                                 label="Additional Processing"
                                 placeholder="Additional Processing"
                                 defaultValue={existingAdditionalProcessing}
-                                multiSelectOptions={additionalProcessingOptions}
+                                multiSelectOptions={additionalProcessingOptions_1.concat(additionalProcessingOptions_2)}
                                 selectedValues={handleOnChange}
+                                invalidOptions={
+                                    existingAdditionalProcessing?.map(({ value }) => value).length
+                                        ? existingAdditionalProcessing?.map(({ value }) => value).includes("N") ? additionalProcessingOptions_1
+                                            : additionalProcessingOptions_2
+                                        : []
+                                }
                                 required={true}
                                 id="additional-processing"
                                 field="additionalProcessing">
