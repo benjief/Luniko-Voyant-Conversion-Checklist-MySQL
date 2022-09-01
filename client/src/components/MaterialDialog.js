@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 /**
-/**
  * A dialog button/popup combination customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-dialog/.
  * @returns said dialog.
  */

@@ -15,7 +15,6 @@ const filter = createFilterOptions();
 /**
  * A multiple value, free solo selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/. Note that this was created to handle inputs with a first name and last name. This component may be made more general purpose in the future.
  * @returns said selector.
- * @returns 
  */
 function MaterialMultiSelectFreeSoloForNames(
     {
@@ -23,9 +22,9 @@ function MaterialMultiSelectFreeSoloForNames(
         field, // name of the field being selected
         label, // text displayed inside of the selector before the user has input anything
         placeholder, // text displayed inside of the selector after the user has input something
-        defaultValue, // values to be selected by the component upon initial render
+        defaultValue, // value(s) to be selected by the component upon initial render
         multiSelectOptions, // selectable options
-        invalidOptions, // an array of options that aren't valid (e.g. if a user has chosen an option that invalidates other options)
+        invalidOptions, // array of options that aren't valid (e.g. if a user has chosen an option that invalidates other options)
         selectedValues, // callback function that provides selected value(s) to the component containing this component
         limitTags, // number of (selected options) displayed inside of this selector when the user clicks outside of it
         isDisabled, // whether or not the selector is disabled
@@ -196,6 +195,7 @@ function MaterialMultiSelectFreeSoloForNames(
      * @param {string} value - the value input by the user.
      */
     const handleOnChangeNameDialog = (property, value) => {
+        // TODO: abstract this function
         // both dialog input fields must be dealt with, regardless of which one is being changed
         let complementProperty = property === "firstName" ? "lastName" : "firstName";
 
@@ -224,7 +224,7 @@ function MaterialMultiSelectFreeSoloForNames(
      * Handles a blur event for a required dialog popup field. When the user clicks outside this field, further functions are called to handle the display of error messages (depending on whether or not the field is empty). Additionally, if one or more of the dialog fields is empty, the submit button is disabled. If both dialog fields contain input values, the submit button is enabled.
      * @param {string} property - "firstName" if the first name dialog box is being changed; "lastName" if the last name dialog box is being changed.
      */
-    const handleOnBlurNameDialog = (property) => {
+    const handleOnBlurNameDialog = (property) => { // TODO: abstract this function
         // both dialog input fields must be dealt with, regardless of which one is being changed
         let complementProperty = property === "firstName" ? "lastName" : "firstName";
 
@@ -248,7 +248,7 @@ function MaterialMultiSelectFreeSoloForNames(
      * @param {string} property - "firstName" if the first name dialog box is being changed; "lastName" if the last name dialog box is being changed.
      * @param {boolean} booleanValue - true if the error message should be displayed; false if the error message should be hidden.
      */
-    const setNameDialogError = (property, booleanValue) => {
+    const setNameDialogError = (property, booleanValue) => { // TODO: abstract this function
         const helperText = "Required Field";
         property === "firstName"
             ? setIsFirstNameErrorEnabled(booleanValue)
@@ -269,7 +269,7 @@ function MaterialMultiSelectFreeSoloForNames(
      * @param {string} firstName - input for the first name field.
      * @param {string} lastName - input for the last name field.
      */
-    const handleDialogErrors = (firstName, lastName) => {
+    const handleDialogErrors = (firstName, lastName) => { // TODO: abstract this function
         !firstName.trim().length ? setNameDialogError("firstName", true) : setNameDialogError("firstName", false);
         !lastName.trim().length ? setNameDialogError("lastName", true) : setNameDialogError("lastName", false);
         !firstName.trim().length || !lastName.trim().length ? setIsAddButtonDisabled(true) : setIsAddButtonDisabled(false);
@@ -283,10 +283,10 @@ function MaterialMultiSelectFreeSoloForNames(
     return (
         <React.Fragment>
             <Autocomplete
-                disabled={isDisabled}
                 isOptionEqualToValue={(option, value) => {
                     return value !== "" ? option.value === value.value : true;
                 }}
+                disabled={isDisabled}
                 disablePortal // handles proper option popover placement 
                 multiple
                 value={values}

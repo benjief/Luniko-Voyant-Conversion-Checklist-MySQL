@@ -9,12 +9,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import LockOpenTwoTone from '@mui/icons-material/LockOpenTwoTone';
 import "../styles/DialogComponents.css";
 
+/**
+ * A dialog lock icon/popup combination used for entering passwords and revealing a checkbox. Note that the checkbox comes from another component that houses this dialog. Customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-dialog/.
+ * @returns said password dialog.
+ */
 function MaterialPasswordDialog({
-    content,
-    label,
-    password,
-    setIsCheckboxUnlocked,
-    isDisabled,
+    content, // text displayed in the body of the dialog popup, above the password input field
+    label, // the label to be used for the password input field
+    password, // the password used to unlock the checkbox
+    setIsCheckboxUnlocked,  // a state-setting function for whether or not the checkbox's (housed in another component) isCheckboxUnlocked state variable is set to true
+    isDisabled, // whether or not this password dialog is disabled
 }) {
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState("");
@@ -22,17 +26,27 @@ function MaterialPasswordDialog({
     const [isErrorEnabled, setIsErrorEnabled] = React.useState(false);
     const errorMsg = "Invalid password"
 
+    /**
+     * Opens the dialog popup.
+     */
     const handleClickOpen = () => {
         if (!isDisabled) {
             setOpen(true);
         }
     };
 
+    /** 
+     * Handles changes to the dialog's input field. The dialog popup's input value is set to any user-entered input and any displayed error messages are cleared.
+     * @param {string} value - user-entered input
+    */
     const handleOnChange = (value) => {
         setValue(value);
         setIsErrorEnabled(false);
     }
 
+    /**
+     * Handles password submission. If the user-entered input matches the password, the parent component's checkbox's isCheckBoxUnlocked state variable is set to true and the dialog popup is closed.
+     */
     const handleSubmit = () => {
         if (value === password) {
             setIsCheckboxUnlocked(true);
@@ -42,11 +56,17 @@ function MaterialPasswordDialog({
         }
     }
 
+    /**
+     *      * Closes the dialog popup.
+     */
     const handleClose = () => {
         setOpen(false);
         setIsErrorEnabled(false);
     };
 
+    /**
+     * If user-entered input exists, the dialog popup's submit button is enabled. Otherwise, it is disabled.
+     */
     React.useEffect(() => {
         value.trim() !== ""
             ? setIsSubmitPasswordButtonDisabled(false)

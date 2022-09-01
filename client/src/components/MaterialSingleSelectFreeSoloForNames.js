@@ -8,21 +8,21 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-// import { v4 as uuidv4 } from "uuid";
 import "../styles/DialogComponents.css";
 
 const filter = createFilterOptions();
 
 function MaterialSingleSelectFreeSoloForNames(
     {
-        field,
         className,
-        label,
-        placeholder,
-        defaultValue,
-        singleSelectOptions,
-        invalidOptions,
-        selectedValue,
+        field, // name of the field being selected
+        label, // text displayed inside of the selector before the user has input anything
+        placeholder, // text displayed inside of the selector after the user has input something
+        defaultValue, // value to be selected by the component upon initial render
+        singleSelectOptions, // selectable options
+        invalidOptions, // array of options that aren't valid (e.g. if a user has chosen an option in some other, mutually exclusive field that invalidates options in this one)
+        selectedValue, // callback function that provides selected value to the component containing this component
+        isDisabled, // whether or not the selector is disabled
         required,
     }) {
     const [value, setValue] = React.useState(defaultValue.value !== null ? defaultValue : null);
@@ -34,7 +34,14 @@ function MaterialSingleSelectFreeSoloForNames(
     const [firstNameDisplayedHelperText, setFirstNameDisplayedHelperText] = React.useState("");
     const [lastNameDisplayedHelperText, setLastNameDisplayedHelperText] = React.useState("");
     const [isAddButtonDisabled, setIsAddButtonDisabled] = React.useState(true);
+    const [dialogValue, setDialogValue] = React.useState({
+        firstName: "",
+        lastName: "",
+    });
 
+    /**
+     * Closes the dialog popup. After this happens, dialog values are set to empty strings, and any error messages that may have been present are cleared. In other words, the dialog is reset for the next time it is opened.
+     */
     const handleClose = () => {
         toggleOpen(false);
         setDialogValue({
@@ -48,11 +55,11 @@ function MaterialSingleSelectFreeSoloForNames(
         setIsAddButtonDisabled(true);
     };
 
-    const [dialogValue, setDialogValue] = React.useState({
-        firstName: "",
-        lastName: "",
-    });
-
+    /**
+     * Determines whether the input value is present in the singleSelectOptions array. Only lower case labels between options (objects with value and label props) are compared.
+     * @param {object} inputValue - the input object being compared to objects set as options.
+     * @returns false if the input value is matched against any of this selector's options, true otherwise.
+     */
     const checkInputValueAgainstOptions = React.useCallback((inputValue) => {
         let matchingOptions = [];
         if (inputValue.trim() !== "" && singleSelectOptions.length) {
@@ -63,6 +70,11 @@ function MaterialSingleSelectFreeSoloForNames(
         return matchingOptions.length ? false : true;
     }, [singleSelectOptions])
 
+    /**
+     * Determines whether the input value is present in the invalidOptions array. Only lower case labels between options (objects with value and label props) are compared. In this case, comparing values wouldn't work, since this is a free solo component, and any input that wasn't fetched from the database will have the same value (namely, -1).
+     * @param {object} inputValue - the input object being compared to objects in the invalidOptions array.
+     * @returns false if the input value is matched against any of this selector's invalid options, true otherwise.
+     */
     const checkInputValueAgainstInvalidOptions = React.useCallback((inputValue) => {
         let matchingInvalidOptions = [];
         if (inputValue.trim() !== "" && invalidOptions.length) {
@@ -73,6 +85,11 @@ function MaterialSingleSelectFreeSoloForNames(
         return matchingInvalidOptions.length ? false : true;
     }, [invalidOptions])
 
+    /**
+     * Determines whether an existing option is present in the invalidOptions array. Only values between options (objects with value and label props) are compared.
+     * @param {object} existingOption - the object being compared to objects deemed to be invalid.
+     * @returns true if the existing option is matched against any of this selector's invalid options, false otherwise.
+     */
     const checkExistingOptionsAgainstInvalidOptions = (existingOption) => {
         let matchingInvalidOptions = [];
         if (existingOption.value && invalidOptions.length) {
@@ -83,6 +100,11 @@ function MaterialSingleSelectFreeSoloForNames(
         return matchingInvalidOptions.length ? true : false;
     }
 
+    /**
+     * If a user inputs the name of an already-existing option into the dialog popup (i.e. it already exists in singleSelectOptions), that option is retrieved and selected, rather than creating a duplicate of that option (with the same label/different value).
+     * @param {string} optionLabel - the label of the object to be located and returned.
+     * @returns the object in singleSelectOptions with a matching label, if it exists; an empty string if not.
+     */
     const getOptionWithLabel = React.useCallback((optionName) => {
         let matchingOptions = [];
         if (optionName && singleSelectOptions.length) {
@@ -93,17 +115,22 @@ function MaterialSingleSelectFreeSoloForNames(
         return matchingOptions.length ? matchingOptions[0] : "";
     }, [singleSelectOptions])
 
+    /**
+     * Handles submission of user input from the dialog popup. Calls functions that determine if said input already exists in this selector's options/invalid options. Essentially, if the user attemps to create a new option with the same label as one that already exists, or is invalid (i.e. having already been selected in this selector or having already been selected inside of a separate, mutually exclusive field). If a valid new option is input, its value is set to -1, a flag that is used by the main page to write new options to the database when a form is submitted. If the user enters a valid, already-existing option, that option is retrieved and added to the selected input.
+     * @param {event} event - the submission event triggering this function call.
+     */
     const handleSubmit = React.useCallback((event) => {
         event.preventDefault();
         let fullName = [dialogValue.firstName, dialogValue.lastName].join(" ");
 
-        // prevents duplicate values from being added
+        // input is NOT already in options and isn't in invalid options - input = new option
         if (checkInputValueAgainstOptions(fullName)
             && checkInputValueAgainstInvalidOptions(fullName)) {
             let selectedObject = { label: fullName, value: -1 }
             let returnedObject = { field: field, value: selectedObject }
             setValue(selectedObject);
             selectedValue(returnedObject);
+            // input IS already in options and isn't in invalid options - input = existing option
         } else if (!checkInputValueAgainstOptions(fullName)) {
             setValue(getOptionWithLabel(fullName));
             selectedValue({ field: field, value: getOptionWithLabel(fullName) });
@@ -111,7 +138,11 @@ function MaterialSingleSelectFreeSoloForNames(
         handleClose();
     }, [checkInputValueAgainstInvalidOptions, checkInputValueAgainstOptions, dialogValue.firstName, dialogValue.lastName, field, getOptionWithLabel, selectedValue])
 
-    const handleOnChange = React.useCallback((value) => {
+    /**
+     * Handles error messages for changing input. If input is required and the user doesn't input anything, or they remove existing input, an error message will be displayed. If input isn't required and the user doesn't input anything, the value for the field is set to an object with a null value and empty string label, and no error message is displayed.
+     * @param {value} - the selected value.
+     */
+    const handleErrorMessage = React.useCallback((value) => {
         if (required) {
             if (value) {
                 setIsErrorEnabled(false);
@@ -126,6 +157,9 @@ function MaterialSingleSelectFreeSoloForNames(
         }
     }, [field, required, selectedValue])
 
+    /**
+     * Handles a blur event. When the user clicks outside the selector just after it has been active, if the selector contains a required field and the input is empty, an error message is displayed. If the input for a required field isn't empty, or the field isn't required, nothing happens.
+     */
     const handleOnBlur = React.useCallback(() => {
         if (required && !value && !open) {
             setIsErrorEnabled(true);
@@ -133,13 +167,20 @@ function MaterialSingleSelectFreeSoloForNames(
         }
     }, [open, required, value])
 
-    const handleOnChangeNameDialog = (property, value) => {
+    /**
+     * Handles changing inputs to the first and last name fields inside the dialog popup. The dialog value is set to whatever is input by the user. Then, further functions are called to handle the display of error messages (depending on whether or not the field is empty). Additionally, if one or more of the dialog fields is empty, the submit button is disabled. If both dialog fields contain input values, the submit button is enabled. It should be noted that this function assumes that both dialog popup fields are required. This should be made more general in the future.
+     * @param {string} property - "firstName" if the first name dialog box is being changed; "lastName" if the last name dialog box is being changed.
+     * @param {string} value - the value input by the user.
+     */
+    const handleOnChangeNameDialog = (property, value) => { // TODO: abstract this function
+        // both dialog input fields must be dealt with, regardless of which one is being changed
         let complementProperty = property === "firstName" ? "lastName" : "firstName";
 
         setDialogValue(
             prev => ({ ...prev, [property]: value })
         );
 
+        // handles error message display
         if (!value.trim().length) {
             property === "firstName"
                 ? setNameDialogError(property, true)
@@ -156,7 +197,12 @@ function MaterialSingleSelectFreeSoloForNames(
         }
     }
 
-    const handleOnBlurNameDialog = (property) => {
+    /**
+     * Handles a blur event for a required dialog popup field. When the user clicks outside this field, further functions are called to handle the display of error messages (depending on whether or not the field is empty). Additionally, if one or more of the dialog fields is empty, the submit button is disabled. If both dialog fields contain input values, the submit button is enabled.
+     * @param {string} property - "firstName" if the first name dialog box is being changed; "lastName" if the last name dialog box is being changed.
+     */
+    const handleOnBlurNameDialog = (property) => { // TODO: abstract this function
+        // both dialog input fields must be dealt with, regardless of which one is being changed
         let complementProperty = property === "firstName" ? "lastName" : "firstName";
 
         if (!dialogValue[property].trim().length) {
@@ -174,7 +220,12 @@ function MaterialSingleSelectFreeSoloForNames(
         }
     }
 
-    const setNameDialogError = (property, booleanValue) => {
+    /**
+     * Displays (or hides) an error message below dialog popup fields. Said error message is "Required Field," but this could be made more flexible in the future.
+     * @param {string} property - "firstName" if the first name dialog box is being changed; "lastName" if the last name dialog box is being changed.
+     * @param {boolean} booleanValue - true if the error message should be displayed; false if the error message should be hidden.
+     */
+    const setNameDialogError = (property, booleanValue) => { // TODO: abstract this function
         property === "firstName"
             ? setIsFirstNameErrorEnabled(booleanValue)
             : setIsLastNameErrorEnabled(booleanValue);
@@ -189,7 +240,12 @@ function MaterialSingleSelectFreeSoloForNames(
         }
     }
 
-    const handleDialogErrors = (firstName, lastName) => {
+    /**
+     * Handles the display of error messages and enabling/disabling of the submit button for this component's dialog popup, when a user enters an option that doesn't already exist. For example, if the user enters "Firstname" and attempts to add this option, the last name field in the dialog popup, when it opens, will have an error message displayed below it. In addition, the submit button will be disabled. This operates very similarly to the functions above, but deals with the case of a popup dialog that isn't yet open.
+     * @param {string} firstName - input for the first name field.
+     * @param {string} lastName - input for the last name field.
+     */
+    const handleDialogErrors = (firstName, lastName) => { // TODO: abstract this function
         !firstName.trim().length ? setNameDialogError("firstName", true) : setNameDialogError("firstName", false);
         !lastName.trim().length ? setNameDialogError("lastName", true) : setNameDialogError("lastName", false);
         !firstName.trim().length || !lastName.trim().length ? setIsAddButtonDisabled(true) : setIsAddButtonDisabled(false);
@@ -204,13 +260,9 @@ function MaterialSingleSelectFreeSoloForNames(
         <React.Fragment>
             <Autocomplete
                 isOptionEqualToValue={(option, value) => option.value === value.value}
-                // isOptionEqualToValue={(option, value) => {
-                //     console.log("is option equal to value:", option, value);
-                //     return value.length ? option.value === value.value : true;
-                // }}
-                disablePortal
+                disabled={isDisabled}
+                disablePortal // handles proper option popover placement 
                 value={value}
-                // defaultValue={actualDefaultValue.value}
                 onBlur={handleOnBlur}
                 onChange={(event, value) => {
                     if (typeof value === "string") {
@@ -228,7 +280,7 @@ function MaterialSingleSelectFreeSoloForNames(
                         setValue(value);
                         selectedValue({ field: field, value: value });
                     }
-                    handleOnChange(value);
+                    handleErrorMessage(value);
                 }}
                 filterOptions={(options, params) => {
                     const filtered = filter(options, params);
@@ -329,6 +381,7 @@ MaterialSingleSelectFreeSoloForNames.propTypes = {
     singleSelectOptions: PropTypes.array,
     invalidOptions: PropTypes.array,
     selectedValue: PropTypes.func,
+    isDisabled: PropTypes.bool,
     required: PropTypes.bool,
 }
 
@@ -341,6 +394,7 @@ MaterialSingleSelectFreeSoloForNames.defaultProps = {
     singleSelectOptions: [{ label: "", value: null }],
     invalidOptions: [],
     selectedValue: () => { },
+    isDisabled: false,
     required: false,
 }
 

@@ -13,13 +13,13 @@ function MaterialMultiSelect(
     className,
     label, // text displayed inside of the selector before the user has input anything
     placeholder, // text displayed inside of the selector after the user has input something
-    defaultValue, // values to be selected by the component upon initial render
+    defaultValue, // value(s) to be selected by the component upon initial render
     multiSelectOptions, // selectable options
     selectedValues, // callback function that provides selected value(s) to the component containing this component
     limitTags, // number of (selected options) displayed inside of this selector when the user clicks outside of it
     isDisabled, // whether or not the selector is disabled
     required, // whether or not this is a required field
-    invalidOptions, // an array of options that aren't valid (e.g. if a user has chosen an option that invalidates other options)
+    invalidOptions, // array of options that aren't valid (e.g. if a user has chosen an option that invalidates other options)
   }
 ) {
 
