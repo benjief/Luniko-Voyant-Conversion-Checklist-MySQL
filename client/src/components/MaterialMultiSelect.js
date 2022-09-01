@@ -48,7 +48,6 @@ function MaterialMultiSelect(
    */
   const handleErrorMessage = React.useCallback((valueArray) => {
     if (required) {
-      console.log(valueArray);
       if (valueArray.length) {
         setIsErrorEnabled(false);
         setDisplayedHelperText("");
