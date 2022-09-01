@@ -8,6 +8,10 @@ const sx = {
   '& .MuiTextField-root': { m: 1, width: '25ch' }, // TODO: make sure you understand this! move all constants outside functions
 }
 
+/**
+ * Text field that currently allows for the input of text, email addresses and numbers. Customized from the original Material UI component, which can be found here: https://mui.com/material-ui/react-text-field/.
+ * @returns said text field.
+ */
 function MaterialTextField({
   field, // name of the field being input
   className,
@@ -87,8 +91,8 @@ function MaterialTextField({
     let comparisonInput = isTextValidationCaseSensitive ? input : input.toLowerCase();
     if (invalidInputs.includes(comparisonInput.trim())) {
       invalidInputMsg.length
-        ? setDisplayedHelperText("Invalid input")
-        : setDisplayedHelperText(invalidInputMsg);
+        ? setDisplayedHelperText(invalidInputMsg)
+        : setDisplayedHelperText("Invalid input");
       // invalid inputs are treated as empty
       handleEmptyValue(comparisonInput);
     } else {

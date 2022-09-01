@@ -67,7 +67,7 @@ function CreateOrModifyPreConversionChecklist() {
     const navigate = useNavigate();
 
     /**
-     * Displays an alert with the correct type of error (success or error). 
+     * Displays an alert with the correct type of error. 
      * @param {string} errorType 
      */
     const handleError = useCallback((errorType) => {
@@ -116,7 +116,7 @@ function CreateOrModifyPreConversionChecklist() {
 
     useEffect(() => {
         /**
-         * Calls functions that gather information required for the initial page load.
+         * Calls functions that gather information required for the initial page load. Once all required information is gathered, rendering is set to false and the page is displayed.
          */
         const runPrimaryReadAsyncFunctions = async () => {
             isDataBeingFetched.current = true;
@@ -313,7 +313,7 @@ function CreateOrModifyPreConversionChecklist() {
     }, [checkIfRequiredFieldsArePopulated, handleError, selectorFormProps, isValidLoadSheetNameEntered, pageFunctionality, rendering])
 
     /**
-     * When a user requests a load sheet name that has previously been written to the database, that load sheet name is validated (through a call to validateChecklistNameEntered). If the load sheet name entered is indeed valid, setValidLoadSheetName is set to true, as is rendering, and the "request checklist" button is disabled. Then, the useEffect hook carries out secondary read async functions to fetch/write all of the necessary checklist information to the page. If the load sheet name entered isn't valid, an error message is displayed.
+     * When the user requests a load sheet name that has previously been written to the database, that load sheet name is validated (through a call to validateChecklistNameEntered). If the load sheet name entered is indeed valid, setValidLoadSheetName is set to true, as is rendering, and the "request checklist" button is disabled. Then, the useEffect hook carries out secondary read async functions to fetch/write all of the necessary checklist information to the page. If the load sheet name entered isn't valid, an error message is displayed.
      */
     const handleRequestChecklist = () => {
         if (!isValidLoadSheetNameEntered) {
@@ -354,7 +354,7 @@ function CreateOrModifyPreConversionChecklist() {
     }
 
     /**
-     * Calls a series of functions that write checklist information to the database. First, new personnel (entered by the user, who aren't already in the database) are gathered. Then, they are added to the databse (if they exist). After this, if a user has created a new conversion checklist, the checklist, along with the user's selected additional processing and any submitted contributors (if they exist) are written to the database. If a user is updating a checklist, any additional processing or contributors that were previously submitted are first removed from the database (since they're stored in separate tables), before being re-added, using updated information, and updating the previously-submitted checklist's fields. n alert is displayed once all of the called functions have run.
+     * Calls a series of functions that write checklist information to the database. First, new personnel (entered by the user, who aren't already in the database) are gathered. Then, they are added to the databse (if they exist). After this, if a user has created a new conversion checklist, that checklist, along with the user's selected additional processing and any submitted contributors (if they exist) are written to the database. If a user is updating a checklist, any additional processing or contributors that were previously submitted are first removed from the database (since they're stored in separate tables), before being re-added, using updated information, and updating the previously-submitted checklist's fields. An alert is displayed once all of the called functions have run.
      */
     const runWriteAsyncFunctions = async () => {
         getNewPersonnel();

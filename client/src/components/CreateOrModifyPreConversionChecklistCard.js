@@ -90,8 +90,8 @@ function CreateOrModifyPreConversionChecklistCard({
             copyOfFormProps[returnedObject.field] = returnedObject.value;
             nonSelectorFormProps = copyOfFormProps;
         }
-        checkIfRequiredFieldsArePopulated();
-        setFormUpdated(true);
+        checkIfRequiredFieldsArePopulated(); // updates button states
+        setFormUpdated(true); // updates checkbox/update button states
         // timeout needed to avoid a tiny blip in button functionality
         setTimeout(() => {
             if (forceUpdateButtonDisabled.current) {
@@ -105,12 +105,11 @@ function CreateOrModifyPreConversionChecklistCard({
      * @param {boolean} checkState - true or false, depending on the state of the checkbox/radio button.
      */
     const handleOnCheckOrDecheck = (checkState) => {
-        // console.log(checkState);
-        setFormUpdated(false);
+        setFormUpdated(false); // checkbox shouldn't be forced off if it has been checked (formUpdated.current is used in checkbox isForcedOff prop)
         let copyOfFormProps = nonSelectorFormProps;
         copyOfFormProps["isFormReviewed"] = checkState;
         nonSelectorFormProps = copyOfFormProps;
-        checkIfRequiredFieldsArePopulated();
+        checkIfRequiredFieldsArePopulated(); // updates button states
     }
 
     return (

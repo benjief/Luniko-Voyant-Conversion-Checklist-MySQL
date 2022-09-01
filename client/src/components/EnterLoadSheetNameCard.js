@@ -20,11 +20,11 @@ function EnterLoadSheetNameCard({
     checkIfRequiredFieldsArePopulated, // function used to check whether or not all required fields are populated
     requestChecklist, // function to handle the user requesting a checklist
     isSubmitButtonDisabled, // whether or not the submit button is disabled
-    displayFadingBalls, // whether or not fading balls are displayed (to indicate that the page is writing checklist information)
     isUserViewingConversionChecklist, // whether or not the user is simply viewing a checklist (vs. creating or updating one)
+    displayFadingBalls, // whether or not fading balls are displayed (to indicate that the page is writing checklist information)
 }) {
     const expanded = true;
-    const invalidTestScriptNameError = useValidationErrorUpdate();
+    const invalidTestScriptNameError = useValidationErrorUpdate(); // context variable
 
     /**
      * Handles changes to a card field (form prop). The corresponding field (form prop) in the page housing this card is updated with the value entered. Note that because we're dealing with load sheet names here, we need to eliminate any white space from the user-entered string and make it lower case. This allows the string to be properly compared to load sheet names that already exist in the database on the page containing this card (i.e. all the strings being compared to are lower case and don't contain any outside white space).
@@ -97,8 +97,8 @@ EnterLoadSheetNameCard.propTypes = {
     checkIfRequiredFieldsArePopulated: PropTypes.func,
     requestChecklist: PropTypes.func,
     isSubmitButtonDisabled: PropTypes.bool,
-    displayFadingBalls: PropTypes.bool,
     isUserViewingConversionChecklist: PropTypes.bool,
+    displayFadingBalls: PropTypes.bool,
 }
 
 EnterLoadSheetNameCard.defaultProps = {
@@ -109,8 +109,8 @@ EnterLoadSheetNameCard.defaultProps = {
     checkIfRequiredFieldsArePopulated: () => { },
     requestChecklist: () => { },
     isSubmitButtonDisabled: true,
-    displayFadingBalls: false,
     isUserViewingConversionChecklist: false,
+    displayFadingBalls: false,
 }
 
 export default EnterLoadSheetNameCard;

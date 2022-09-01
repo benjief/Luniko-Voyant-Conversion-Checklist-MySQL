@@ -13,7 +13,6 @@ function CardWrapper({
     preConversionChecklist, // whether or not the current page's functionality has to do with pre-conversion checklists
     postConversionChecklist, // whether or not the current page's functionality has to do with post-conversion checklists
 }) {
-
     return (
         rendering || alert
             ? <div></div>

@@ -4,7 +4,7 @@ import { Navbar } from "reactstrap";
 import "../styles/Navbar.css";
 
 /**
- * Just a very simplified version of reactstrap's navbar, which can be found here: https://6-4-0--reactstrap.netlify.app/components/navbar/.
+ * Very simplified version of reactstrap's navbar, which can be found here: https://6-4-0--reactstrap.netlify.app/components/navbar/.
  * @returns said navbar.
  */
 function NavBar() {

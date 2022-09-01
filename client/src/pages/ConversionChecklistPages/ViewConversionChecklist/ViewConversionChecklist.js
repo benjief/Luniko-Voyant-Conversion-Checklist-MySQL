@@ -57,7 +57,7 @@ function ViewConversionChecklist() {
     const navigate = useNavigate();
 
     /**
-     * Displays an alert with the correct type of error (success or error). 
+     * Displays an alert with the correct type of error. 
      * @param {string} errorType 
      */
     const handleError = useCallback(() => {

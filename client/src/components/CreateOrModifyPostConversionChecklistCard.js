@@ -47,7 +47,7 @@ function CreateOrModifyPostConversionChecklistCard({
         setFormProps(
             prev => ({ ...prev, [returnedObject.field]: returnedObject.value })
         );
-        formUpdated.current = true;
+        formUpdated.current = true; // updates checkbox/update button states
         // timeout needed to avoid a tiny blip in button functionality
         setTimeout(() => {
             if (forceUpdateButtonDisabled.current) {
@@ -62,7 +62,7 @@ function CreateOrModifyPostConversionChecklistCard({
      * @param {boolean} checkState - true or false, depending on the state of the checkbox/radio button.
      */
     const handleOnCheckOrDecheck = React.useCallback((property, checkState) => {
-        formUpdated.current = false;
+        formUpdated.current = false; // checkbox shouldn't be forced off if it has been checked (formUpdated.current is used in checkbox isForcedOff prop)
         if (property === "isFormApproved") {
             if (forceUpdateButtonDisabled.current) {
                 forceUpdateButtonDisabled.current = false;
