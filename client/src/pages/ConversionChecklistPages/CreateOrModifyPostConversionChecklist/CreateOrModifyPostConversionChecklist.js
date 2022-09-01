@@ -192,8 +192,7 @@ function CreateOrModifyPostConversionChecklist() {
                 setRendering(true);
                 setIsRequestChecklistButtonDisabled(true);
             } else {
-                // this is a context variable
-                invalidChecklistNameError("Invalid load sheet name");
+                invalidChecklistNameError("Invalid load sheet name"); // context variable
             }
         }
     }

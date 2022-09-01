@@ -10,7 +10,7 @@ import LockOpenTwoTone from '@mui/icons-material/LockOpenTwoTone';
 import "../styles/DialogComponents.css";
 
 /**
- * A dialog lock icon/popup combination used for entering passwords and revealing a checkbox. Note that the checkbox comes from another component that houses this dialog. Customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-dialog/.
+ * Dialog lock icon/popup combination used for entering passwords and revealing a checkbox. Note that the checkbox comes from another component that houses this dialog. Customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-dialog/.
  * @returns said password dialog.
  */
 function MaterialPasswordDialog({

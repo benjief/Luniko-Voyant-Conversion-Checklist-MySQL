@@ -12,7 +12,7 @@ import MaterialPasswordDialog from './MaterialPasswordDialog';
 import SubmitButton from './SubmitButton';
 
 /**
- * This card houses all of the fields required to submit a post-conversion checklist.
+ * Card that houses all of the fields required to submit a post-conversion checklist.
  * @returns said card.
  */
 function CreateOrModifyPostConversionChecklistCard({
@@ -77,7 +77,7 @@ function CreateOrModifyPostConversionChecklistCard({
         <div>
             <Card
                 sx={{
-                    maxHeight: "calc(100vh - 360.52px)",
+                    maxHeight: "calc(100vh - 363.52px)",
                     overflowY: "scroll",
                     borderRadius: "10px",
                     boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",

@@ -2,13 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FadingBalls from "react-cssfx-loading/lib/FadingBalls";
 
+/**
+ * General purpose submit button that gets used in many of this application's components.
+ * @returns said button.
+ */
 function SubmitButton({
     className,
-    submitButtonText,
-    isSubmitButtonDisabled,
-    displayFadingBalls,
-    handleOnClick,
-    handleOnClickFunction,
+    submitButtonText, // text displayed on the submit button
+    isSubmitButtonDisabled, // whether or not the submit button is disabled
+    displayFadingBalls, // whether or not a set of fading balls is displayed on the submit button (to indicate that the page is working on a request)
+    handleOnClick, // whether or not a callback function is called that handles submission in the parent component
+    handleOnClickFunction, // callback function that handles submission in the parent component
 }) {
     return (
         <button

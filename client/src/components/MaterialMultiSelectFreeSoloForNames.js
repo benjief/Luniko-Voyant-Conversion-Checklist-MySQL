@@ -13,7 +13,7 @@ import "../styles/DialogComponents.css";
 const filter = createFilterOptions();
 
 /**
- * A multiple value, free solo selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/. Note that this was created to handle inputs with a first name and last name. This component may be made more general purpose in the future.
+ * Multiple value, free solo selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/. Note that this was created to handle inputs with a first name and last name. This component may be made more general purpose in the future.
  * @returns said selector.
  */
 function MaterialMultiSelectFreeSoloForNames(

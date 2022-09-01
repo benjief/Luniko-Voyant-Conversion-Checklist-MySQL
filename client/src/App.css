@@ -9,11 +9,12 @@
 }
 
 .App {
+  height: 100vh;
   text-align: center;
 }
 
 #root {
-  height: 100vh;
+  /* height: 100vh; */
   background-image: url("img/background_pattern.png");
   font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
   font-size: 11pt;

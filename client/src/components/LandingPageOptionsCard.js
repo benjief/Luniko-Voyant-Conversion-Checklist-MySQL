@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 
 /**
- * This card contains links to all of the different checklist-related options this application offers.
+ * Card that contains links to all of the different checklist-related options this application offers.
  * @returns said card.
  */
 function LandingPageOptionsCard() {

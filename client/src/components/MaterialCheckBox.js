@@ -7,7 +7,7 @@ import CircleOutlined from '@mui/icons-material/CircleOutlined';
 import CheckCircle from '@mui/icons-material/CheckCircle';
 
 /**
- * A checkbox customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-checkbox/.
+ * Checkbox customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-checkbox/.
  * @returns said checkbox.
  */
 function MaterialCheckBox({

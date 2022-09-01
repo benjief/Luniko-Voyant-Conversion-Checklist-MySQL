@@ -4,7 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
 /**
- * A multiple value selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/.
+ * Multiple value selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/.
  * @returns said selector.
  */
 function MaterialMultiSelect(

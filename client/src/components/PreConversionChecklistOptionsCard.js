@@ -6,7 +6,11 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 
-export default function PreConversionChecklistOptionsCard() {
+/**
+ * Card that contains links to all of the different post-convresion-checklist-related options this application offers.
+ * @returns said card.
+ */
+function PreConversionChecklistOptionsCard() {
     const expanded = true;
 
     return (
@@ -45,3 +49,5 @@ export default function PreConversionChecklistOptionsCard() {
         </Card >
     );
 }
+
+export default PreConversionChecklistOptionsCard;

@@ -323,8 +323,7 @@ function CreateOrModifyPreConversionChecklist() {
                 setRendering(true);
                 setIsRequestChecklistButtonDisabled(true);
             } else {
-                // this is a context variable
-                invalidLoadSheetNameError("Invalid load sheet name");
+                invalidLoadSheetNameError("Invalid load sheet name"); // context variable
             }
         }
     }

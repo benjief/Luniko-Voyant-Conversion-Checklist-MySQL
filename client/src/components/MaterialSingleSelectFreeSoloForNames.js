@@ -12,6 +12,10 @@ import "../styles/DialogComponents.css";
 
 const filter = createFilterOptions();
 
+/**
+ * Single value, free solo selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/. Note that this was created to handle inputs with a first name and last name. This component may be made more general purpose in the future.
+ * @returns said selector.
+ */
 function MaterialSingleSelectFreeSoloForNames(
     {
         className,
@@ -23,7 +27,7 @@ function MaterialSingleSelectFreeSoloForNames(
         invalidOptions, // array of options that aren't valid (e.g. if a user has chosen an option in some other, mutually exclusive field that invalidates options in this one)
         selectedValue, // callback function that provides selected value to the component containing this component
         isDisabled, // whether or not the selector is disabled
-        required,
+        required, // whether or not this is a required field
     }) {
     const [value, setValue] = React.useState(defaultValue.value !== null ? defaultValue : null);
     const [open, toggleOpen] = React.useState(false);

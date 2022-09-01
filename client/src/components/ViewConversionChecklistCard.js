@@ -7,7 +7,12 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 
+/**
+ * Card that displays all of a submitted conversion checklist's fields, regardless of that checklist's state of completion. If a particular field hasn't been filled out yet (e.g. because the field is specific to a post-conversion checklist, but the checklist hasn't yet reached that stage), "None" is displayed under that field's heading.
+ * @returns said card.
+ */
 function ViewConversionChecklistCard({
+    // all load sheet props
     loadSheetName,
     loadSheetOwner,
     decisionMaker,

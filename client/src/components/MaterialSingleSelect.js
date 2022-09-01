@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
 /**
- * A single value selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/.
+ * Single value selector component customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-autocomplete/.
  * @returns said selector.
  */
 function MaterialSingleSelect(

@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 /**
- * An alert component, customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-alert/
+ * Alert component, customized from the original Material UI component that can be found here: https://mui.com/material-ui/react-alert/
  * @returns said alert component.
  */
 function MaterialAlert({
