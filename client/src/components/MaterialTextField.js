@@ -48,7 +48,7 @@ function MaterialTextField({
    * @param value - empty input.
    */
   const handleEmptyValue = React.useCallback((value) => {
-    console.log(value);
+    // console.log(value);
     setValue(value);
     inputValue({ field: field, value: "" });
     setInputLength(0);
