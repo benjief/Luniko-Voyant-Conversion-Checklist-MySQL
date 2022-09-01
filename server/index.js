@@ -6,6 +6,8 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+
+// local DB setup
 // const db = mysql.createConnection({
 //     user: "root",
 //     host: "localhost",
@@ -13,6 +15,7 @@ app.use(express.json());
 //     database: "voyant_conversion_checklist"
 // });
 
+// Heroku DB setup
 const db = mysql.createConnection({
     user: "smalbqxwpdi81cf1",
     host: "uyu7j8yohcwo35j3.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
@@ -202,28 +205,6 @@ app.get('/get-additional-processing/:checklistID', (req, res) => {
             }
         });
 });
-
-// app.get('/get-post-conversion-checklist-info/:loadSheetName', (req, res) => {
-//     const loadSheetName = req.params.loadSheetName;
-//     db.query(
-//         `SELECT
-//              cc_id,
-//              cc_post_conversion_loading_errors,
-//              cc_post_conversion_validation_results,
-//              cc_post_conversion_changes,
-//              is_approved
-//          FROM
-//              conversion_checklist
-//          WHERE
-//             cc_load_sheet_name = ?`,
-//         loadSheetName, (err, result) => {
-//             if (err) {
-//                 console.log(err);
-//             } else {
-//                 res.send(result);
-//             }
-//         });
-// });
 
 app.get('/get-load-sheet-id/:loadSheetName', (req, res) => {
     const loadSheetName = req.params.loadSheetName;
@@ -492,10 +473,12 @@ app.put("/update-post-conversion-checklist/:conversionChecklistID", (req, res) =
     );
 });
 
+// local connect
 // app.listen(3001, () => {
 //     console.log("Yay! Your server is running on port 3001.");
 // });
 
+// Heroku connect
 app.listen(process.env.PORT || 3001, () => {
     console.log("Your server is running!");
 });

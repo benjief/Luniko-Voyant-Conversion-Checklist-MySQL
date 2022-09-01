@@ -1,16 +1,17 @@
 import PropTypes from "prop-types";
 import React from "react";
 
+/**
+ * Component that structures this application's checklist-related pages (i.e. CreateOrModifyPre/PostConversionChecklist.js and ViewConversionChecklist.js).
+ * @returns said component.
+ */
 function CardWrapper({
-    children,
-    rendering,
-    alert,
-    isErrorThrown,
-    preConversionChecklist,
-    postConversionChecklist,
-    testScriptName,
-    isTestingSessionBeingDeleted,
-    isStepBeingAddedOrRemoved,
+    children, // components to be displayed within the structured divs below
+    rendering, // whether or not the page is rendering
+    alert, // whether or not an alert is being displayed on the page
+    isErrorThrown, // whether or not an error has been thrown on the page
+    preConversionChecklist, // whether or not the current page's functionality has to do with pre-conversion checklists
+    postConversionChecklist, // whether or not the current page's functionality has to do with post-conversion checklists
 }) {
 
     return (
@@ -55,9 +56,6 @@ CardWrapper.propTypes = {
     isErrorThrown: PropTypes.bool,
     preConversionChecklist: PropTypes.bool,
     postConversionChecklist: PropTypes.bool,
-    testScriptName: PropTypes.string,
-    isTestingSessionBeingDeleted: PropTypes.bool,
-    isStepBeingAddedOrRemoved: PropTypes.bool,
 }
 
 CardWrapper.defaultProps = {
@@ -66,9 +64,6 @@ CardWrapper.defaultProps = {
     isErrorThrown: false,
     preConversionChecklist: false,
     postConversionChecklist: false,
-    testScriptName: "",
-    isTestingSessionBeingDeleted: false,
-    isStepBeingAddedOrRemoved: false,
 }
 
 export default CardWrapper;

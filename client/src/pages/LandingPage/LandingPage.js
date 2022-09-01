@@ -5,6 +5,10 @@ import LoadingWrapper from "../wrappers/LoadingWrapper/LoadingWrapper";
 import "../../styles/InputComponents.css"
 import "../../styles/LandingPage.css";
 
+/**
+ * The application's landing page.
+ * @returns said landing page.
+ */
 function LandingPage() {
     const [rendering, setRendering] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");

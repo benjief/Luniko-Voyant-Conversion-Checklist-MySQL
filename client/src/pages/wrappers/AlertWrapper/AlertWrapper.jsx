@@ -2,11 +2,15 @@ import PropTypes from "prop-types";
 import React from "react";
 import MaterialAlert from "../../../components/MaterialAlert";
 
+/**
+ * Component that renders if an error has been thrown on a page. Essentially a blank page with an alert displayed at the top.
+ * @returns said component.
+ */
 function AlertWrapper({
-    alert,
-    alertMessage,
-    handleAlertClosed,
-    alertType,
+    alert, // whether or not an alert is being displayed on the page
+    alertMessage, // text displayed by an active alert
+    handleAlertClosed, // function to be called upon alert closure
+    alertType, // "success-alert" or "error-alert" - this is used for css styling
 }) {
     return (
         alert
@@ -16,7 +20,6 @@ function AlertWrapper({
                     handleAlertClosed={handleAlertClosed}
                     className={alertType}>
                 </MaterialAlert>
-                {/* <div className="error-div"></div> */}
             </div>
             : <div></div>
     )
