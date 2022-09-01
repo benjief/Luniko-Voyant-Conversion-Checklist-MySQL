@@ -12,7 +12,7 @@ import MaterialPasswordDialog from './MaterialPasswordDialog';
 import SubmitButton from './SubmitButton';
 
 /**
- * Card that houses all of the fields required to submit a post-conversion checklist.
+ * Card that houses all of the fields required to create or modify a post-conversion checklist.
  * @returns said card.
  */
 function CreateOrModifyPostConversionChecklistCard({

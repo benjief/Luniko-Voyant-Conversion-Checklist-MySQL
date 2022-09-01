@@ -36,7 +36,7 @@ const selectorFields = [
 ];
 
 /**
- * Card that houses all of the fields required to submit a pret-conversion checklist.
+ * Card that houses all of the fields required to create or modify a pre-conversion checklist.
  * @returns said card.
  */
 function CreateOrModifyPreConversionChecklistCard({
