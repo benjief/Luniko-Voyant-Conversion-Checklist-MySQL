@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
+require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
@@ -17,10 +18,10 @@ app.use(express.json());
 
 // Heroku DB setup
 const db = mysql.createConnection({
-    user: "smalbqxwpdi81cf1",
-    host: "uyu7j8yohcwo35j3.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-    password: "p2q1f0vjwbjayzke",
-    database: "cei6b44h3w9lie0t"
+    user: process.env.user,
+    host: process.env.host,
+    password: process.env.password,
+    database: process.env.database
 });
 
 app.get('/get-all-personnel', (req, res) => {

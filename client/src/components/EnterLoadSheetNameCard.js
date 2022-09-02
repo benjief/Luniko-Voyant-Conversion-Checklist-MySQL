@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 import MaterialTextField from './MaterialTextField';
 import SubmitButton from './SubmitButton';
+import MaterialDialog from './MaterialDialog';
 
 /**
  * Card that allows users to retrieve checklist information from the database by entering a valid load sheet name. Note that the validity of a load sheet name is determined by the page that contains this card.
@@ -21,6 +22,7 @@ function EnterLoadSheetNameCard({
     requestChecklist, // function to handle the user requesting a checklist
     isSubmitButtonDisabled, // whether or not the submit button is disabled
     isUserViewingConversionChecklist, // whether or not the user is simply viewing a checklist (vs. creating or updating one)
+    isDeletionForm, // whether or not this card is being used in a test script deletion form
     displayFadingBalls, // whether or not fading balls are displayed (to indicate that the page is writing checklist information)
 }) {
     const expanded = true;
@@ -70,21 +72,40 @@ function EnterLoadSheetNameCard({
                                 label="Load Sheet Name"
                                 inputValue={handleOnChange}
                                 type="text"
-                                authenticationField={true}
+                                isAuthenticationField={true}
                                 field={"loadSheetName"}>
                             </MaterialTextField>
                         </CardContent>
                     </Collapse>
                 </div>
             </Card >
-            <SubmitButton
-                className="submit-load-sheet-name-button"
-                submitButtonText="Submit"
-                isSubmitButtonDisabled={isSubmitButtonDisabled}
-                displayFadingBalls={displayFadingBalls}
-                handleOnClick={true}
-                handleOnClickFunction={requestChecklist}>
-            </SubmitButton>
+            {/* This component uses a Material Dialog if it is being used in a deletion form. This is to warn users that deletion is irreversible. */}
+            {isDeletionForm
+                ? <MaterialDialog
+                    className="material-dialog-delete"
+                    isDialogDisabled={isSubmitButtonDisabled}
+                    exteriorButton={
+                        <SubmitButton
+                            className={isDeletionForm ? "delete-conversion-checklist-button" : "submit-load-sheet-name-button"}
+                            submitButtonText={isDeletionForm ? "Delete" : "Submit"}
+                            isSubmitButtonDisabled={isSubmitButtonDisabled}
+                            displayFadingBalls={displayFadingBalls}>
+                        </SubmitButton>
+                    }
+                    inactiveButtonText="Cancel"
+                    displayActiveButton={true}
+                    activeButtonFunction={requestChecklist}
+                    activeButtonText="Delete"
+                    dialogDescription={<p>Are you sure you want to permanently delete this checklist? This action cannot be undone.</p>}>
+                </MaterialDialog>
+                : <SubmitButton
+                    className="submit-load-sheet-name-button"
+                    submitButtonText="Submit"
+                    isSubmitButtonDisabled={isSubmitButtonDisabled}
+                    displayFadingBalls={displayFadingBalls}
+                    handleOnClick={true}
+                    handleOnClickFunction={requestChecklist}>
+                </SubmitButton>}
         </div>
     );
 }
@@ -98,6 +119,7 @@ EnterLoadSheetNameCard.propTypes = {
     requestChecklist: PropTypes.func,
     isSubmitButtonDisabled: PropTypes.bool,
     isUserViewingConversionChecklist: PropTypes.bool,
+    isDeletionForm: PropTypes.bool,
     displayFadingBalls: PropTypes.bool,
 }
 
@@ -110,6 +132,7 @@ EnterLoadSheetNameCard.defaultProps = {
     requestChecklist: () => { },
     isSubmitButtonDisabled: true,
     isUserViewingConversionChecklist: false,
+    isDeletionForm: false,
     displayFadingBalls: false,
 }
 

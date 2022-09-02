@@ -21,7 +21,7 @@ function CreateOrModifyPostConversionChecklist() {
     const [rendering, setRendering] = useState(true);
     const { pageFunctionality } = useParams();
     const [isValidLoadSheetNameEntered, setIsValidLoadSheetNameEntered] = useState(false);
-    const invalidChecklistNameError = useValidationErrorUpdate();
+    const invalidLoadSheetNameError = useValidationErrorUpdate();
     const [isRequestChecklistButtonDisabled, setIsRequestChecklistButtonDisabled] = useState(true);
     const [transitionElementOpacity, setTransitionElementOpacity] = useState("100%");
     const [transitionElementVisibility, setTransitionElementVisibility] = useState("visible");
@@ -87,14 +87,14 @@ function CreateOrModifyPostConversionChecklist() {
          */
         const runPrimaryReadAsyncFunctions = async () => {
             isDataBeingFetched.current = true;
-            await fetchLoadSheetNamesAlreadyInDB();
+            await fetchAndWriteLoadSheetNamesAlreadyInDB();
             setRendering(false);
         }
 
         /**
          * Fetches load sheet names that are already stored in the database and writes them to validLoadSheetNames. If the user is creating a post-conversion checklist, pre-conversion load sheet names will be fetched and written. If the user is updating a post-conversion checklist, post-conversion load sheet names will be fetched and written.
          */
-        const fetchLoadSheetNamesAlreadyInDB = async () => {
+        const fetchAndWriteLoadSheetNamesAlreadyInDB = async () => {
             try {
                 let dbFunction = pageFunctionality === "create" ? "get-valid-pre-conversion-ls-names" : "get-valid-post-conversion-ls-names";
                 async.current = true;
@@ -192,7 +192,7 @@ function CreateOrModifyPostConversionChecklist() {
                 setRendering(true);
                 setIsRequestChecklistButtonDisabled(true);
             } else {
-                invalidChecklistNameError("Invalid load sheet name"); // context variable
+                invalidLoadSheetNameError("Invalid load sheet name"); // context variable
             }
         }
     }

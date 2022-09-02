@@ -1,42 +1,36 @@
-.landing-page-options {
+.enter-valid-load-sheet-name,
+.delete-conversion-checklist {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
     height: calc(100vh - 76.52px);
-    overflow-y: scroll;
+    overflow: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
 
-.landing-page-options-container {
+.enter-valid-load-sheet-name-container,
+.delete-conversion-checklist-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
     width: 95%;
     max-width: 900px;
-    /* padding-bottom: 20px; */
+    padding-bottom: 20px;
 }
 
-.landing-page-options-card {
+.enter-valid-load-sheet-name-card,
+.delete-conversion-checklist-card {
     width: 100%;
 }
 
-.landing-page-options-container a {
-    width: 100%;
-}
-
-.pre-conversion-checklist-button,
-.post-conversion-checklist-button,
-.view-conversion-checklist-button,
 .delete-conversion-checklist-button {
     padding: 10px;
-    /* margin-top: 5px !important; */
     /* margin-bottom: 10px; */
     border: none;
     color: white;
-    background-color: var(--lunikoBlue);
     border-radius: 5px;
     font-family: "Raleway", Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 600;
@@ -47,13 +41,14 @@
     box-shadow: 2px 2px 4px rgba(43, 43, 43, 0.6);
 }
 
-.post-conversion-checklist-button,
-.view-conversion-checklist-button,
-.delete-conversion-checklist-button {
-    margin-top: 10px !important;
+.delete-conversion-checklist-button:not(:disabled) {
+    background-color: var(--lunikoBlue);
 }
 
-.landing-page-options-container button:hover {
-    cursor: pointer;
+.delete-conversion-checklist-button:not(:disabled):hover {
     background-color: var(--lunikoOrange);
+}
+
+.delete-conversion-checklist-button:disabled {
+    background-color: #BFBFBF;
 }

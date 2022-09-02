@@ -120,7 +120,7 @@ function CreateOrModifyPreConversionChecklist() {
          */
         const runPrimaryReadAsyncFunctions = async () => {
             isDataBeingFetched.current = true;
-            await fetchLoadSheetNamesAlreadyInDB();
+            await fetchAndWriteLoadSheetNamesAlreadyInDB();
             await fetchAndWritePersonnelAlreadyInDB();
             setRendering(false);
         }
@@ -128,7 +128,7 @@ function CreateOrModifyPreConversionChecklist() {
         /**
          * Fetches load sheet names that are already stored in the database and writes them to loadSheetNamesAlreadyInDB. If a user is creating a pre-conversion checklist, all the load sheet names in the database are fetched and written. Alternatively, if the user is modifying an existing form, since the load sheet name is immutable once submitted, only pre-conversion load sheet names must be fetched by the page (so that only pre-conversion checklists are loadable).
          */
-        const fetchLoadSheetNamesAlreadyInDB = async () => {
+        const fetchAndWriteLoadSheetNamesAlreadyInDB = async () => {
             try {
                 let dbFunction = pageFunctionality === "create" ? "get-all-ls-names" : "get-valid-pre-conversion-ls-names";
                 async.current = true;

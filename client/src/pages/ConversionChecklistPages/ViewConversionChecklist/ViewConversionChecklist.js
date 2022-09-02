@@ -293,7 +293,7 @@ function ViewConversionChecklist() {
             </LoadingWrapper>
             <AlertWrapper
                 alert={alert}
-                alertMessage={alertMessage.current}
+                alertMessage={alertMessage}
                 handleAlertClosed={handleAlertClosed}
                 alertType={alertType.current}>
             </AlertWrapper>

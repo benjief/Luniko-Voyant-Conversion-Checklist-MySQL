@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 
 /**
- * Component that structures this application's checklist-related pages (i.e. CreateOrModifyPre/PostConversionChecklist.js and ViewConversionChecklist.js).
+ * Component that structures this application's checklist-related pages (i.e. CreateOrModifyPre/PostConversionChecklist.js, ViewConversionChecklist.js and DeleteChecklist.js).
  * @returns said component.
  */
 function CardWrapper({
@@ -12,6 +12,7 @@ function CardWrapper({
     isErrorThrown, // whether or not an error has been thrown on the page
     preConversionChecklist, // whether or not the current page's functionality has to do with pre-conversion checklists
     postConversionChecklist, // whether or not the current page's functionality has to do with post-conversion checklists
+    isUserDeletingChecklist, // whether or not the user is currently deleting a checklist
 }) {
     return (
         rendering || alert
@@ -22,24 +23,32 @@ function CardWrapper({
                     ? "create-or-modify-pre-conversion-checklist"
                     : postConversionChecklist
                         ? "create-or-modify-post-conversion-checklist"
-                        : "view-conversion-checklist"}>
+                        : isUserDeletingChecklist
+                            ? "delete-conversion-checklist"
+                            : "view-conversion-checklist"}>
                     <div className="page-message">
                         {preConversionChecklist || postConversionChecklist
                             ? "Please Fill in the Fields Below:"
-                            : "View Your Checklist Below:"}
+                            : isUserDeletingChecklist
+                                ? "Enter the Name of the Checklist to Delete Below"
+                                : "View Your Checklist Below:"}
                     </div>
                     <div className={
                         preConversionChecklist
                             ? "create-or-modify-pre-conversion-checklist-container"
                             : postConversionChecklist
                                 ? "create-or-modify-post-conversion-checklist-container"
-                                : "view-conversion-checklist-container"}>
+                                : isUserDeletingChecklist
+                                    ? "delete-conversion-checklist-container"
+                                    : "view-conversion-checklist-container"}>
                         <div className={
                             preConversionChecklist
                                 ? "create-or-modify-pre-conversion-checklist-card"
                                 : postConversionChecklist
                                     ? "create-or-modify-post-conversion-checklist-card"
-                                    : "view-conversion-checklist-card"}>
+                                    : isUserDeletingChecklist
+                                        ? "delete-conversion-checklist-card"
+                                        : "view-conversion-checklist-card"}>
                             {children}
                         </div>
                     </div>
@@ -55,6 +64,7 @@ CardWrapper.propTypes = {
     isErrorThrown: PropTypes.bool,
     preConversionChecklist: PropTypes.bool,
     postConversionChecklist: PropTypes.bool,
+    isUserDeletingChecklist: PropTypes.bool,
 }
 
 CardWrapper.defaultProps = {
@@ -63,6 +73,7 @@ CardWrapper.defaultProps = {
     isErrorThrown: false,
     preConversionChecklist: false,
     postConversionChecklist: false,
+    isUserDeletingChecklist: false,
 }
 
 export default CardWrapper;

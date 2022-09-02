@@ -15,7 +15,7 @@ function LandingPageOptionsCard() {
     return (
         <Card
             sx={{
-                minHeight: "243.47px",
+                minHeight: "303.47px",
                 overflowY: "scroll",
                 borderRadius: "10px",
                 boxShadow: "2px 2px 6px rgba(43, 43, 43, 0.6)",
@@ -45,6 +45,12 @@ function LandingPageOptionsCard() {
                             <button
                                 className="view-conversion-checklist-button">
                                 View Checklist
+                            </button>
+                        </Link>
+                        <Link to={"/delete-conversion-checklist"}>
+                            <button
+                                className="delete-conversion-checklist-button">
+                                Delete Checklist
                             </button>
                         </Link>
                     </CardContent>

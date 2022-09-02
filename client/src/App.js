@@ -5,6 +5,7 @@ import PostConversionChecklist from "./pages/ConversionChecklistPages/PostConver
 import CreateOrModifyPreConversionChecklist from "./pages/ConversionChecklistPages/CreateOrModifyPreConversionChecklist";
 import CreateOrModifyPostConversionChecklist from "./pages/ConversionChecklistPages/CreateOrModifyPostConversionChecklist";
 import ViewConversionChecklist from "./pages/ConversionChecklistPages/ViewConversionChecklist/ViewConversionChecklist";
+import DeleteConversionChecklist from "./pages/ConversionChecklistPages/DeleteConversionChecklist/DeleteConversionChecklist";
 import { ValidationErrorProvider } from "./pages/ConversionChecklistPages/Context/ValidationErrorContext";
 import './App.css';
 
@@ -20,6 +21,7 @@ function App() {
             <Route exact path="/create-or-modify-pre-conversion-checklist/:pageFunctionality" element={<CreateOrModifyPreConversionChecklist />} />
             <Route exact path="/create-or-modify-post-conversion-checklist/:pageFunctionality" element={<CreateOrModifyPostConversionChecklist />} />
             <Route exact path="/view-conversion-checklist" element={<ViewConversionChecklist />} />
+            <Route exact path="/delete-conversion-checklist" element={<DeleteConversionChecklist />} />
           </Switch>
         </Router>
       </ValidationErrorProvider>
